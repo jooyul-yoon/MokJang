@@ -12,7 +12,7 @@ export interface Group {
   name: string;
   description: string;
   meeting_time: string;
-  meeting_location: string;
+  region: string;
 }
 
 export const fetchAnnouncements = async (): Promise<Announcement[]> => {

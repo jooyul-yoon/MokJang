@@ -18,7 +18,7 @@ interface Group {
   name: string;
   description: string;
   meeting_time: string;
-  meeting_location: string;
+  region: string;
 }
 
 interface GroupListProps {
@@ -136,7 +136,7 @@ export default function GroupList({
                   🕒 {group.meeting_time}
                 </Text>
                 <Text className="text-typography-gray-500 text-xs">
-                  📍 {group.meeting_location}
+                  📍 {group.region}
                 </Text>
               </VStack>
               <Button

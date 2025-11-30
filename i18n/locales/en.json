@@ -16,6 +16,12 @@
     "bible": "Bible",
     "profile": "Profile"
   },
+  "community": {
+    "myMokjang": "My Mokjang",
+    "meetingTime": "Meeting Time",
+    "region": "Location",
+    "createMokjang": "Create New Mokjang"
+  },
   "profile": {
     "name": "Name",
     "namePlaceholder": "Enter your name",

@@ -85,17 +85,17 @@ export default function CommunityScreen() {
                 size="md"
                 className="mb-2 text-typography-black dark:text-typography-white"
               >
-                My MokJang: {userGroup.name}
+                {t("community.myMokjang")}: {userGroup.name}
               </Heading>
               <Text className="text-typography-gray-600 dark:text-typography-gray-400">
                 {userGroup.description}
               </Text>
               <VStack className="mt-4 gap-2">
                 <Text className="text-typography-gray-500 text-sm">
-                  🕒 Meeting Time: {userGroup.meeting_time}
+                  🕒 {t("community.meetingTime")}: {userGroup.meeting_time}
                 </Text>
                 <Text className="text-typography-gray-500 text-sm">
-                  📍 Location: {userGroup.meeting_location}
+                  📍 {t("community.region")}: {userGroup.region}
                 </Text>
               </VStack>
             </Card>
@@ -107,7 +107,7 @@ export default function CommunityScreen() {
               onPress={() => router.push("/groups/create")}
               className="mb-4"
             >
-              <ButtonText>Create New MokJang</ButtonText>
+              <ButtonText>{t("community.createMokjang")}</ButtonText>
             </Button>
             <GroupList
               groups={groups}
