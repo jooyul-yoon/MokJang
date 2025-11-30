@@ -1,4 +1,5 @@
 import GroupList from "@/components/GroupList";
+import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
@@ -10,6 +11,7 @@ import {
   fetchUserJoinRequests,
 } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView } from "react-native";
@@ -18,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function CommunityScreen() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: userGroup, isLoading: isLoadingUserGroup } = useQuery({
@@ -99,11 +102,19 @@ export default function CommunityScreen() {
             {/* Add more group features here later */}
           </VStack>
         ) : (
-          <GroupList
-            groups={groups}
-            initialRequestedGroups={requestedGroupIds}
-            isLoading={isLoadingGroups || isLoadingRequests}
-          />
+          <VStack className="flex-1 gap-4">
+            <Button
+              onPress={() => router.push("/groups/create")}
+              className="mb-4"
+            >
+              <ButtonText>Create New MokJang</ButtonText>
+            </Button>
+            <GroupList
+              groups={groups}
+              initialRequestedGroups={requestedGroupIds}
+              isLoading={isLoadingGroups || isLoadingRequests}
+            />
+          </VStack>
         )}
       </ScrollView>
     </SafeAreaView>
