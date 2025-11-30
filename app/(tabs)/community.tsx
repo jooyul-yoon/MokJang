@@ -12,7 +12,8 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, SafeAreaView, ScrollView } from "react-native";
+import { RefreshControl, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CommunityScreen() {
   const { t } = useTranslation();
