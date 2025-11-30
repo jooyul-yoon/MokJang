@@ -60,3 +60,21 @@ export const joinGroup = async (
   }
   return { success: true };
 };
+
+export const fetchUserJoinRequests = async (): Promise<string[]> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("group_join_requests")
+    .select("group_id")
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error fetching join requests:", error);
+    return [];
+  }
+  return data.map((req: any) => req.group_id);
+};
