@@ -78,3 +78,26 @@ export const fetchUserJoinRequests = async (): Promise<string[]> => {
   }
   return data.map((req: any) => req.group_id);
 };
+
+export const fetchUserGroup = async (): Promise<Group | null> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("group_members")
+    .select("group_id, groups(*)")
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    if (error.code !== "PGRST116") {
+      // PGRST116 is "The result contains 0 rows"
+      console.error("Error fetching user group:", error);
+    }
+    return null;
+  }
+
+  return data?.groups as unknown as Group;
+};

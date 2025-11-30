@@ -1,12 +1,7 @@
 import AnnouncementList from "@/components/AnnouncementList";
-import GroupList from "@/components/GroupList";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import {
-  fetchAnnouncements,
-  fetchGroups,
-  fetchUserJoinRequests,
-} from "@/services/api";
+import { fetchAnnouncements } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,24 +19,9 @@ export default function HomeScreen() {
       queryFn: fetchAnnouncements,
     });
 
-  const { data: groups = [], isLoading: isLoadingGroups } = useQuery({
-    queryKey: ["groups"],
-    queryFn: fetchGroups,
-  });
-
-  const { data: requestedGroupIds = [], isLoading: isLoadingRequests } =
-    useQuery({
-      queryKey: ["userJoinRequests"],
-      queryFn: fetchUserJoinRequests,
-    });
-
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["announcements"] }),
-      queryClient.invalidateQueries({ queryKey: ["groups"] }),
-      queryClient.invalidateQueries({ queryKey: ["userJoinRequests"] }),
-    ]);
+    await queryClient.invalidateQueries({ queryKey: ["announcements"] });
     setRefreshing(false);
   };
 
@@ -65,11 +45,6 @@ export default function HomeScreen() {
         <AnnouncementList
           announcements={announcements}
           isLoading={isLoadingAnnouncements}
-        />
-        <GroupList
-          groups={groups}
-          initialRequestedGroups={requestedGroupIds}
-          isLoading={isLoadingGroups || isLoadingRequests}
         />
       </ScrollView>
     </SafeAreaView>
