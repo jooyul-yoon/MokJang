@@ -2,10 +2,12 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
+import * as AppleAuthentication from "expo-apple-authentication";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import React from "react";
+import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // Required for web only
 
@@ -58,6 +60,40 @@ export default function LoginScreen() {
       >
         <ButtonText>Sign in with Google</ButtonText>
       </Button>
+
+      {Platform.OS === "ios" && (
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+          cornerRadius={5}
+          style={{ width: "100%", maxWidth: 320, height: 44, marginTop: 12 }}
+          onPress={async () => {
+            try {
+              const credential = await AppleAuthentication.signInAsync({
+                requestedScopes: [
+                  AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                  AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                ],
+              });
+              // Sign in via Supabase Auth.
+              if (credential.identityToken) {
+                const { error } = await supabase.auth.signInWithIdToken({
+                  provider: "apple",
+                  token: credential.identityToken,
+                });
+                if (error) throw error;
+                // Session is handled by onAuthStateChange in _layout.tsx
+              }
+            } catch (e: any) {
+              if (e.code === "ERR_REQUEST_CANCELED") {
+                // handle that the user canceled the sign-in flow
+              } else {
+                console.error(e);
+              }
+            }
+          }}
+        />
+      )}
     </VStack>
   );
 }
