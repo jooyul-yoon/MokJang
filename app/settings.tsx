@@ -5,6 +5,7 @@ import { VStack } from "@/components/ui/vstack";
 import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Stack } from "expo-router";
 import { useColorScheme } from "nativewind";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -21,12 +22,12 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    <SafeAreaView
+      edges={["bottom", "left", "right"]}
+      className="flex-1 bg-background-light dark:bg-background-dark"
+    >
+      <Stack.Screen options={{ title: t("common.settings") }} />
       <ScrollView className="flex-1 p-4">
-        <Text className="mb-6 text-2xl font-bold text-typography-black dark:text-typography-white">
-          {t("common.settings")}
-        </Text>
-
         <VStack className="mb-8">
           <Text className="mb-2 text-lg font-semibold text-typography-black dark:text-typography-white">
             {t("common.language")}

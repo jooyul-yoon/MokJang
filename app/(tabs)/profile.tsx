@@ -23,12 +23,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const colorScheme = useColorScheme();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
@@ -198,9 +200,18 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView className="flex-1 p-4">
         <VStack className="space-y-6 pb-10">
-          <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">
-            {t("tabs.profile")}
-          </Heading>
+          <HStack className="items-center justify-between">
+            <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">
+              {t("tabs.profile")}
+            </Heading>
+            <TouchableOpacity onPress={() => router.push("/settings")}>
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color={colorScheme === "dark" ? "#FFF" : "#000"}
+              />
+            </TouchableOpacity>
+          </HStack>
 
           {/* Avatar Section */}
           <VStack className="items-center space-y-4">
