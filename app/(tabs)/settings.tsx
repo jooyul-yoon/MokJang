@@ -3,6 +3,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import i18n from "@/i18n";
+import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useColorScheme } from "nativewind";
 import React from "react";
@@ -71,6 +72,15 @@ export default function SettingsScreen() {
             ))}
           </HStack>
         </VStack>
+
+        <Button
+          onPress={() => supabase.auth.signOut()}
+          action="negative"
+          variant="outline"
+          className="mb-8 mt-4"
+        >
+          <ButtonText>Sign Out</ButtonText>
+        </Button>
       </ScrollView>
     </SafeAreaView>
   );
