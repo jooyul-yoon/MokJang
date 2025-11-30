@@ -55,17 +55,20 @@ export default function LoginScreen() {
       </Text>
       <Button
         onPress={performOAuth}
-        className="w-full max-w-xs"
-        action="primary"
+        className="h-[44px] w-full max-w-[320px] rounded-md border border-black bg-white"
       >
-        <ButtonText>Sign in with Google</ButtonText>
+        <ButtonText className="text-lg font-medium text-gray-800">
+          Sign in with Google
+        </ButtonText>
       </Button>
 
       {Platform.OS === "ios" && (
         <AppleAuthentication.AppleAuthenticationButton
-          buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+          buttonType={
+            AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+          }
           buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-          cornerRadius={5}
+          cornerRadius={6}
           style={{ width: "100%", maxWidth: 320, height: 44, marginTop: 12 }}
           onPress={async () => {
             try {
