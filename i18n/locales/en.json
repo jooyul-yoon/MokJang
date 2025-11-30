@@ -15,5 +15,16 @@
     "community": "Community",
     "bible": "Bible",
     "profile": "Profile"
+  },
+  "profile": {
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "signOut": "Sign Out",
+    "mokjang": "Mokjang",
+    "noMokjang": "You haven't joined a Mokjang yet.",
+    "joinMokjang": "Join a Mokjang"
   }
 }

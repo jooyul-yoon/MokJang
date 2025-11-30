@@ -236,14 +236,14 @@ export default function ProfileScreen() {
           </VStack>
 
           {/* Name Section */}
-          <VStack className="dark:bg-background-card space-y-2 rounded-xl bg-white p-4 shadow-sm">
+          <VStack className="space-y-2 rounded-xl p-4">
             <HStack className="items-center justify-between">
               <Text className="text-sm font-medium text-typography-500">
-                Name
+                {t("profile.name")}
               </Text>
               {!isEditing && (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Text className="text-primary-500">Edit</Text>
+                  <Text className="text-primary-500">{t("profile.edit")}</Text>
                 </TouchableOpacity>
               )}
             </HStack>
@@ -253,10 +253,10 @@ export default function ProfileScreen() {
                   className="flex-1 rounded-md border border-outline-300 p-2 text-typography-black dark:border-outline-700 dark:text-typography-white"
                   value={fullName}
                   onChangeText={setFullName}
-                  placeholder="Enter your name"
+                  placeholder={t("profile.namePlaceholder")}
                 />
                 <Button size="sm" onPress={updateProfile}>
-                  <ButtonText>Save</ButtonText>
+                  <ButtonText>{t("profile.save")}</ButtonText>
                 </Button>
                 <Button
                   size="sm"
@@ -266,7 +266,7 @@ export default function ProfileScreen() {
                     setIsEditing(false);
                   }}
                 >
-                  <ButtonText>Cancel</ButtonText>
+                  <ButtonText>{t("profile.cancel")}</ButtonText>
                 </Button>
               </HStack>
             ) : (
@@ -277,9 +277,9 @@ export default function ProfileScreen() {
           </VStack>
 
           {/* MokJang Section */}
-          <VStack className="dark:bg-background-card space-y-4 rounded-xl bg-white p-4 shadow-sm">
+          <VStack className="space-y-4 rounded-xl p-4">
             <Text className="text-sm font-medium text-typography-500">
-              My MokJang
+              {t("profile.mokjang")}
             </Text>
             {mokjang ? (
               <VStack className="space-y-2">
@@ -293,10 +293,10 @@ export default function ProfileScreen() {
             ) : (
               <VStack className="items-center space-y-4 py-4">
                 <Text className="text-center text-typography-500">
-                  You haven't joined a MokJang yet.
+                  {t("profile.noMokjang")}
                 </Text>
                 <Button onPress={() => router.push("/(tabs)/community")}>
-                  <ButtonText>Join a MokJang</ButtonText>
+                  <ButtonText>{t("profile.joinMokjang")}</ButtonText>
                 </Button>
               </VStack>
             )}
@@ -309,7 +309,7 @@ export default function ProfileScreen() {
             className="mt-4"
             onPress={() => supabase.auth.signOut()}
           >
-            <ButtonText>Sign Out</ButtonText>
+            <ButtonText>{t("profile.signOut")}</ButtonText>
           </Button>
         </VStack>
       </ScrollView>

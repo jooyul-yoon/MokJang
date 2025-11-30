@@ -15,5 +15,16 @@
     "community": "목장",
     "bible": "성경",
     "profile": "프로필"
+  },
+  "profile": {
+    "name": "이름",
+    "namePlaceholder": "이름을 입력해주세요",
+    "edit": "수정",
+    "save": "저장",
+    "cancel": "취소",
+    "signOut": "로그아웃",
+    "mokjang": "목장",
+    "noMokjang": "아직 목장에 가입하지 않았습니다.",
+    "joinMokjang": "목장 가입"
   }
 }
