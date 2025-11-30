@@ -1,0 +1,15 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "settings": "Settings",
+    "language": "Language",
+    "korean": "Korean",
+    "english": "English"
+  },
+  "tabs": {
+    "home": "Home",
+    "community": "Community",
+    "bible": "Bible",
+    "profile": "Profile"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "settings": "설정",
+    "language": "언어",
+    "korean": "한국어",
+    "english": "영어"
+  },
+  "tabs": {
+    "home": "홈",
+    "community": "커뮤니티",
+    "bible": "성경",
+    "profile": "프로필"
+  }
+}
