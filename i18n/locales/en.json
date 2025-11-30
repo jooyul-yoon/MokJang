@@ -4,7 +4,11 @@
     "settings": "Settings",
     "language": "Language",
     "korean": "Korean",
-    "english": "English"
+    "english": "English",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "tabs": {
     "home": "Home",
