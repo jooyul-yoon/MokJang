@@ -8,7 +8,10 @@
     "theme": "Theme",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "saving": "Saving..."
   },
   "tabs": {
     "home": "Home",
@@ -26,7 +29,15 @@
     "upcomingMeetings": "Upcoming Meetings",
     "noUpcomingMeetings": "No upcoming meetings.",
     "host": "Host",
-    "tbd": "TBD"
+    "tbd": "TBD",
+    "volunteer": "Volunteer",
+    "volunteerTitle": "Volunteer as Host",
+    "volunteerDescription": "Would you like to host this meeting? Please enter the location.",
+    "enterLocation": "Location",
+    "locationPlaceholder": "e.g. 123 Main St",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "saving": "Saving..."
   },
   "profile": {
     "name": "Name",

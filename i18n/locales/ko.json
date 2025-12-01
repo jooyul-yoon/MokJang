@@ -8,7 +8,10 @@
     "theme": "테마",
     "light": "라이트",
     "dark": "다크",
-    "system": "시스템"
+    "system": "시스템",
+    "confirm": "확인",
+    "cancel": "취소",
+    "saving": "저장 중..."
   },
   "tabs": {
     "home": "홈",
@@ -26,7 +29,15 @@
     "upcomingMeetings": "다가오는 모임",
     "noUpcomingMeetings": "예정된 모임이 없습니다.",
     "host": "인도자",
-    "tbd": "미정"
+    "tbd": "미정",
+    "volunteer": "자원하기",
+    "volunteerTitle": "목장 모임 인도 자원",
+    "volunteerDescription": "이번 모임을 인도하시겠습니까? 모임 장소를 입력해주세요.",
+    "enterLocation": "장소",
+    "locationPlaceholder": "예: 우리집",
+    "confirm": "확인",
+    "cancel": "취소",
+    "saving": "저장 중..."
   },
   "profile": {
     "name": "이름",

@@ -226,3 +226,45 @@ export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
 
   return mergedMeetings;
 };
+
+export const volunteerForMeeting = async (
+  meeting: Meeting,
+  location: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  // If it's a generated meeting, we need to insert a new record
+  if (meeting.id.startsWith("generated-")) {
+    const { error } = await supabase.from("meetings").insert({
+      group_id: meeting.group_id,
+      title: meeting.title || "목장모임", // Use default title if empty
+      meeting_time: meeting.meeting_time,
+      location: location,
+      host_id: user.id,
+    });
+
+    if (error) {
+      console.error("Error creating meeting:", error);
+      return { success: false, error: error.message };
+    }
+  } else {
+    // Existing meeting, update it
+    const { error } = await supabase
+      .from("meetings")
+      .update({
+        host_id: user.id,
+        location: location,
+      })
+      .eq("id", meeting.id);
+
+    if (error) {
+      console.error("Error updating meeting:", error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  return { success: true };
+};
