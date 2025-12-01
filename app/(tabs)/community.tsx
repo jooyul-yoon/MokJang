@@ -1,14 +1,17 @@
 import GroupList from "@/components/GroupList";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
+import { HStack } from "@/components/ui/hstack";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import {
   fetchGroups,
+  fetchMeetings,
   fetchUserGroup,
   fetchUserJoinRequests,
+  Meeting,
 } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
@@ -41,12 +44,19 @@ export default function CommunityScreen() {
       enabled: !userGroup,
     });
 
+  const { data: meetings = [], isLoading: isLoadingMeetings } = useQuery({
+    queryKey: ["meetings", userGroup?.id],
+    queryFn: () => fetchMeetings(userGroup!.id),
+    enabled: !!userGroup?.id,
+  });
+
   const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ["userGroup"] }),
       queryClient.invalidateQueries({ queryKey: ["groups"] }),
       queryClient.invalidateQueries({ queryKey: ["userJoinRequests"] }),
+      queryClient.invalidateQueries({ queryKey: ["meetings"] }),
     ]);
     setRefreshing(false);
   };
@@ -56,7 +66,7 @@ export default function CommunityScreen() {
       <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
         <ScrollView className="flex-1 p-4">
           <VStack className="gap-4">
-            <SkeletonText _lines={1} className="mb-4 h-8 w-1/2" />
+            <Heading>{t("community.mokjang")}</Heading>
             <Skeleton className="h-40 w-full rounded-lg" />
           </VStack>
         </ScrollView>
@@ -73,33 +83,71 @@ export default function CommunityScreen() {
         }
       >
         <VStack className="mb-6">
-          <Text className="text-2xl font-bold text-typography-black dark:text-typography-white">
-            {t("tabs.community")}
-          </Text>
+          <Heading>
+            {userGroup ? userGroup.name : t("community.mokjang")}
+          </Heading>
         </VStack>
 
         {userGroup ? (
           <VStack className="gap-4">
-            <Card className="dark:bg-background-card-dark rounded-lg bg-white p-4 shadow-sm">
-              <Heading
-                size="md"
-                className="mb-2 text-typography-black dark:text-typography-white"
-              >
-                {t("community.myMokjang")}: {userGroup.name}
-              </Heading>
-              <Text className="text-typography-gray-600 dark:text-typography-gray-400">
-                {userGroup.description}
+            <Text className="text-typography-gray-600 dark:text-typography-gray-400">
+              {userGroup.description}
+            </Text>
+            <VStack className="mt-4 gap-2">
+              <Text className="text-typography-gray-500 text-sm">
+                🕒 {t("community.meetingTime")}: {userGroup.meeting_time}
               </Text>
-              <VStack className="mt-4 gap-2">
-                <Text className="text-typography-gray-500 text-sm">
-                  🕒 {t("community.meetingTime")}: {userGroup.meeting_time}
+              <Text className="text-typography-gray-500 text-sm">
+                📍 {t("community.region")}: {userGroup.region}
+              </Text>
+            </VStack>
+            {/* Meetings Section */}
+            <VStack className="space-y-4">
+              <Heading
+                size="sm"
+                className="text-lg text-typography-black dark:text-typography-white"
+              >
+                {t("community.upcomingMeetings")}
+              </Heading>
+              {meetings.length > 0 ? (
+                meetings.map((meeting: Meeting) => (
+                  <VStack key={meeting.id}>
+                    <Divider />
+                    <HStack className="dark:bg-background-card rounded-lg py-2">
+                      <VStack className="flex-1">
+                        <Text className="font-bold text-typography-black dark:text-typography-white">
+                          {meeting.title || t("community.mokjangMeeting")}
+                        </Text>
+                        <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                          {new Date(meeting.meeting_time).toLocaleString(
+                            "en-US",
+                            {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            },
+                          )}
+                        </Text>
+                      </VStack>
+                      {meeting.profiles ? (
+                        <VStack>
+                          <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                            👤 {meeting.profiles.full_name}
+                          </Text>
+                          <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                            📍 {meeting.location}
+                          </Text>
+                        </VStack>
+                      ) : null}
+                    </HStack>
+                  </VStack>
+                ))
+              ) : (
+                <Text className="text-typography-gray-500">
+                  {t("community.noUpcomingMeetings")}
                 </Text>
-                <Text className="text-typography-gray-500 text-sm">
-                  📍 {t("community.region")}: {userGroup.region}
-                </Text>
-              </VStack>
-            </Card>
-            {/* Add more group features here later */}
+              )}
+            </VStack>
+            {/* 목장 기도제목 */}
           </VStack>
         ) : (
           <VStack className="flex-1 gap-4">

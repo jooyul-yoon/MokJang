@@ -17,10 +17,16 @@
     "profile": "Profile"
   },
   "community": {
+    "mokjang": "Explore Mokjang",
+    "mokjangMeeting": "Weekly Mokjang",
     "myMokjang": "My Mokjang",
     "meetingTime": "Meeting Time",
     "region": "Location",
-    "createMokjang": "Create New Mokjang"
+    "createMokjang": "Create New Mokjang",
+    "upcomingMeetings": "Upcoming Meetings",
+    "noUpcomingMeetings": "No upcoming meetings.",
+    "host": "Host",
+    "tbd": "TBD"
   },
   "profile": {
     "name": "Name",

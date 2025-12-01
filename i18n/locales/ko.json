@@ -17,10 +17,16 @@
     "profile": "프로필"
   },
   "community": {
+    "mokjangMeeting": "목장 모임",
+    "mokjang": "목장",
     "myMokjang": "내 목장",
     "meetingTime": "모임 시간",
     "region": "지역",
-    "createMokjang": "새 목장 만들기"
+    "createMokjang": "새 목장 만들기",
+    "upcomingMeetings": "다가오는 모임",
+    "noUpcomingMeetings": "예정된 모임이 없습니다.",
+    "host": "인도자",
+    "tbd": "미정"
   },
   "profile": {
     "name": "이름",
