@@ -268,3 +268,51 @@ export const volunteerForMeeting = async (
 
   return { success: true };
 };
+
+export interface UserProfile {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  role: string;
+}
+
+export const fetchUserProfile = async (): Promise<UserProfile | null> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching user profile:", error);
+    return null;
+  }
+  return data as UserProfile;
+};
+
+export const createAnnouncement = async (
+  title: string,
+  content: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("announcements").insert({
+    title,
+    content,
+    // author_id: user.id, // Uncomment if author_id column exists
+  });
+
+  if (error) {
+    console.error("Error creating announcement:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
