@@ -75,7 +75,7 @@ export default function AnnouncementList({
       {announcements.map((announcement) => (
         <Card
           key={announcement.id}
-          className="dark:bg-background-card-dark rounded-lg bg-white p-4 shadow-sm"
+          className="dark:bg-background-card-dark rounded-md bg-white px-4 py-2 shadow-sm"
         >
           {/* Header */}
           <HStack className="mb-3 items-center gap-3">
@@ -121,7 +121,7 @@ export default function AnnouncementList({
           <Divider className="my-2 bg-background-100" />
 
           {/* Footer Actions */}
-          <HStack className="mt-1 justify-between">
+          <HStack className="h-6 items-center justify-between">
             <Button
               variant="link"
               action="secondary"
