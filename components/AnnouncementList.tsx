@@ -15,6 +15,7 @@ import { VStack } from "@/components/ui/vstack";
 import { markAnnouncementAsRead } from "@/services/api";
 import { Check, Eye, MessageCircle, Share2 } from "lucide-react-native";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Announcement {
   id: string;
@@ -38,6 +39,7 @@ export default function AnnouncementList({
   announcements,
   isLoading = false,
 }: AnnouncementListProps) {
+  const { t } = useTranslation();
   // Local state to track read status optimistically
   const [readStates, setReadStates] = useState<{
     [key: string]: { isRead: boolean; count: number };
@@ -68,7 +70,7 @@ export default function AnnouncementList({
           size="md"
           className="mb-2 text-typography-black dark:text-typography-white"
         >
-          Church Announcements
+          {t("announcements.title")}
         </Heading>
         {[1, 2, 3].map((i) => (
           <Card
@@ -97,7 +99,7 @@ export default function AnnouncementList({
         size="md"
         className="mb-2 text-typography-black dark:text-typography-white"
       >
-        Church Announcements
+        {t("announcements.title")}
       </Heading>
       {announcements.map((announcement) => {
         const isRead =
@@ -114,7 +116,7 @@ export default function AnnouncementList({
             <HStack className="mb-3 items-center gap-3">
               <Avatar size="xs">
                 <AvatarFallbackText>
-                  {announcement.profiles?.full_name || "Admin"}
+                  {announcement.profiles?.full_name || t("announcements.admin")}
                 </AvatarFallbackText>
                 <AvatarImage
                   source={{
@@ -126,7 +128,8 @@ export default function AnnouncementList({
               </Avatar>
               <VStack>
                 <Text className="font-bold text-typography-black dark:text-typography-white">
-                  {announcement.profiles?.full_name || "Church Admin"}
+                  {announcement.profiles?.full_name ||
+                    t("announcements.churchAdmin")}
                 </Text>
                 <HStack className="items-center gap-2">
                   <Text className="text-typography-gray-500 text-xs">
@@ -138,7 +141,10 @@ export default function AnnouncementList({
                   </Text>
                   {readCount > 0 && (
                     <Text className="text-typography-gray-400 text-xs">
-                      • {readCount} read{readCount !== 1 ? "s" : ""}
+                      • {readCount}{" "}
+                      {readCount !== 1
+                        ? t("announcements.reads_plural")
+                        : t("announcements.reads")}
                     </Text>
                   )}
                 </HStack>
@@ -185,7 +191,7 @@ export default function AnnouncementList({
                     isRead ? "text-primary-500" : "text-typography-gray-500"
                   } text-xs`}
                 >
-                  {isRead ? "Read" : "Read"}
+                  {isRead ? t("announcements.read") : t("announcements.read")}
                 </ButtonText>
               </Button>
               <Button
@@ -199,7 +205,7 @@ export default function AnnouncementList({
                   className="text-typography-gray-500 h-4 w-4"
                 />
                 <ButtonText className="text-typography-gray-500 text-xs">
-                  Comment
+                  {t("announcements.comment")}
                 </ButtonText>
               </Button>
               <Button
@@ -213,7 +219,7 @@ export default function AnnouncementList({
                   className="text-typography-gray-500 h-4 w-4"
                 />
                 <ButtonText className="text-typography-gray-500 text-xs">
-                  Share
+                  {t("announcements.share")}
                 </ButtonText>
               </Button>
             </HStack>

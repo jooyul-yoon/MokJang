@@ -49,5 +49,15 @@
     "mokjang": "Mokjang",
     "noMokjang": "You haven't joined a Mokjang yet.",
     "joinMokjang": "Join a Mokjang"
+  },
+  "announcements": {
+    "title": "Church Announcements",
+    "read": "Read",
+    "comment": "Comment",
+    "share": "Share",
+    "reads": "read",
+    "reads_plural": "reads",
+    "admin": "Admin",
+    "churchAdmin": "Church Admin"
   }
 }

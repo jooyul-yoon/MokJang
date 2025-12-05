@@ -49,5 +49,15 @@
     "mokjang": "목장",
     "noMokjang": "아직 목장에 가입하지 않았습니다.",
     "joinMokjang": "목장 가입"
+  },
+  "announcements": {
+    "title": "교회 소식",
+    "read": "읽음",
+    "comment": "댓글",
+    "share": "공유",
+    "reads": "읽음",
+    "reads_plural": "읽음",
+    "admin": "관리자",
+    "churchAdmin": "교회 관리자"
   }
 }
