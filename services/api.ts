@@ -33,7 +33,7 @@ export interface Meeting {
 export const fetchAnnouncements = async (): Promise<Announcement[]> => {
   const { data, error } = await supabase
     .from("announcements")
-    .select("*")
+    .select("*, profiles(full_name, avatar_url)")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -307,7 +307,7 @@ export const createAnnouncement = async (
   const { error } = await supabase.from("announcements").insert({
     title,
     content,
-    // author_id: user.id, // Uncomment if author_id column exists
+    author_id: user.id,
   });
 
   if (error) {

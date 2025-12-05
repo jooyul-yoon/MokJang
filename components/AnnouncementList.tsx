@@ -19,6 +19,10 @@ interface Announcement {
   title: string;
   content: string;
   created_at: string;
+  profiles?: {
+    full_name: string;
+    avatar_url: string;
+  };
 }
 
 interface AnnouncementListProps {
@@ -76,16 +80,20 @@ export default function AnnouncementList({
           {/* Header */}
           <HStack className="mb-3 items-center gap-3">
             <Avatar size="xs">
-              <AvatarFallbackText>Admin</AvatarFallbackText>
+              <AvatarFallbackText>
+                {announcement.profiles?.full_name || "Admin"}
+              </AvatarFallbackText>
               <AvatarImage
                 source={{
-                  uri: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+                  uri:
+                    announcement.profiles?.avatar_url ||
+                    "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
                 }}
               />
             </Avatar>
             <VStack>
               <Text className="font-bold text-typography-black dark:text-typography-white">
-                Church Admin
+                {announcement.profiles?.full_name || "Church Admin"}
               </Text>
               <Text className="text-typography-gray-500 text-xs">
                 {new Date(announcement.created_at).toLocaleDateString()} •{" "}
