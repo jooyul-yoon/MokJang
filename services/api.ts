@@ -5,6 +5,12 @@ export interface Announcement {
   title: string;
   content: string;
   created_at: string;
+  read_count?: number;
+  is_read?: boolean;
+  profiles?: {
+    full_name: string;
+    avatar_url: string;
+  };
 }
 
 export interface Group {
@@ -31,16 +37,70 @@ export interface Meeting {
 }
 
 export const fetchAnnouncements = async (): Promise<Announcement[]> => {
-  const { data, error } = await supabase
-    .from("announcements")
-    .select("*, profiles(full_name, avatar_url)")
-    .order("created_at", { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    // Fallback for unauthenticated users (shouldn't happen in this app flow usually, but good for safety)
+    const { data, error } = await supabase
+      .from("announcements")
+      .select("*, profiles(full_name, avatar_url)")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching announcements:", error);
+      return [];
+    }
+    return data as Announcement[];
+  }
+
+  const { data, error } = await supabase.rpc("get_announcements_with_reads", {
+    current_user_id: user.id,
+  });
 
   if (error) {
     console.error("Error fetching announcements:", error);
     return [];
   }
-  return data as Announcement[];
+
+  // Map the RPC result to match the Announcement interface structure expected by UI
+  return data.map((item: any) => ({
+    id: item.id,
+    title: item.title,
+    content: item.content,
+    created_at: item.created_at,
+    read_count: item.read_count,
+    is_read: item.is_read,
+    profiles: {
+      full_name: item.author_full_name,
+      avatar_url: item.author_avatar_url,
+    },
+  })) as Announcement[];
+};
+
+export const markAnnouncementAsRead = async (
+  announcementId: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("announcement_reads").insert({
+    announcement_id: announcementId,
+    user_id: user.id,
+  });
+
+  if (error) {
+    // If unique violation, it means already read, which is fine.
+    if (error.code === "23505") {
+      return { success: true };
+    }
+    console.error("Error marking announcement as read:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
 };
 
 export const fetchGroups = async (): Promise<Group[]> => {
