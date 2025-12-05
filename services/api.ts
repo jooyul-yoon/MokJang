@@ -42,17 +42,8 @@ export const fetchAnnouncements = async (): Promise<Announcement[]> => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // Fallback for unauthenticated users (shouldn't happen in this app flow usually, but good for safety)
-    const { data, error } = await supabase
-      .from("announcements")
-      .select("*, profiles(full_name, avatar_url)")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching announcements:", error);
-      return [];
-    }
-    return data as Announcement[];
+    console.error("User not authenticated");
+    return [];
   }
 
   const { data, error } = await supabase.rpc("get_announcements_with_reads", {
@@ -72,6 +63,7 @@ export const fetchAnnouncements = async (): Promise<Announcement[]> => {
     created_at: item.created_at,
     read_count: item.read_count,
     is_read: item.is_read,
+    comment_count: item.comment_count || 0,
     profiles: {
       full_name: item.author_full_name,
       avatar_url: item.author_avatar_url,
@@ -98,6 +90,65 @@ export const markAnnouncementAsRead = async (
       return { success: true };
     }
     console.error("Error marking announcement as read:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export interface Comment {
+  id: string;
+  announcement_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  profiles: {
+    full_name: string;
+    avatar_url: string;
+  };
+}
+
+export const fetchComments = async (
+  announcementId: string,
+): Promise<Comment[]> => {
+  const { data, error } = await supabase
+    .from("announcement_comments")
+    .select(
+      `
+      *,
+      profiles (
+        full_name,
+        avatar_url
+      )
+    `,
+    )
+    .eq("announcement_id", announcementId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+
+  return data as Comment[];
+};
+
+export const createComment = async (
+  announcementId: string,
+  content: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("announcement_comments").insert({
+    announcement_id: announcementId,
+    user_id: user.id,
+    content,
+  });
+
+  if (error) {
+    console.error("Error creating comment:", error);
     return { success: false, error: error.message };
   }
   return { success: true };

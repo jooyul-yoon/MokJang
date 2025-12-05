@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements, markAnnouncementAsRead } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { Check, Eye, MessageCircle } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ interface Announcement {
   created_at: string;
   read_count?: number;
   is_read?: boolean;
+  comment_count?: number;
   profiles?: {
     full_name: string;
     avatar_url: string;
@@ -31,6 +33,7 @@ interface Announcement {
 
 export default function AnnouncementList() {
   const { t } = useTranslation();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -147,11 +150,17 @@ export default function AnnouncementList() {
                 action="secondary"
                 size="sm"
                 className="gap-2"
+                onPress={() => router.push(`/announcements/${announcement.id}`)}
               >
                 <ButtonIcon
                   as={MessageCircle}
                   className="text-typography-800"
                 />
+                {(announcement.comment_count ?? 0) > 0 && (
+                  <ButtonText className="text-xs text-typography-400">
+                    {announcement.comment_count}
+                  </ButtonText>
+                )}
               </Button>
             </HStack>
           </VStack>
