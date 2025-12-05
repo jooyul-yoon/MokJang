@@ -66,12 +66,6 @@ export default function AnnouncementList({
   if (isLoading) {
     return (
       <VStack className="gap-4">
-        <Heading
-          size="md"
-          className="mb-2 text-typography-black dark:text-typography-white"
-        >
-          {t("announcements.title")}
-        </Heading>
         {[1, 2, 3].map((i) => (
           <Card
             key={i}
@@ -95,12 +89,6 @@ export default function AnnouncementList({
 
   return (
     <VStack className="gap-4">
-      <Heading
-        size="md"
-        className="mb-2 text-typography-black dark:text-typography-white"
-      >
-        {t("announcements.title")}
-      </Heading>
       {announcements.map((announcement) => {
         const isRead =
           readStates[announcement.id]?.isRead ?? announcement.is_read;

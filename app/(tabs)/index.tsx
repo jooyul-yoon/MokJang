@@ -1,5 +1,5 @@
 import AnnouncementList from "@/components/AnnouncementList";
-import { Button, ButtonText } from "@/components/ui/button";
+import { HomeTabs } from "@/components/HomeTabs";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements, fetchUserProfile } from "@/services/api";
@@ -9,6 +9,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const tabs = [
+  { en: "Announcements", ko: "공지사항", value: "announcements" },
+  { en: "Prayers", ko: "기도제목", value: "prayers" },
+  { en: "QT", ko: "말씀 묵상", value: "qt" },
+];
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -41,6 +47,8 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView
@@ -49,28 +57,23 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <VStack className="mb-6">
+        <VStack>
           <Text className="text-2xl font-bold text-typography-black dark:text-typography-white">
-            {t("tabs.home")}
-          </Text>
-          <Text className="text-typography-gray-500 dark:text-typography-gray-400 text-sm">
-            Welcome to MokJang Community
+            VCHUNG
           </Text>
         </VStack>
 
-        {canCreateAnnouncement && (
-          <Button
-            className="mb-4"
-            onPress={() => router.push("/announcements/create")}
-          >
-            <ButtonText>Create Announcement</ButtonText>
-          </Button>
-        )}
-
-        <AnnouncementList
-          announcements={announcements}
-          isLoading={isLoadingAnnouncements}
+        <HomeTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
         />
+        {activeTab.value === "announcements" && (
+          <AnnouncementList
+            announcements={announcements}
+            isLoading={isLoadingAnnouncements}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );
