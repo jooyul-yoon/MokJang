@@ -3,21 +3,18 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Divider } from "@/components/ui/divider";
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements, markAnnouncementAsRead } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Eye, MessageCircle, Share2 } from "lucide-react-native";
+import { Check, Eye, MessageCircle } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
+import { Button, ButtonIcon, ButtonText } from "./ui/button";
 
 interface Announcement {
   id: string;
@@ -77,10 +74,10 @@ export default function AnnouncementList() {
       readStates[announcement.id]?.count ?? announcement.read_count ?? 0;
 
     return (
-      <Card className="dark:bg-background-card-dark mb-4 rounded-md bg-white px-4 py-2 shadow-sm">
+      <VStack className="dark:bg-background-card-dark mb-3 border-b border-outline-50 ">
         {/* Header */}
-        <HStack className="mb-3 items-center gap-3">
-          <Avatar size="xs">
+        <HStack className="gap-3">
+          <Avatar>
             <AvatarFallbackText>
               {announcement.profiles?.full_name || t("announcements.admin")}
             </AvatarFallbackText>
@@ -92,101 +89,74 @@ export default function AnnouncementList() {
               }}
             />
           </Avatar>
-          <VStack>
-            <Text className="font-bold text-typography-black dark:text-typography-white">
-              {announcement.profiles?.full_name ||
-                t("announcements.churchAdmin")}
-            </Text>
+          <VStack className="flex-1">
             <HStack className="items-center gap-2">
-              <Text className="text-typography-gray-500 text-xs">
-                {new Date(announcement.created_at).toLocaleDateString()} •{" "}
-                {new Date(announcement.created_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <Text className="font-bold text-typography-black dark:text-typography-white">
+                {announcement.title}
               </Text>
-              {readCount > 0 && (
-                <Text className="text-typography-gray-400 text-xs">
-                  • {readCount}{" "}
-                  {readCount !== 1
-                    ? t("announcements.reads_plural")
-                    : t("announcements.reads")}
+              <HStack className="items-center gap-2">
+                <Text className="text-xs text-typography-700">
+                  {announcement.profiles?.full_name || t("announcements.admin")}
+                  {" • "}
+                  {new Date(announcement.created_at).toLocaleDateString(
+                    "en-US",
+                    {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    },
+                  )}
                 </Text>
-              )}
+              </HStack>
+            </HStack>
+
+            {/* Body */}
+            <VStack className="my-2">
+              <Text className="pr-4 text-sm text-typography-800 dark:text-typography-400">
+                {announcement.content}
+              </Text>
+            </VStack>
+
+            {/* Footer Actions */}
+            <HStack className="items-center gap-4">
+              <Button
+                variant="link"
+                action={isRead ? "primary" : "secondary"}
+                size="sm"
+                className="gap-0.5"
+                onPress={() => {
+                  if (!isRead) {
+                    handleRead(announcement.id, readCount);
+                  }
+                }}
+                disabled={isRead}
+              >
+                <ButtonIcon
+                  as={isRead ? Check : Eye}
+                  className="text-typography-800"
+                />
+
+                {readCount > 0 && (
+                  <ButtonText className="text-xs text-typography-400">
+                    {readCount}
+                  </ButtonText>
+                )}
+              </Button>
+              <Button
+                variant="link"
+                action="secondary"
+                size="sm"
+                className="gap-2"
+              >
+                <ButtonIcon
+                  as={MessageCircle}
+                  className="text-typography-800"
+                />
+              </Button>
             </HStack>
           </VStack>
         </HStack>
-
-        {/* Body */}
-        <VStack className="mb-4">
-          <Heading
-            size="sm"
-            className="mb-2 text-typography-black dark:text-typography-white"
-          >
-            {announcement.title}
-          </Heading>
-          <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
-            {announcement.content}
-          </Text>
-        </VStack>
-
-        <Divider className="my-2 bg-background-100" />
-
-        {/* Footer Actions */}
-        <HStack className="h-6 items-center justify-between">
-          <Button
-            variant="link"
-            action={isRead ? "primary" : "secondary"}
-            size="sm"
-            className="flex-1 gap-2"
-            onPress={() => {
-              if (!isRead) {
-                handleRead(announcement.id, readCount);
-              }
-            }}
-            disabled={isRead}
-          >
-            <Icon
-              as={isRead ? Check : Eye}
-              className={`${
-                isRead ? "text-primary-500" : "text-typography-gray-500"
-              } h-4 w-4`}
-            />
-            <ButtonText
-              className={`${
-                isRead ? "text-primary-500" : "text-typography-gray-500"
-              } text-xs`}
-            >
-              {isRead ? t("announcements.read") : t("announcements.read")}
-            </ButtonText>
-          </Button>
-          <Button
-            variant="link"
-            action="secondary"
-            size="sm"
-            className="flex-1 gap-2"
-          >
-            <Icon
-              as={MessageCircle}
-              className="text-typography-gray-500 h-4 w-4"
-            />
-            <ButtonText className="text-typography-gray-500 text-xs">
-              {t("announcements.comment")}
-            </ButtonText>
-          </Button>
-          <Button
-            variant="link"
-            action="secondary"
-            size="sm"
-            className="flex-1 gap-2"
-          >
-            <Icon as={Share2} className="text-typography-gray-500 h-4 w-4" />
-            <ButtonText className="text-typography-gray-500 text-xs">
-              {t("announcements.share")}
-            </ButtonText>
-          </Button>
-        </HStack>
-      </Card>
+      </VStack>
     );
   };
 
@@ -219,7 +189,7 @@ export default function AnnouncementList() {
       data={announcements}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      contentContainerStyle={{ paddingBottom: 0, gap: 8 }}
+      contentContainerStyle={{ paddingBottom: 0 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
