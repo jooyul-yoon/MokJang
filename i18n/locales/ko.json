@@ -58,6 +58,7 @@
     "reads": "읽음",
     "reads_plural": "읽음",
     "admin": "관리자",
-    "churchAdmin": "교회 관리자"
+    "churchAdmin": "교회 관리자",
+    "create": "새 공지"
   }
 }

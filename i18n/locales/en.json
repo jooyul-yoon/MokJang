@@ -58,6 +58,7 @@
     "reads": "read",
     "reads_plural": "reads",
     "admin": "Admin",
-    "churchAdmin": "Church Admin"
+    "churchAdmin": "Church Admin",
+    "create": "New Announcement"
   }
 }

@@ -1,10 +1,12 @@
 import AnnouncementList from "@/components/AnnouncementList";
 import { HomeTabs } from "@/components/HomeTabs";
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements, fetchUserProfile } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { Plus } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView } from "react-native";
@@ -57,7 +59,7 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <VStack>
+        <VStack className="mb-6">
           <Text className="text-2xl font-bold text-typography-black dark:text-typography-white">
             VCHUNG
           </Text>
@@ -75,6 +77,20 @@ export default function HomeScreen() {
           />
         )}
       </ScrollView>
+
+      {canCreateAnnouncement && activeTab.value === "announcements" && (
+        <Fab
+          size="lg"
+          placement="bottom right"
+          isHovered={false}
+          isDisabled={false}
+          isPressed={false}
+          onPress={() => router.push("/announcements/create")}
+        >
+          <FabIcon as={Plus} />
+          <FabLabel>{t("announcements.create")}</FabLabel>
+        </Fab>
+      )}
     </SafeAreaView>
   );
 }
