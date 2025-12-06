@@ -4,7 +4,6 @@ import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
 import { AntDesign } from "@expo/vector-icons";
 import * as AppleAuthentication from "expo-apple-authentication";
-import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import React from "react";
@@ -13,8 +12,7 @@ import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // Required for web only
 
-const redirectTo = makeRedirectUri();
-
+const REDIRECT_URI = "mokjang://google-auth";
 const createSessionFromUrl = async (url: string) => {
   const { params, errorCode } = QueryParams.getQueryParams(url);
 
@@ -35,13 +33,12 @@ const performOAuth = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo,
-      skipBrowserRedirect: true,
+      redirectTo: REDIRECT_URI,
     },
   });
   if (error) throw error;
 
-  const res = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+  const res = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI);
 
   if (res.type === "success") {
     const { url } = res;
