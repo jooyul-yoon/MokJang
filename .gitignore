@@ -44,3 +44,5 @@ app-example
 
 # Environment variables
 .env
+# EAS
+eas.json
