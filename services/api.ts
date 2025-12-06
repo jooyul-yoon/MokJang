@@ -42,7 +42,7 @@ export const fetchAnnouncements = async (): Promise<Announcement[]> => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.error("User not authenticated");
+    console.log("User not authenticated");
     return [];
   }
 

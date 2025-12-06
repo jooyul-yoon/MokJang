@@ -60,5 +60,9 @@
     "admin": "Admin",
     "churchAdmin": "Church Admin",
     "create": "New Announcement"
+  },
+  "login": {
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithApple": "Sign in with Apple"
   }
 }
