@@ -95,25 +95,25 @@ export default function CommunityScreen() {
                 >
                   {userGroup.name}
                 </Heading>
-                <Text className="text-typography-gray-600 dark:text-typography-gray-400">
+                <Text className="text-typography-600 dark:text-typography-400">
                   {userGroup.description}
                 </Text>
               </VStack>
 
               <VStack className="gap-2 rounded-lg bg-background-50 p-4 dark:bg-background-900">
                 <HStack className="items-center justify-between">
-                  <Text className="text-typography-gray-900 dark:text-typography-gray-100 font-semibold">
+                  <Text className="font-semibold text-typography-900 dark:text-typography-100">
                     {t("community.meetingTime")}
                   </Text>
-                  <Text className="text-typography-gray-600 dark:text-typography-gray-400">
+                  <Text className="text-typography-600 dark:text-typography-400">
                     {userGroup.meeting_time}
                   </Text>
                 </HStack>
                 <HStack className="items-center justify-between">
-                  <Text className="text-typography-gray-900 dark:text-typography-gray-100 font-semibold">
+                  <Text className="font-semibold text-typography-900 dark:text-typography-100">
                     {t("community.region")}
                   </Text>
-                  <Text className="text-typography-gray-600 dark:text-typography-gray-400">
+                  <Text className="text-typography-600 dark:text-typography-400">
                     {userGroup.region}
                   </Text>
                 </HStack>

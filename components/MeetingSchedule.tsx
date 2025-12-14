@@ -80,7 +80,7 @@ export default function MeetingSchedule({
                 <Text className="font-bold text-typography-black dark:text-typography-white">
                   {meeting.title || t("community.mokjangMeeting")}
                 </Text>
-                <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                <Text className="text-sm text-typography-600 dark:text-typography-400">
                   {new Date(meeting.meeting_time).toLocaleString("en-US", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -89,10 +89,10 @@ export default function MeetingSchedule({
               </VStack>
               {meeting.profiles ? (
                 <VStack className="items-end">
-                  <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                  <Text className="text-sm text-typography-600 dark:text-typography-400">
                     👤 {meeting.profiles.full_name}
                   </Text>
-                  <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+                  <Text className="text-sm text-typography-600 dark:text-typography-400">
                     📍 {meeting.location}
                   </Text>
                 </VStack>
@@ -110,7 +110,7 @@ export default function MeetingSchedule({
           </VStack>
         ))
       ) : (
-        <Text className="text-typography-gray-500">
+        <Text className="text-typography-500">
           {t("community.noUpcomingMeetings")}
         </Text>
       )}

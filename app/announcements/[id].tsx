@@ -120,7 +120,7 @@ export default function AnnouncementDetailScreen() {
                     {announcement.profiles?.full_name ||
                       t("announcements.churchAdmin")}
                   </Text>
-                  <Text className="text-typography-gray-500 text-xs dark:text-typography-400">
+                  <Text className="text-xs text-typography-500 dark:text-typography-400">
                     {new Date(announcement.created_at).toLocaleDateString()} •{" "}
                     {new Date(announcement.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -136,7 +136,7 @@ export default function AnnouncementDetailScreen() {
               >
                 {announcement.title}
               </Heading>
-              <Text className="text-typography-gray-600 text-base leading-6 dark:text-typography-400">
+              <Text className="text-base leading-6 text-typography-600 dark:text-typography-400">
                 {announcement.content}
               </Text>
             </Card>

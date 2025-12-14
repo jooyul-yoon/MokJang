@@ -128,14 +128,14 @@ export default function GroupList({
               <Text className="text-lg font-bold text-typography-black dark:text-typography-white">
                 {group.name}
               </Text>
-              <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-sm">
+              <Text className="text-sm text-typography-600 dark:text-typography-400">
                 {group.description}
               </Text>
               <VStack className="mt-2">
-                <Text className="text-typography-gray-500 text-xs">
+                <Text className="text-xs text-typography-500">
                   🕒 {group.meeting_time}
                 </Text>
-                <Text className="text-typography-gray-500 text-xs">
+                <Text className="text-xs text-typography-500">
                   📍 {group.region}
                 </Text>
               </VStack>
