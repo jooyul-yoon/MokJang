@@ -119,7 +119,10 @@ export default function AnnouncementList() {
 
             {/* Body */}
             <VStack className="my-2">
-              <Text className="pr-4 text-sm text-typography-800 dark:text-typography-400">
+              <Text
+                className="pr-4 text-sm text-typography-800 dark:text-typography-400"
+                numberOfLines={5}
+              >
                 {announcement.content}
               </Text>
             </VStack>

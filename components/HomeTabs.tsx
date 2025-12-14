@@ -36,7 +36,6 @@ export const HomeTabs = ({ tabs, activeTab, setActiveTab }: HomeTabsProps) => {
               onPress={() => setActiveTab(tab)}
             >
               <Text
-                size="sm"
                 className={`${
                   activeTab === tab
                     ? "text-typography-900"

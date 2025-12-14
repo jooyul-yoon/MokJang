@@ -47,8 +47,8 @@ export default function HomeScreen() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
+        {activeTab.value === "announcements" && <AnnouncementList />}
       </VStack>
-      {activeTab.value === "announcements" && <AnnouncementList />}
 
       {canCreateAnnouncement && activeTab.value === "announcements" && (
         <Fab
