@@ -22,11 +22,10 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView
-      edges={["bottom", "left", "right"]}
-      className="flex-1 bg-background-light dark:bg-background-dark"
-    >
-      <Stack.Screen options={{ title: t("common.settings") }} />
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <Stack.Screen
+        options={{ title: t("common.settings"), headerShown: true }}
+      />
       <ScrollView className="flex-1 p-4">
         <VStack className="mb-8">
           <Text className="mb-2 text-lg font-semibold text-typography-black dark:text-typography-white">
