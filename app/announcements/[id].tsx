@@ -100,7 +100,7 @@ export default function AnnouncementDetailScreen() {
 
           <ScrollView className="flex-1 p-4">
             {/* Announcement Content */}
-            <Card className="dark:bg-background-card-dark mb-6 rounded-md bg-white px-4 py-4 shadow-sm">
+            <Card className="mb-6 rounded-md bg-white px-4 py-4 shadow-sm dark:bg-background-50">
               <HStack className="mb-4 items-center gap-3">
                 <Avatar>
                   <AvatarFallbackText>
@@ -120,7 +120,7 @@ export default function AnnouncementDetailScreen() {
                     {announcement.profiles?.full_name ||
                       t("announcements.churchAdmin")}
                   </Text>
-                  <Text className="text-typography-gray-500 text-xs">
+                  <Text className="text-typography-gray-500 text-xs dark:text-typography-400">
                     {new Date(announcement.created_at).toLocaleDateString()} •{" "}
                     {new Date(announcement.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -136,7 +136,7 @@ export default function AnnouncementDetailScreen() {
               >
                 {announcement.title}
               </Heading>
-              <Text className="text-typography-gray-600 dark:text-typography-gray-400 text-base leading-6">
+              <Text className="text-typography-gray-600 text-base leading-6 dark:text-typography-400">
                 {announcement.content}
               </Text>
             </Card>

@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { Button, ButtonIcon, ButtonText } from "./ui/button";
+import { Pressable } from "./ui/pressable";
 
 interface Announcement {
   id: string;
@@ -77,7 +78,10 @@ export default function AnnouncementList() {
       readStates[announcement.id]?.count ?? announcement.read_count ?? 0;
 
     return (
-      <VStack className="dark:bg-background-card-dark mb-3 border-b border-outline-50 ">
+      <Pressable
+        onPress={() => router.push(`/announcements/${announcement.id}`)}
+        className="border-b border-outline-50 p-4 active:bg-background-50"
+      >
         {/* Header */}
         <HStack className="gap-3">
           <Avatar>
@@ -165,7 +169,7 @@ export default function AnnouncementList() {
             </HStack>
           </VStack>
         </HStack>
-      </VStack>
+      </Pressable>
     );
   };
 
@@ -198,11 +202,11 @@ export default function AnnouncementList() {
       data={announcements}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      contentContainerStyle={{ paddingBottom: 0 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
+      contentContainerStyle={{ gap: 0 }}
     />
   );
 }
