@@ -1,6 +1,6 @@
 import GroupList from "@/components/GroupList";
 import MeetingSchedule from "@/components/MeetingSchedule";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,6 +14,7 @@ import {
 } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { Plus } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView } from "react-native";
@@ -123,12 +124,6 @@ export default function CommunityScreen() {
             </VStack>
           ) : (
             <VStack className="flex-1 gap-4">
-              <Button
-                onPress={() => router.push("/groups/create")}
-                className="mb-4"
-              >
-                <ButtonText>{t("community.createMokjang")}</ButtonText>
-              </Button>
               <GroupList
                 groups={groups}
                 initialRequestedGroups={requestedGroupIds}
@@ -138,6 +133,16 @@ export default function CommunityScreen() {
           )}
         </VStack>
       </ScrollView>
+      {!userGroup && (
+        <Fab
+          size="lg"
+          placement="bottom right"
+          onPress={() => router.push("/groups/create")}
+        >
+          <FabIcon as={Plus} />
+          <FabLabel>{t("community.createMokjang")}</FabLabel>
+        </Fab>
+      )}
     </SafeAreaView>
   );
 }
