@@ -12,6 +12,7 @@ import {
 import { VStack } from "@/components/ui/vstack";
 import { joinGroup } from "@/services/api";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Group {
   id: string;
@@ -36,6 +37,7 @@ export default function GroupList({
   const [requestedGroups, setRequestedGroups] = useState<Set<string>>(
     new Set(initialRequestedGroups),
   );
+  const { t } = useTranslation();
 
   useEffect(() => {
     setRequestedGroups(new Set(initialRequestedGroups));
@@ -53,9 +55,9 @@ export default function GroupList({
           return (
             <Toast nativeID={"toast-" + id} action="error" variant="solid">
               <VStack space="xs">
-                <ToastTitle>Error</ToastTitle>
+                <ToastTitle>{t("common.error")}</ToastTitle>
                 <ToastDescription>
-                  {error || "Failed to send join request."}
+                  {error || t("community.joinRequestFailed")}
                 </ToastDescription>
               </VStack>
             </Toast>
@@ -70,9 +72,9 @@ export default function GroupList({
           return (
             <Toast nativeID={"toast-" + id} action="success" variant="solid">
               <VStack space="xs">
-                <ToastTitle>Success</ToastTitle>
+                <ToastTitle>{t("common.success")}</ToastTitle>
                 <ToastDescription>
-                  Join request sent successfully!
+                  {t("community.joinRequestSuccess")}
                 </ToastDescription>
               </VStack>
             </Toast>
@@ -89,7 +91,7 @@ export default function GroupList({
           size="md"
           className="mb-2 text-typography-black dark:text-typography-white"
         >
-          Explore MokJangs
+          {t("community.exploreMokjangs")}
         </Heading>
         {[1, 2, 3].map((i) => (
           <Card
@@ -115,14 +117,15 @@ export default function GroupList({
         size="md"
         className="mb-2 text-typography-black dark:text-typography-white"
       >
-        Explore MokJangs
+        {t("community.exploreMokjangs")}
       </Heading>
       {groups.map((group) => {
         const isRequested = requestedGroups.has(group.id);
         return (
           <Card
             key={group.id}
-            className="dark:bg-background-card-dark rounded-lg bg-white p-4 shadow-sm"
+            variant="elevated"
+            className="flex-row items-center justify-between rounded-lg p-4"
           >
             <VStack className="gap-2">
               <Text className="text-lg font-bold text-typography-black dark:text-typography-white">
@@ -139,18 +142,19 @@ export default function GroupList({
                   📍 {group.region}
                 </Text>
               </VStack>
-              <Button
-                onPress={() => handleJoinRequest(group.id)}
-                size="sm"
-                action={isRequested ? "secondary" : "primary"}
-                isDisabled={isRequested}
-                className="mt-2 self-start"
-              >
-                <ButtonText>
-                  {isRequested ? "Requested" : "Request to Join"}
-                </ButtonText>
-              </Button>
             </VStack>
+            <Button
+              onPress={() => handleJoinRequest(group.id)}
+              size="sm"
+              action="secondary"
+              isDisabled={isRequested}
+            >
+              <ButtonText>
+                {isRequested
+                  ? t("community.requested")
+                  : t("community.requestToJoin")}
+              </ButtonText>
+            </Button>
           </Card>
         );
       })}

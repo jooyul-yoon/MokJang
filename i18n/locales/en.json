@@ -12,7 +12,9 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "delete": "Delete"
+    "delete": "Delete",
+    "error": "Error",
+    "success": "Success"
   },
   "tabs": {
     "home": "Home",
@@ -38,7 +40,12 @@
     "locationPlaceholder": "e.g. 123 Main St",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "requested": "Requested",
+    "requestToJoin": "Request to Join",
+    "exploreMokjangs": "Explore MokJangs",
+    "joinRequestFailed": "Failed to send join request.",
+    "joinRequestSuccess": "Join request sent successfully!"
   },
   "profile": {
     "name": "Name",
