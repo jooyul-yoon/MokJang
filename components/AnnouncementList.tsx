@@ -8,7 +8,8 @@ import { HStack } from "@/components/ui/hstack";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { fetchAnnouncements, markAnnouncementAsRead } from "@/services/api";
+import { useAnnouncementRead } from "@/hooks/useAnnouncementRead";
+import { fetchAnnouncements } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Check, Eye, MessageCircle } from "lucide-react-native";
@@ -44,27 +45,10 @@ export default function AnnouncementList() {
   });
 
   // Local state to track read status optimistically
-  const [readStates, setReadStates] = useState<{
-    [key: string]: { isRead: boolean; count: number };
-  }>({});
-
-  const handleRead = async (id: string, currentCount: number = 0) => {
-    // Optimistic update
-    setReadStates((prev) => ({
-      ...prev,
-      [id]: { isRead: true, count: currentCount + 1 },
-    }));
-
-    const { success } = await markAnnouncementAsRead(id);
-    if (!success) {
-      // Revert if failed
-      setReadStates((prev) => {
-        const newState = { ...prev };
-        delete newState[id];
-        return newState;
-      });
-    }
-  };
+  // const [readStates, setReadStates] = useState<{
+  //   [key: string]: { isRead: boolean; count: number };
+  // }>({});
+  const { mutate: handleRead } = useAnnouncementRead();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -73,9 +57,8 @@ export default function AnnouncementList() {
   };
 
   const renderItem = ({ item: announcement }: { item: Announcement }) => {
-    const isRead = readStates[announcement.id]?.isRead ?? announcement.is_read;
-    const readCount =
-      readStates[announcement.id]?.count ?? announcement.read_count ?? 0;
+    const isRead = announcement.is_read;
+    const readCount = announcement.read_count ?? 0;
 
     return (
       <Pressable
@@ -136,7 +119,10 @@ export default function AnnouncementList() {
                 className="gap-0.5"
                 onPress={() => {
                   if (!isRead) {
-                    handleRead(announcement.id, readCount);
+                    handleRead({
+                      id: announcement.id,
+                      currentCount: readCount,
+                    });
                   }
                 }}
                 disabled={isRead}

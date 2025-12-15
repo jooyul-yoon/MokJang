@@ -60,7 +60,8 @@
     "reads_plural": "읽음",
     "admin": "관리자",
     "churchAdmin": "교회 관리자",
-    "create": "새 공지"
+    "create": "새 공지",
+    "markAsRead": "읽음으로 표시"
   },
   "login": {
     "signInWithGoogle": "Google로 로그인",

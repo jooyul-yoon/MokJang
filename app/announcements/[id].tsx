@@ -22,6 +22,7 @@ import {
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useAnnouncementRead } from "@/hooks/useAnnouncementRead";
 import { supabase } from "@/lib/supabase";
 import {
   createComment,
@@ -31,7 +32,15 @@ import {
 } from "@/services/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, MoreVertical, Send, Trash, X } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Check,
+  Eye,
+  MoreVertical,
+  Send,
+  Trash,
+  X,
+} from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -50,6 +59,7 @@ export default function AnnouncementDetailScreen() {
   const [commentText, setCommentText] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const { mutate: handleRead } = useAnnouncementRead();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -184,6 +194,29 @@ export default function AnnouncementDetailScreen() {
             </Text>
 
             <Divider className="my-2 bg-background-100" />
+
+            {/*Read Button*/}
+            <Button
+              onPress={() => {
+                if (!announcement.is_read) {
+                  handleRead({
+                    id: announcement.id,
+                    currentCount: announcement.read_count || 0,
+                  });
+                }
+              }}
+              variant="link"
+              action={announcement.is_read ? "primary" : "secondary"}
+              isDisabled={announcement.is_read}
+              className="flex-row gap-2"
+            >
+              <ButtonIcon as={announcement.is_read ? Check : Eye} />
+              <ButtonText>
+                {announcement.is_read
+                  ? t("announcements.read")
+                  : t("announcements.markAsRead")}
+              </ButtonText>
+            </Button>
 
             {/* Comments Section */}
             <VStack className="gap-4 pb-8">

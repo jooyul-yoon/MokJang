@@ -60,7 +60,8 @@
     "reads_plural": "reads",
     "admin": "Admin",
     "churchAdmin": "Church Admin",
-    "create": "New Announcement"
+    "create": "New Announcement",
+    "markAsRead": "Mark as Read"
   },
   "login": {
     "signInWithGoogle": "Sign in with Google",
