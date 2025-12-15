@@ -89,7 +89,7 @@ export default function GroupList({
       <VStack className="mt-6 gap-4">
         <Heading
           size="md"
-          className="mb-2 text-typography-black dark:text-typography-white"
+          className="mb-2 text-xl text-typography-black dark:text-typography-white"
         >
           {t("community.exploreMokjangs")}
         </Heading>
@@ -115,7 +115,7 @@ export default function GroupList({
     <VStack className="mt-6 gap-4">
       <Heading
         size="md"
-        className="mb-2 text-typography-black dark:text-typography-white"
+        className="mb-2 text-xl text-typography-black dark:text-typography-white"
       >
         {t("community.exploreMokjangs")}
       </Heading>
