@@ -7,6 +7,7 @@ export interface Announcement {
   created_at: string;
   read_count?: number;
   is_read?: boolean;
+  author_id: string;
   profiles?: {
     full_name: string;
     avatar_url: string;
@@ -63,6 +64,7 @@ export const fetchAnnouncements = async (): Promise<Announcement[]> => {
     created_at: item.created_at,
     read_count: item.read_count,
     is_read: item.is_read,
+    author_id: item.author_id,
     comment_count: item.comment_count || 0,
     profiles: {
       full_name: item.author_full_name,
@@ -423,6 +425,24 @@ export const createAnnouncement = async (
 
   if (error) {
     console.error("Error creating announcement:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export const deleteAnnouncement = async (
+  id: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("announcements").delete().eq("id", id);
+
+  if (error) {
+    console.error("Error deleting announcement:", error);
     return { success: false, error: error.message };
   }
   return { success: true };

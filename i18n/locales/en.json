@@ -11,7 +11,8 @@
     "system": "System",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "delete": "Delete"
   },
   "tabs": {
     "home": "Home",

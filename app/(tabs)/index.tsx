@@ -35,8 +35,8 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <VStack className="flex-1 p-4">
-        <VStack className="mb-4">
+      <VStack className="flex-1">
+        <VStack className="mb-4 px-4">
           <Text className="text-2xl font-bold text-typography-black dark:text-typography-white">
             VCHUNG
           </Text>

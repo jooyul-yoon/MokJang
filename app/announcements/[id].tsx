@@ -3,23 +3,36 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
+import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@/components/ui/modal";
+import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { supabase } from "@/lib/supabase";
 import {
   createComment,
+  deleteAnnouncement,
   fetchAnnouncements,
   fetchComments,
 } from "@/services/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, Send } from "lucide-react-native";
-import { useState } from "react";
+import { ArrowLeft, MoreVertical, Send, Trash, X } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -35,6 +48,14 @@ export default function AnnouncementDetailScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id || null);
+    });
+  }, []);
 
   const { data: announcements = [] } = useQuery({
     queryKey: ["announcements"],
@@ -96,50 +117,71 @@ export default function AnnouncementDetailScreen() {
               {t("announcements.create")}{" "}
               {/* Reusing "New Announcement" or similar title key if appropriate, or just "Announcement" */}
             </Heading>
+            {announcement.author_id === userId && (
+              <Menu
+                offset={10}
+                placement="bottom right"
+                trigger={({ ...triggerProps }) => {
+                  return (
+                    <Pressable {...triggerProps} className="ml-auto">
+                      <Icon as={MoreVertical} className="text-typography-900" />
+                    </Pressable>
+                  );
+                }}
+              >
+                <MenuItem
+                  key="delete"
+                  textValue="Delete"
+                  onPress={() => setShowDeleteModal(true)}
+                >
+                  <Icon as={Trash} className="mr-2 text-error-500" />
+                  <MenuItemLabel size="sm" className="text-error-500">
+                    {t("common.delete")}
+                  </MenuItemLabel>
+                </MenuItem>
+              </Menu>
+            )}
           </HStack>
 
           <ScrollView className="flex-1 p-4">
             {/* Announcement Content */}
-            <Card className="mb-6 rounded-md bg-white px-4 py-4 shadow-sm dark:bg-background-50">
-              <HStack className="mb-4 items-center gap-3">
-                <Avatar>
-                  <AvatarFallbackText>
-                    {announcement.profiles?.full_name ||
-                      t("announcements.admin")}
-                  </AvatarFallbackText>
-                  <AvatarImage
-                    source={{
-                      uri:
-                        announcement.profiles?.avatar_url ||
-                        "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-                    }}
-                  />
-                </Avatar>
-                <VStack>
-                  <Text className="font-bold text-typography-black dark:text-typography-white">
-                    {announcement.profiles?.full_name ||
-                      t("announcements.churchAdmin")}
-                  </Text>
-                  <Text className="text-xs text-typography-500 dark:text-typography-400">
-                    {new Date(announcement.created_at).toLocaleDateString()} •{" "}
-                    {new Date(announcement.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                </VStack>
-              </HStack>
+            <HStack className="mb-4 items-center gap-3">
+              <Avatar>
+                <AvatarFallbackText>
+                  {announcement.profiles?.full_name || t("announcements.admin")}
+                </AvatarFallbackText>
+                <AvatarImage
+                  source={{
+                    uri:
+                      announcement.profiles?.avatar_url ||
+                      "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+                  }}
+                />
+              </Avatar>
+              <VStack>
+                <Text className="font-bold text-typography-black dark:text-typography-white">
+                  {announcement.profiles?.full_name ||
+                    t("announcements.churchAdmin")}
+                </Text>
+                <Text className="text-xs text-typography-500 dark:text-typography-400">
+                  {new Date(announcement.created_at).toLocaleDateString()} •{" "}
+                  {new Date(announcement.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
+              </VStack>
+            </HStack>
 
-              <Heading
-                size="md"
-                className="mb-2 text-typography-black dark:text-typography-white"
-              >
-                {announcement.title}
-              </Heading>
-              <Text className="text-base leading-6 text-typography-600 dark:text-typography-400">
-                {announcement.content}
-              </Text>
-            </Card>
+            <Heading
+              size="md"
+              className="mb-2 text-typography-black dark:text-typography-white"
+            >
+              {announcement.title}
+            </Heading>
+            <Text className="text-lg leading-6 text-typography-600 dark:text-typography-400">
+              {announcement.content}
+            </Text>
 
             <Divider className="my-2 bg-background-100" />
 
@@ -210,6 +252,57 @@ export default function AnnouncementDetailScreen() {
           </HStack>
         </VStack>
       </KeyboardAvoidingView>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        size="md"
+      >
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="md" className="text-typography-900">
+              {t("common.delete")}
+            </Heading>
+            <ModalCloseButton>
+              <Icon as={X} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <Text size="sm" className="text-typography-500">
+              {t("common.deleteConfirmation")}
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              action="secondary"
+              onPress={() => setShowDeleteModal(false)}
+            >
+              <ButtonText>{t("common.cancel")}</ButtonText>
+            </Button>
+            <Button
+              onPress={async () => {
+                const { success, error } = await deleteAnnouncement(
+                  id as string,
+                );
+                if (success) {
+                  setShowDeleteModal(false);
+                  queryClient.invalidateQueries({
+                    queryKey: ["announcements"],
+                  });
+                  router.back();
+                } else {
+                  console.error(error);
+                  // Optionally show error toast
+                }
+              }}
+              action="negative"
+            >
+              <ButtonText>{t("common.delete")}</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </SafeAreaView>
   );
 }

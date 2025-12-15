@@ -20,7 +20,7 @@ interface HomeTabsProps {
 export const HomeTabs = ({ tabs, activeTab, setActiveTab }: HomeTabsProps) => {
   const { i18n } = useTranslation();
   return (
-    <HStack className="mb-6 border-b border-outline-100 md:border-b-0 md:border-transparent">
+    <HStack className="mb-6 border-b border-outline-100 px-4 md:border-b-0 md:border-transparent">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <HStack space="xl" className="mx-0.5 xl:gap-5 2xl:gap-6">
           {tabs.map((tab) => (
