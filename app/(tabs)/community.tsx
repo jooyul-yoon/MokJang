@@ -65,7 +65,7 @@ export default function CommunityScreen() {
     queryClient.invalidateQueries({ queryKey: ["groups"] });
     queryClient.invalidateQueries({ queryKey: ["userJoinRequests"] });
     queryClient.invalidateQueries({ queryKey: ["meetings"] });
-  }, [queryClient]);
+  }, []);
 
   if (
     isGroupLoading ||
