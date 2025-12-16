@@ -8,6 +8,7 @@ import { Group, Meeting } from "@/services/api";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Pressable } from "./ui/pressable";
 
 interface MeetingScheduleProps {
   userGroup: Group;
@@ -45,7 +46,16 @@ export default function MeetingSchedule({
       <VStack className="gap-4">
         {previewMeetings.length > 0 ? (
           previewMeetings.map((meeting: Meeting) => (
-            <VStack key={meeting.id}>
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/community/meetings",
+                  params: { date: meeting.meeting_time.split("T")[0] },
+                })
+              }
+              key={meeting.id}
+              className="active:bg-background-50"
+            >
               <Divider />
               <HStack className="dark:bg-background-card items-start justify-between rounded-lg py-3">
                 <VStack className="flex-1 gap-1">
@@ -96,7 +106,7 @@ export default function MeetingSchedule({
                     )}
                 </VStack>
               </HStack>
-            </VStack>
+            </Pressable>
           ))
         ) : (
           <Text className="text-typography-500">

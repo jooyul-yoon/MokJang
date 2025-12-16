@@ -47,9 +47,12 @@ import { ScrollView } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useLocalSearchParams } from "expo-router";
+
 export default function MeetingsScreen() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { date } = useLocalSearchParams<{ date: string }>();
 
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
@@ -72,7 +75,7 @@ export default function MeetingsScreen() {
 
   // --- Calendar State ---
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0],
+    date || new Date().toISOString().split("T")[0],
   );
 
   // --- Create Meeting State ---
