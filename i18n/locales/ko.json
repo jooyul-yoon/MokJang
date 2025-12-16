@@ -16,7 +16,9 @@
     "error": "오류",
     "success": "성공",
     "deleteAccount": "계정 삭제",
-    "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+    "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "title": "제목",
+    "more": "더보기"
   },
   "tabs": {
     "home": "홈",
@@ -52,7 +54,16 @@
     "pendingRequests": "가입 요청 대기",
     "approve": "승인",
     "reject": "거절",
-    "noPendingRequests": "대기 중인 요청이 없습니다."
+    "noPendingRequests": "대기 중인 요청이 없습니다.",
+    "addMeeting": "모임 추가",
+    "meetingType": "모임 종류",
+    "generalMeeting": "일반 모임",
+    "enterTitle": "제목 입력",
+    "selectTime": "시간 선택",
+    "volunteerAvailable": "인도자 자원 가능",
+    "memo": "메모",
+    "enterMemo": "메모 입력 (선택사항)",
+    "meetings": "모임"
   },
   "profile": {
     "name": "이름",

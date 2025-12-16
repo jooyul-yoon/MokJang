@@ -16,7 +16,9 @@
     "error": "Error",
     "success": "Success",
     "deleteAccount": "Delete Account",
-    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone."
+    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+    "title": "Title",
+    "more": "More"
   },
   "tabs": {
     "home": "Home",
@@ -52,7 +54,16 @@
     "pendingRequests": "Pending Requests",
     "approve": "Approve",
     "reject": "Reject",
-    "noPendingRequests": "No pending requests."
+    "noPendingRequests": "No pending requests.",
+    "addMeeting": "Add Meeting",
+    "meetingType": "Meeting Type",
+    "generalMeeting": "General Meeting",
+    "enterTitle": "Enter title",
+    "selectTime": "Select Time",
+    "volunteerAvailable": "Open for Volunteering",
+    "memo": "Memo",
+    "enterMemo": "Enter memo (optional)",
+    "meetings": "Meetings"
   },
   "profile": {
     "name": "Name",

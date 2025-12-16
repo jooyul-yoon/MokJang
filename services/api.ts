@@ -30,9 +30,11 @@ export interface Meeting {
   group_id: string;
   title: string;
   meeting_time: string;
-  location: string;
+  location?: string;
   created_at: string;
-  host_id: string;
+  host_id: string | null;
+  type: "mokjang" | "general";
+  memo?: string;
   profiles?: {
     full_name: string;
   };
@@ -243,113 +245,49 @@ export const fetchUserGroup = async (): Promise<Group | null> => {
 };
 
 export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
-  // 1. Get group schedule
-  const { data: group, error: groupError } = await supabase
-    .from("groups")
-    .select("meeting_day, meeting_hour, region")
-    .eq("id", groupId)
-    .single();
+  const { data, error } = await supabase
+    .from("meetings")
+    .select("*, profiles(full_name)")
+    .eq("group_id", groupId)
+    .gte("meeting_time", new Date().toISOString()) // Only future meetings? Or maybe recent past too? Let's stick to future + widely used standard.
+    .order("meeting_time", { ascending: true });
 
-  if (groupError || !group || !group.meeting_day || !group.meeting_hour) {
-    console.error("No schedule found or error:", groupError);
+  if (error) {
+    console.error("Error fetching meetings:", error);
     return [];
   }
 
-  // 2. Generate next 4 weeks of meetings
-  const days: { [key: string]: number } = {
-    Sunday: 0,
-    Monday: 1,
-    Tuesday: 2,
-    Wednesday: 3,
-    Thursday: 4,
-    Friday: 5,
-    Saturday: 6,
-  };
+  return data as Meeting[];
+};
 
-  const targetDay = days[group.meeting_day];
-  const [hour, minute, second] = group.meeting_hour.split(":").map(Number);
+export interface CreateMeetingDTO {
+  group_id: string;
+  type: "mokjang" | "general";
+  title: string;
+  meeting_time: string;
+  location?: string;
+  memo?: string;
+}
 
-  const generatedMeetings: Meeting[] = [];
-  const now = new Date();
-  let current = new Date(now);
+export const createMeeting = async (
+  data: CreateMeetingDTO,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
 
-  // Find next occurrence of targetDay
-  // If today is the target day, check if the time has passed.
-  // If time has passed, move to next week.
-  // If today is not target day, move to next target day.
-
-  // Reset time to check day difference correctly
-  const currentDay = current.getDay();
-  let daysUntilTarget = (targetDay - currentDay + 7) % 7;
-
-  // If it's today (0 days diff), check if time has passed
-  if (daysUntilTarget === 0) {
-    const meetingTimeToday = new Date(current);
-    meetingTimeToday.setHours(hour, minute, second || 0, 0);
-    if (now > meetingTimeToday) {
-      daysUntilTarget = 7;
-    }
-  }
-
-  current.setDate(current.getDate() + daysUntilTarget);
-  current.setHours(hour, minute, second || 0, 0);
-
-  for (let i = 0; i < 4; i++) {
-    generatedMeetings.push({
-      id: `generated-${current.toISOString()}`, // Temporary ID
-      group_id: groupId,
-      title: "", // Default to empty, will show Mokjang in UI
-      meeting_time: current.toISOString(),
-      location: "", // Default to empty, will show TBD in UI
-      created_at: new Date().toISOString(),
-      host_id: "", // Empty initially
-    });
-    // Add 7 days for next week
-    current.setDate(current.getDate() + 7);
-  }
-
-  // 3. Fetch overrides/details from DB
-  // We fetch meetings that match the generated dates (or roughly in range)
-  const startRange = generatedMeetings[0].meeting_time;
-  const endRange = generatedMeetings[generatedMeetings.length - 1].meeting_time;
-
-  // Add a small buffer to endRange to ensure we catch the last one
-  const endDate = new Date(endRange);
-  endDate.setHours(endDate.getHours() + 1);
-
-  const { data: dbMeetings, error: dbError } = await supabase
-    .from("meetings")
-    .select("*, profiles(full_name)")
-    .eq("group_id", groupId);
-  // .gte("meeting_time", new Date().toISOString()); // Widen range for debugging
-
-  if (dbError) {
-    console.error("Error fetching db meetings:", dbError);
-  }
-
-  // 4. Merge
-  const mergedMeetings = generatedMeetings.map((gen) => {
-    // Find matching DB record (fuzzy match on time could be safer, but let's try exact ISO string match first.
-    // Actually, ISO strings might differ by milliseconds or timezone formatting.
-    // Safer to match by timestamp within a small window (e.g. same minute).
-
-    const genTime = new Date(gen.meeting_time).getTime();
-
-    const match = dbMeetings?.find((db) => {
-      const dbTime = new Date(db.meeting_time).getTime();
-      return Math.abs(dbTime - genTime) < 60000; // Match within 1 minute
-    });
-
-    if (match) {
-      return {
-        ...gen,
-        ...match, // Override with DB data (id, title, location, host_id, profiles)
-      };
-    }
-    return gen;
+  const { error } = await supabase.from("meetings").insert({
+    ...data,
+    // Let's leave host_id as null for now to be safe, unless user explicitly "volunteers" during creation (which isn't in requirements yet).
+    // Wait, createMeeting was commented out below? No, it was just non-existent or different.
   });
 
-  return mergedMeetings;
+  if (error) {
+    console.error("Error creating meeting:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
 };
 
 export const volunteerForMeeting = async (
@@ -361,34 +299,18 @@ export const volunteerForMeeting = async (
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "User not authenticated" };
 
-  // If it's a generated meeting, we need to insert a new record
-  if (meeting.id.startsWith("generated-")) {
-    const { error } = await supabase.from("meetings").insert({
-      group_id: meeting.group_id,
-      title: meeting.title || "목장모임", // Use default title if empty
-      meeting_time: meeting.meeting_time,
-      location: location,
+  // Existing meeting, update it
+  const { error } = await supabase
+    .from("meetings")
+    .update({
       host_id: user.id,
-    });
+      location: location,
+    })
+    .eq("id", meeting.id);
 
-    if (error) {
-      console.error("Error creating meeting:", error);
-      return { success: false, error: error.message };
-    }
-  } else {
-    // Existing meeting, update it
-    const { error } = await supabase
-      .from("meetings")
-      .update({
-        host_id: user.id,
-        location: location,
-      })
-      .eq("id", meeting.id);
-
-    if (error) {
-      console.error("Error updating meeting:", error);
-      return { success: false, error: error.message };
-    }
+  if (error) {
+    console.error("Error updating meeting:", error);
+    return { success: false, error: error.message };
   }
 
   return { success: true };
