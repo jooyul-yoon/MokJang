@@ -116,7 +116,6 @@ export default function AnnouncementList() {
                 variant="link"
                 action={isRead ? "primary" : "secondary"}
                 size="sm"
-                className="gap-0.5"
                 onPress={() => {
                   if (!isRead) {
                     handleRead({
@@ -129,31 +128,25 @@ export default function AnnouncementList() {
               >
                 <ButtonIcon
                   as={isRead ? Check : Eye}
-                  className="text-typography-800"
+                  className="h-6 w-6 text-typography-800"
                 />
-
-                {readCount > 0 && (
-                  <ButtonText className="text-xs text-typography-400">
-                    {readCount}
-                  </ButtonText>
-                )}
+                <ButtonText className="text-typography-400">
+                  {readCount}
+                </ButtonText>
               </Button>
               <Button
                 variant="link"
                 action="secondary"
                 size="sm"
-                className="gap-2"
                 onPress={() => router.push(`/announcements/${announcement.id}`)}
               >
                 <ButtonIcon
                   as={MessageCircle}
-                  className="text-typography-800"
+                  className="h-6 w-6 text-typography-800"
                 />
-                {(announcement.comment_count ?? 0) > 0 && (
-                  <ButtonText className="text-xs text-typography-400">
-                    {announcement.comment_count}
-                  </ButtonText>
-                )}
+                <ButtonText className="text-typography-400">
+                  {announcement.comment_count}
+                </ButtonText>
               </Button>
             </HStack>
           </VStack>
