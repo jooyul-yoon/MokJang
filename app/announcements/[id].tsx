@@ -1,3 +1,4 @@
+import { GoBackHeader } from "@/components/GoBackHeader";
 import {
   Avatar,
   AvatarFallbackText,
@@ -32,15 +33,7 @@ import {
 } from "@/services/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  ArrowLeft,
-  Check,
-  Eye,
-  MoreVertical,
-  Send,
-  Trash,
-  X,
-} from "lucide-react-native";
+import { Check, Eye, MoreVertical, Send, Trash, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -111,47 +104,39 @@ export default function AnnouncementDetailScreen() {
       >
         <VStack className="flex-1">
           {/* Header */}
-          <HStack className="items-center border-b border-outline-100 p-4">
-            <Button
-              variant="link"
-              onPress={() => router.back()}
-              className="mr-4 p-0"
-            >
-              <ButtonIcon
-                as={ArrowLeft}
-                size="xl"
-                className="text-typography-900"
-              />
-            </Button>
-            <Heading size="md" className="text-typography-900">
-              {t("announcements.create")}{" "}
-              {/* Reusing "New Announcement" or similar title key if appropriate, or just "Announcement" */}
-            </Heading>
-            {announcement.author_id === userId && (
-              <Menu
-                offset={10}
-                placement="bottom right"
-                trigger={({ ...triggerProps }) => {
-                  return (
-                    <Pressable {...triggerProps} className="ml-auto">
-                      <Icon as={MoreVertical} className="text-typography-900" />
-                    </Pressable>
-                  );
-                }}
-              >
-                <MenuItem
-                  key="delete"
-                  textValue="Delete"
-                  onPress={() => setShowDeleteModal(true)}
+          {/* Header */}
+          <GoBackHeader
+            title={t("announcements.create")}
+            rightElement={
+              announcement.author_id === userId && (
+                <Menu
+                  offset={10}
+                  placement="bottom right"
+                  trigger={({ ...triggerProps }) => {
+                    return (
+                      <Pressable {...triggerProps}>
+                        <Icon
+                          as={MoreVertical}
+                          className="text-typography-900"
+                        />
+                      </Pressable>
+                    );
+                  }}
                 >
-                  <Icon as={Trash} className="mr-2 text-error-500" />
-                  <MenuItemLabel size="sm" className="text-error-500">
-                    {t("common.delete")}
-                  </MenuItemLabel>
-                </MenuItem>
-              </Menu>
-            )}
-          </HStack>
+                  <MenuItem
+                    key="delete"
+                    textValue="Delete"
+                    onPress={() => setShowDeleteModal(true)}
+                  >
+                    <Icon as={Trash} className="mr-2 text-error-500" />
+                    <MenuItemLabel size="sm" className="text-error-500">
+                      {t("common.delete")}
+                    </MenuItemLabel>
+                  </MenuItem>
+                </Menu>
+              )
+            }
+          />
 
           <ScrollView className="flex-1 p-4">
             {/* Announcement Content */}

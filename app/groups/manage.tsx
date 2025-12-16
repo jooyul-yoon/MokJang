@@ -1,3 +1,4 @@
+import { GoBackHeader } from "@/components/GoBackHeader";
 import {
   Avatar,
   AvatarFallbackText,
@@ -141,12 +142,7 @@ export default function GroupManagementScreen() {
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView contentContainerClassName="p-4">
         <VStack className="gap-6">
-          <Heading
-            size="xl"
-            className="text-typography-black dark:text-typography-white"
-          >
-            {t("community.manageGroup")}
-          </Heading>
+          <GoBackHeader title={t("community.manageGroup")} />
 
           <VStack className="gap-4">
             <Heading

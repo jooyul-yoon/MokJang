@@ -1,3 +1,4 @@
+import { GoBackHeader } from "@/components/GoBackHeader";
 import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -23,9 +24,8 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <Stack.Screen
-        options={{ title: t("common.settings"), headerShown: true }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
+      <GoBackHeader title={t("common.settings")} />
       <ScrollView className="flex-1 p-4">
         <VStack className="mb-8">
           <Text className="mb-2 text-lg font-semibold text-typography-black dark:text-typography-white">
