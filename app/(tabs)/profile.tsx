@@ -133,7 +133,7 @@ export default function ProfileScreen() {
       setUploading(true);
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images", "livePhotos"],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
@@ -200,7 +200,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView className="flex-1 p-4">
         <VStack className="space-y-6 pb-10">
-          <HStack className="items-center justify-between">
+          <HStack className="mb-4 items-center justify-between">
             <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">
               {t("tabs.profile")}
             </Heading>
@@ -214,9 +214,12 @@ export default function ProfileScreen() {
           </HStack>
 
           {/* Avatar Section */}
-          <VStack className="items-center space-y-4">
+          <VStack className="items-center gap-4">
             <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
-              <Avatar size="2xl" className="bg-primary-500">
+              <Avatar
+                size="2xl"
+                className="border-4 border-outline-100 bg-primary-500"
+              >
                 {profile?.avatar_url ? (
                   <AvatarImage
                     source={{ uri: profile.avatar_url }}
@@ -301,16 +304,6 @@ export default function ProfileScreen() {
               </VStack>
             )}
           </VStack>
-
-          {/* Sign Out */}
-          <Button
-            variant="outline"
-            action="negative"
-            className="mt-4"
-            onPress={() => supabase.auth.signOut()}
-          >
-            <ButtonText>{t("profile.signOut")}</ButtonText>
-          </Button>
         </VStack>
       </ScrollView>
     </SafeAreaView>
