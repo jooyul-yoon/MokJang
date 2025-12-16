@@ -14,7 +14,9 @@
     "delete": "삭제",
     "saving": "저장 중...",
     "error": "오류",
-    "success": "성공"
+    "success": "성공",
+    "deleteAccount": "계정 삭제",
+    "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
   },
   "tabs": {
     "home": "홈",

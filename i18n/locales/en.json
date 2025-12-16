@@ -14,7 +14,9 @@
     "saving": "Saving...",
     "delete": "Delete",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone."
   },
   "tabs": {
     "home": "Home",

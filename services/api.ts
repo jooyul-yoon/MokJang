@@ -520,3 +520,19 @@ export const rejectJoinRequest = async (
   }
   return { success: true };
 };
+
+export const deleteAccount = async (): Promise<{
+  success: boolean;
+  error?: string;
+}> => {
+  const { error } = await supabase.rpc("delete_user");
+
+  if (error) {
+    console.error("Error deleting account:", error);
+    return { success: false, error: error.message };
+  }
+
+  // Sign out after deletion to clear local session
+  await supabase.auth.signOut();
+  return { success: true };
+};
