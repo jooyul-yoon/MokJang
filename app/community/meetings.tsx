@@ -41,9 +41,10 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircleIcon, Plus, X } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MeetingsScreen() {
@@ -68,6 +69,11 @@ export default function MeetingsScreen() {
   });
 
   const isLeader = userGroup?.leader_id === userProfile?.id;
+
+  // --- Calendar State ---
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   // --- Create Meeting State ---
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -147,12 +153,53 @@ export default function MeetingsScreen() {
     setNewMeetingDate(currentDate);
   };
 
+  // --- Filtered Meetings ---
+  const filteredMeetings = useMemo(() => {
+    return meetings.filter((meeting) =>
+      meeting.meeting_time.startsWith(selectedDate),
+    );
+  }, [meetings, selectedDate]);
+
+  // --- Marked Dates for Calendar ---
+  const markedDates = useMemo(() => {
+    const marks: any = {};
+    meetings.forEach((meeting) => {
+      const date = meeting.meeting_time.split("T")[0];
+      marks[date] = {
+        marked: true,
+        dotColor: "#059669", // primary-600 equivalent
+      };
+    });
+
+    // Add selected date highlighting
+    marks[selectedDate] = {
+      ...(marks[selectedDate] || {}),
+      selected: true,
+      selectedColor: "#000000",
+      disableTouchEvent: true,
+    };
+
+    return marks;
+  }, [meetings, selectedDate]);
+
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <GoBackHeader title={t("community.meetings")} />
+
+      <Calendar
+        current={selectedDate}
+        onDayPress={(day: any) => setSelectedDate(day.dateString)}
+        markedDates={markedDates}
+        theme={{
+          selectedDayBackgroundColor: "#000000", // Customized in markedDates, but good fallback
+          todayTextColor: "#059669",
+          arrowColor: "#059669",
+        }}
+      />
+
       <ScrollView contentContainerClassName="p-4 pb-24 gap-4">
-        {meetings.length > 0 ? (
-          meetings.map((meeting: Meeting) => (
+        {filteredMeetings.length > 0 ? (
+          filteredMeetings.map((meeting: Meeting) => (
             <VStack key={meeting.id}>
               <Divider />
               <HStack className="dark:bg-background-card items-start justify-between rounded-lg py-3">
@@ -212,8 +259,8 @@ export default function MeetingsScreen() {
             </VStack>
           ))
         ) : (
-          <Text className="text-typography-500">
-            {t("community.noUpcomingMeetings")}
+          <Text className="text-center text-typography-500">
+            {t("community.noMeetingsOnDate")}
           </Text>
         )}
       </ScrollView>
