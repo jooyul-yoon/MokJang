@@ -22,6 +22,7 @@ export interface Group {
   region: string;
   meeting_day: string | null;
   meeting_hour: string | null;
+  leader_id: string;
 }
 
 export interface Meeting {
@@ -34,6 +35,17 @@ export interface Meeting {
   host_id: string;
   profiles?: {
     full_name: string;
+  };
+}
+
+export interface JoinRequest {
+  id: string;
+  user_id: string;
+  group_id: string;
+  created_at: string;
+  profiles: {
+    full_name: string;
+    avatar_url: string;
   };
 }
 
@@ -443,6 +455,67 @@ export const deleteAnnouncement = async (
 
   if (error) {
     console.error("Error deleting announcement:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export const fetchGroupRequests = async (
+  groupId: string,
+): Promise<JoinRequest[]> => {
+  const { data, error } = await supabase
+    .from("group_join_requests")
+    .select("*, profiles(full_name, avatar_url)")
+    .eq("group_id", groupId);
+
+  if (error) {
+    console.error("Error fetching group requests:", error);
+    return [];
+  }
+  return data as unknown as JoinRequest[];
+};
+
+export const approveJoinRequest = async (
+  requestId: string,
+  groupId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> => {
+  // 1. Insert into group_members
+  const { error: insertError } = await supabase.from("group_members").insert({
+    group_id: groupId,
+    user_id: userId,
+  });
+
+  if (insertError) {
+    console.error("Error approving request (insert):", insertError);
+    return { success: false, error: insertError.message };
+  }
+
+  // 2. Delete from group_join_requests
+  const { error: deleteError } = await supabase
+    .from("group_join_requests")
+    .delete()
+    .eq("id", requestId);
+
+  if (deleteError) {
+    console.error("Error approving request (delete):", deleteError);
+    // Ideally we'd rollback here, but for now we'll just log it.
+    // The user is in the group, so it's mostly a cleanup issue.
+  }
+
+  return { success: true };
+};
+
+export const rejectJoinRequest = async (
+  requestId: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const { error } = await supabase
+    .from("group_join_requests")
+    .delete()
+    .eq("id", requestId);
+
+  if (error) {
+    console.error("Error rejecting request:", error);
     return { success: false, error: error.message };
   }
   return { success: true };

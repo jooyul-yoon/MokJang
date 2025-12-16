@@ -45,7 +45,12 @@
     "requestToJoin": "Request to Join",
     "exploreMokjangs": "Explore MokJangs",
     "joinRequestFailed": "Failed to send join request.",
-    "joinRequestSuccess": "Join request sent successfully!"
+    "joinRequestSuccess": "Join request sent successfully!",
+    "manageGroup": "Manage Group",
+    "pendingRequests": "Pending Requests",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noPendingRequests": "No pending requests."
   },
   "profile": {
     "name": "Name",

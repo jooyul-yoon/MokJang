@@ -1,5 +1,6 @@
 import GroupList from "@/components/GroupList";
 import MeetingSchedule from "@/components/MeetingSchedule";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -11,10 +12,11 @@ import {
   fetchMeetings,
   fetchUserGroup,
   fetchUserJoinRequests,
+  fetchUserProfile,
 } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Plus } from "lucide-react-native";
+import { Plus, Settings } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView } from "react-native";
@@ -24,6 +26,11 @@ export default function CommunityScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: fetchUserProfile,
+  });
 
   const { data: userGroup, isLoading: isGroupLoading } = useQuery({
     queryKey: ["userGroup"],
@@ -90,15 +97,33 @@ export default function CommunityScreen() {
           {userGroup ? (
             <VStack className="gap-4">
               <VStack className="gap-2">
-                <Heading
-                  size="xl"
-                  className="text-typography-black dark:text-typography-white"
-                >
-                  {userGroup.name}
-                </Heading>
-                <Text className="text-typography-600 dark:text-typography-400">
-                  {userGroup.description}
-                </Text>
+                <HStack className="items-center justify-between">
+                  <VStack>
+                    <Heading
+                      size="xl"
+                      className="text-typography-black dark:text-typography-white"
+                    >
+                      {userGroup.name}
+                    </Heading>
+                    <Text className="text-typography-600 dark:text-typography-400">
+                      {userGroup.description}
+                    </Text>
+                  </VStack>
+                  {userGroup?.leader_id === userProfile?.id && (
+                    <Button
+                      size="md"
+                      variant="link"
+                      action="secondary"
+                      onPress={() => router.push("/groups/manage")}
+                      className="p-0"
+                    >
+                      <ButtonIcon
+                        as={Settings}
+                        className="text-typography-900 dark:text-typography-100"
+                      />
+                    </Button>
+                  )}
+                </HStack>
               </VStack>
 
               <VStack className="gap-2 rounded-lg bg-background-50 p-4 dark:bg-background-900">
