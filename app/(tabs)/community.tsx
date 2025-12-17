@@ -96,18 +96,26 @@ export default function CommunityScreen() {
         <VStack className="gap-6">
           {userGroup ? (
             <VStack className="gap-4">
-              <VStack className="gap-2">
-                <HStack className="items-center justify-between">
+              <VStack className="mb-4 gap-2">
+                <HStack className="justify-between">
                   <VStack>
+                    <Text className="text-typography-600 dark:text-typography-400">
+                      {userGroup.description}
+                    </Text>
                     <Heading
                       size="xl"
                       className="text-typography-black dark:text-typography-white"
                     >
                       {userGroup.name}
                     </Heading>
-                    <Text className="text-typography-600 dark:text-typography-400">
-                      {userGroup.description}
-                    </Text>
+                    <HStack className="mt-2 items-center gap-2">
+                      <Text className="text-typography-600 dark:text-typography-400">
+                        {userGroup.meeting_time}
+                      </Text>
+                      <Text className="text-typography-600 dark:text-typography-400">
+                        @{userGroup.region}
+                      </Text>
+                    </HStack>
                   </VStack>
                   {userGroup?.leader_id === userProfile?.id && (
                     <Button
@@ -119,32 +127,12 @@ export default function CommunityScreen() {
                     >
                       <ButtonIcon
                         as={Settings}
-                        className="text-typography-900 dark:text-typography-100"
+                        className="h-6 w-6 text-typography-900 dark:text-typography-100"
                       />
                     </Button>
                   )}
                 </HStack>
               </VStack>
-
-              <VStack className="gap-2 rounded-lg bg-background-50 p-4 dark:bg-background-900">
-                <HStack className="items-center justify-between">
-                  <Text className="font-semibold text-typography-900 dark:text-typography-100">
-                    {t("community.meetingTime")}
-                  </Text>
-                  <Text className="text-typography-600 dark:text-typography-400">
-                    {userGroup.meeting_time}
-                  </Text>
-                </HStack>
-                <HStack className="items-center justify-between">
-                  <Text className="font-semibold text-typography-900 dark:text-typography-100">
-                    {t("community.region")}
-                  </Text>
-                  <Text className="text-typography-600 dark:text-typography-400">
-                    {userGroup.region}
-                  </Text>
-                </HStack>
-              </VStack>
-
               <MeetingSchedule userGroup={userGroup} meetings={meetings} />
             </VStack>
           ) : (
