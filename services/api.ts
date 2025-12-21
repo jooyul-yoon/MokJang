@@ -458,3 +458,57 @@ export const deleteAccount = async (): Promise<{
   await supabase.auth.signOut();
   return { success: true };
 };
+
+export interface GroupMember {
+  user_id: string;
+  joined_at: string;
+  profiles: {
+    full_name: string;
+    avatar_url: string;
+  };
+}
+
+export const fetchGroupMembers = async (
+  groupId: string,
+): Promise<GroupMember[]> => {
+  // 1. Fetch group members (user_ids)
+  const { data: members, error: membersError } = await supabase
+    .from("group_members")
+    .select("user_id, joined_at")
+    .eq("group_id", groupId);
+
+  if (membersError) {
+    console.error("Error fetching group members:", membersError);
+    return [];
+  }
+
+  if (!members || members.length === 0) return [];
+
+  const userIds = members.map((m: any) => m.user_id);
+
+  // 2. Fetch profiles for these users
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select("id, full_name, avatar_url")
+    .in("id", userIds);
+
+  if (profilesError) {
+    console.error("Error fetching member profiles:", profilesError);
+    return [];
+  }
+
+  // 3. Merge data
+  const profileMap = new Map(profiles.map((p: any) => [p.id, p]));
+
+  return members.map((member: any) => {
+    const profile = profileMap.get(member.user_id);
+    return {
+      user_id: member.user_id,
+      joined_at: member.joined_at,
+      profiles: {
+        full_name: profile?.full_name || "Unknown",
+        avatar_url: profile?.avatar_url || "",
+      },
+    };
+  });
+};

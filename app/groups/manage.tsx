@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -18,6 +19,7 @@ import {
 import { VStack } from "@/components/ui/vstack";
 import {
   approveJoinRequest,
+  fetchGroupMembers,
   fetchGroupRequests,
   fetchUserGroup,
   fetchUserProfile,
@@ -49,6 +51,12 @@ export default function GroupManagementScreen() {
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["groupRequests", userGroup?.id],
     queryFn: () => fetchGroupRequests(userGroup?.id || ""),
+    enabled: !!userGroup?.id,
+  });
+
+  const { data: members = [] } = useQuery({
+    queryKey: ["groupMembers", userGroup?.id],
+    queryFn: () => fetchGroupMembers(userGroup?.id || ""),
     enabled: !!userGroup?.id,
   });
 
@@ -199,6 +207,30 @@ export default function GroupManagementScreen() {
                 </Card>
               ))
             )}
+
+            <Heading
+              size="md"
+              className="mt-6 text-typography-black dark:text-typography-white"
+            >
+              {t("community.members")}
+            </Heading>
+
+            {members.map((member, index) => (
+              <React.Fragment key={member.user_id}>
+                <HStack space="md" className="items-center py-2">
+                  <Avatar>
+                    <AvatarFallbackText>
+                      {member.profiles.full_name}
+                    </AvatarFallbackText>
+                    <AvatarImage source={{ uri: member.profiles.avatar_url }} />
+                  </Avatar>
+                  <Text className="font-bold text-typography-black dark:text-typography-white">
+                    {member.profiles.full_name}
+                  </Text>
+                </HStack>
+                {index < members.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
           </VStack>
         </VStack>
       </ScrollView>
