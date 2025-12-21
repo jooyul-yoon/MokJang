@@ -1,5 +1,4 @@
 import { Button, ButtonText } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -26,15 +25,15 @@ export default function MeetingSchedule({
 
   return (
     <VStack className="gap-4">
-      <HStack className="items-center justify-between">
+      <HStack className="items-center justify-between px-4">
         <Heading
-          size="sm"
+          size="lg"
           className="text-lg text-typography-black dark:text-typography-white"
         >
           {t("community.upcomingMeetings")}
         </Heading>
         <Button
-          size="xs"
+          size="sm"
           variant="link"
           action="primary"
           onPress={() => router.push("/community/meetings")}
@@ -43,7 +42,7 @@ export default function MeetingSchedule({
         </Button>
       </HStack>
 
-      <VStack className="gap-4">
+      <VStack>
         {previewMeetings.length > 0 ? (
           previewMeetings.map((meeting: Meeting) => (
             <Pressable
@@ -54,9 +53,8 @@ export default function MeetingSchedule({
                 })
               }
               key={meeting.id}
-              className="active:bg-background-50"
+              className="border-b border-background-100 px-4 active:bg-background-50 dark:border-background-50"
             >
-              <Divider />
               <HStack className="dark:bg-background-card items-start justify-between rounded-lg py-3">
                 <VStack className="flex-1 gap-1">
                   <HStack className="items-center gap-2">

@@ -88,7 +88,7 @@ export default function CommunityScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView
-        contentContainerClassName="p-4 pb-20"
+        contentContainerClassName="pb-20"
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={onRefresh} />
         }
@@ -96,7 +96,7 @@ export default function CommunityScreen() {
         <VStack className="gap-6">
           {userGroup ? (
             <VStack className="gap-4">
-              <VStack className="mb-4 gap-2">
+              <VStack className="gap-2 p-4">
                 <HStack className="justify-between">
                   <VStack>
                     <Text className="text-typography-600 dark:text-typography-400">
