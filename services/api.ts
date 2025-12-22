@@ -533,3 +533,125 @@ export const leaveGroup = async (
   }
   return { success: true };
 };
+
+export interface PrayerRequest {
+  id: string;
+  user_id: string;
+  group_id: string | null;
+  content: string;
+  visibility: "public" | "group";
+  created_at: string;
+  profiles?: {
+    full_name: string;
+    avatar_url: string;
+  };
+  comment_count?: number;
+}
+
+export interface PrayerRequestComment {
+  id: string;
+  prayer_request_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  profiles: {
+    full_name: string;
+    avatar_url: string;
+  };
+}
+
+export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("prayer_requests")
+    .select("*, profiles(full_name, avatar_url)")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching prayer requests:", error);
+    return [];
+  }
+
+  return data as PrayerRequest[];
+};
+
+export const createPrayerRequest = async (
+  content: string,
+  visibility: "public" | "group",
+  groupId: string | null,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("prayer_requests").insert({
+    user_id: user.id,
+    content,
+    visibility,
+    group_id: groupId,
+  });
+
+  if (error) {
+    console.error("Error creating prayer request:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export const deletePrayerRequest = async (
+  id: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const { error } = await supabase
+    .from("prayer_requests")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error deleting prayer request:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export const fetchPrayerRequestComments = async (
+  requestId: string,
+): Promise<PrayerRequestComment[]> => {
+  const { data, error } = await supabase
+    .from("prayer_request_comments")
+    .select("*, profiles(full_name, avatar_url)")
+    .eq("prayer_request_id", requestId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching request comments:", error);
+    return [];
+  }
+  return data as PrayerRequestComment[];
+};
+
+export const createPrayerRequestComment = async (
+  requestId: string,
+  content: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("prayer_request_comments").insert({
+    prayer_request_id: requestId,
+    user_id: user.id,
+    content,
+  });
+
+  if (error) {
+    console.error("Error creating request comment:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};

@@ -1,9 +1,10 @@
 import AnnouncementList from "@/components/AnnouncementList";
 import { HomeTabs } from "@/components/HomeTabs";
+import PrayerRequestList from "@/components/PrayerRequestList";
 import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { fetchUserProfile } from "@/services/api";
+import { fetchUserGroup, fetchUserProfile } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Plus } from "lucide-react-native";
@@ -24,6 +25,11 @@ export default function HomeScreen() {
   const { data: profile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: fetchUserProfile,
+  });
+
+  const { data: userGroup } = useQuery({
+    queryKey: ["userGroup"],
+    queryFn: fetchUserGroup,
   });
 
   const canCreateAnnouncement =
@@ -48,6 +54,7 @@ export default function HomeScreen() {
           setActiveTab={setActiveTab}
         />
         {activeTab.value === "announcements" && <AnnouncementList />}
+        {activeTab.value === "prayers" && <PrayerRequestList />}
       </VStack>
 
       {canCreateAnnouncement && activeTab.value === "announcements" && (

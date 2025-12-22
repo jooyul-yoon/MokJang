@@ -1,11 +1,13 @@
 import GroupList from "@/components/GroupList";
 import MeetingSchedule from "@/components/MeetingSchedule";
+import PrayerRequestList from "@/components/PrayerRequestList";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
+import { Pressable } from "@/components/ui/pressable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -29,6 +31,9 @@ export default function CommunityScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = React.useState<"meetings" | "prayers">(
+    "meetings",
+  );
 
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
@@ -127,14 +132,14 @@ export default function CommunityScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView
-        contentContainerClassName="pb-20"
+        contentContainerClassName="flex-1"
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={onRefresh} />
         }
       >
-        <VStack className="gap-6">
+        <VStack className="flex-1 gap-6">
           {userGroup ? (
-            <VStack className="gap-4">
+            <VStack className="flex-1 gap-4">
               <VStack className="gap-2 p-4">
                 <HStack className="justify-between">
                   <VStack>
@@ -204,7 +209,37 @@ export default function CommunityScreen() {
                   )}
                 </HStack>
               </VStack>
-              <MeetingSchedule userGroup={userGroup} meetings={meetings} />
+
+              <VStack className="flex-1">
+                <HStack className="mb-4 border-b border-outline-100 dark:border-outline-800">
+                  <Pressable
+                    className={`flex-1 border-b-2 py-3 ${activeTab === "meetings" ? "border-primary-500" : "border-transparent"}`}
+                    onPress={() => setActiveTab("meetings")}
+                  >
+                    <Text
+                      className={`text-center font-bold ${activeTab === "meetings" ? "text-primary-500" : "text-typography-500"}`}
+                    >
+                      {t("community.meetings", "Meetings")}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    className={`flex-1 border-b-2 py-3 ${activeTab === "prayers" ? "border-primary-500" : "border-transparent"}`}
+                    onPress={() => setActiveTab("prayers")}
+                  >
+                    <Text
+                      className={`text-center font-bold ${activeTab === "prayers" ? "text-primary-500" : "text-typography-500"}`}
+                    >
+                      {t("community.prayerRequests", "Prayer Requests")}
+                    </Text>
+                  </Pressable>
+                </HStack>
+
+                {activeTab === "meetings" ? (
+                  <MeetingSchedule userGroup={userGroup} meetings={meetings} />
+                ) : (
+                  <PrayerRequestList userGroup={userGroup} />
+                )}
+              </VStack>
             </VStack>
           ) : (
             <VStack className="flex-1 gap-4">
