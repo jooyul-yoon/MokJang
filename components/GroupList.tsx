@@ -112,7 +112,7 @@ export default function GroupList({
   }
 
   return (
-    <VStack className="mt-6 gap-4">
+    <VStack className="mt-6 gap-4 p-4">
       <Heading
         size="md"
         className="mb-2 text-xl text-typography-black dark:text-typography-white"
