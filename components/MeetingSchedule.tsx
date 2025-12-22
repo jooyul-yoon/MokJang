@@ -42,7 +42,7 @@ export default function MeetingSchedule({
         </Button>
       </HStack>
 
-      <VStack>
+      <VStack className="px-4">
         {previewMeetings.length > 0 ? (
           previewMeetings.map((meeting: Meeting) => (
             <Pressable
@@ -53,7 +53,7 @@ export default function MeetingSchedule({
                 })
               }
               key={meeting.id}
-              className="border-b border-background-100 px-4 active:bg-background-50 dark:border-background-50"
+              className="border-b border-background-100 active:bg-background-50 dark:border-background-50"
             >
               <HStack className="dark:bg-background-card items-start justify-between rounded-lg py-3">
                 <VStack className="flex-1 gap-1">
