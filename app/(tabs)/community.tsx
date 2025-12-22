@@ -4,6 +4,8 @@ import { Button, ButtonIcon } from "@/components/ui/button";
 import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Icon } from "@/components/ui/icon";
+import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -13,13 +15,14 @@ import {
   fetchUserGroup,
   fetchUserJoinRequests,
   fetchUserProfile,
+  leaveGroup,
 } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Plus, Settings } from "lucide-react-native";
+import { DeleteIcon, Plus, Settings } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, ScrollView } from "react-native";
+import { Alert, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CommunityScreen() {
@@ -66,6 +69,42 @@ export default function CommunityScreen() {
     queryClient.invalidateQueries({ queryKey: ["userJoinRequests"] });
     queryClient.invalidateQueries({ queryKey: ["meetings"] });
   }, []);
+
+  const handleLeaveGroup = async () => {
+    if (!userGroup?.id) return;
+
+    Alert.alert(
+      t("community.leaveGroupTitle", "Leave Group"),
+      t(
+        "community.leaveGroupMessage",
+        "Are you sure you want to leave this group?",
+      ),
+      [
+        {
+          text: t("common.cancel", "Cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("common.leave", "Leave"),
+          style: "destructive",
+          onPress: async () => {
+            const { success, error } = await leaveGroup(userGroup.id);
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["userGroup"] });
+              queryClient.invalidateQueries({ queryKey: ["groups"] });
+              // Optimistically update or just let invalidate handle it
+            } else {
+              Alert.alert(
+                t("common.error", "Error"),
+                error ||
+                  t("community.leaveGroupError", "Failed to leave group"),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
 
   if (
     isGroupLoading ||
@@ -117,7 +156,7 @@ export default function CommunityScreen() {
                       </Text>
                     </HStack>
                   </VStack>
-                  {userGroup?.leader_id === userProfile?.id && (
+                  {userGroup?.leader_id === userProfile?.id ? (
                     <Button
                       size="md"
                       variant="link"
@@ -130,6 +169,38 @@ export default function CommunityScreen() {
                         className="h-6 w-6 text-typography-900 dark:text-typography-100"
                       />
                     </Button>
+                  ) : (
+                    <Menu
+                      trigger={({ ...trigerProps }) => (
+                        <Button
+                          size="md"
+                          variant="link"
+                          action="secondary"
+                          className="p-0"
+                          {...trigerProps}
+                        >
+                          <ButtonIcon
+                            as={Settings}
+                            className="h-6 w-6 text-typography-900 dark:text-typography-100"
+                          />
+                        </Button>
+                      )}
+                    >
+                      <MenuItem
+                        key="Leave group"
+                        textValue="Leave group"
+                        onPress={handleLeaveGroup}
+                      >
+                        <Icon
+                          as={DeleteIcon}
+                          size="sm"
+                          className="mr-2 text-error-500"
+                        />
+                        <MenuItemLabel size="sm" className="text-error-500">
+                          Leave group
+                        </MenuItemLabel>
+                      </MenuItem>
+                    </Menu>
                   )}
                 </HStack>
               </VStack>

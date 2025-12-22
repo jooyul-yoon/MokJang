@@ -512,3 +512,24 @@ export const fetchGroupMembers = async (
     };
   });
 };
+
+export const leaveGroup = async (
+  groupId: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase
+    .from("group_members")
+    .delete()
+    .eq("group_id", groupId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error leaving group:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
