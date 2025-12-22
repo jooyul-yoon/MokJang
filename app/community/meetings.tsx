@@ -274,7 +274,7 @@ export default function MeetingsScreen() {
           placement="bottom right"
           size="lg"
           onPress={() => setShowCreateModal(true)}
-          className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700"
+          className="mb-8 mr-4 bg-primary-500 hover:bg-primary-600 active:bg-primary-700"
         >
           <FabIcon as={Plus} />
         </Fab>
