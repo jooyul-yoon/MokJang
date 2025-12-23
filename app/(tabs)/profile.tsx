@@ -4,17 +4,23 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
+import {
+  fetchMyPrayerRequests,
+  fetchUserGroup,
+  fetchUserProfile,
+} from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
-import { Session } from "@supabase/supabase-js";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -31,106 +37,62 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<{
-    full_name: string;
-    avatar_url: string;
-  } | null>(null);
-  const [mokjang, setMokjang] = useState<{
-    name: string;
-    description: string;
-  } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState("");
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) getProfile(session);
-    });
-  }, []);
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      const p = await fetchUserProfile();
+      if (p) setFullName(p.full_name || "");
+      return p;
+    },
+  });
 
-  async function getProfile(session: Session) {
-    try {
-      setLoading(true);
-      if (!session?.user) throw new Error("No user on the session!");
+  const { data: userGroup, isLoading: isGroupLoading } = useQuery({
+    queryKey: ["userGroup"],
+    queryFn: fetchUserGroup,
+  });
 
-      const { data, error, status } = await supabase
-        .from("profiles")
-        .select(`full_name, avatar_url`)
-        .eq("id", session.user.id)
-        .single();
+  const { data: myPrayers = [], isLoading: isPrayersLoading } = useQuery({
+    queryKey: ["myPrayers"],
+    queryFn: fetchMyPrayerRequests,
+  });
 
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setProfile(data);
-        setFullName(data.full_name || "");
-      }
-
-      // Fetch MokJang membership
-      const { data: memberData, error: memberError } = await supabase
-        .from("group_members")
-        .select(
-          `
-          group_id,
-          groups (
-            name,
-            description
-          )
-        `,
-        )
-        .eq("user_id", session.user.id)
-        .single();
-
-      if (memberData?.groups) {
-        // @ts-ignore
-        setMokjang(memberData.groups);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateProfile() {
-    try {
-      setLoading(true);
-      if (!session?.user) throw new Error("No user on the session!");
+  const updateProfileMutation = useMutation({
+    mutationFn: async (newName: string) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user on the session!");
 
       const updates = {
-        id: session.user.id,
-        full_name: fullName,
+        id: user.id,
+        full_name: newName,
         updated_at: new Date(),
       };
 
       const { error } = await supabase.from("profiles").upsert(updates);
-
-      if (error) {
-        throw error;
-      }
-
-      setProfile((prev) => ({ ...prev!, full_name: fullName }));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       setIsEditing(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
+    },
+    onError: (error: Error) => {
+      Alert.alert(error.message);
+    },
+  });
 
   async function uploadAvatar() {
     try {
       setUploading(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user on the session!");
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images", "livePhotos"],
@@ -148,7 +110,7 @@ export default function ProfileScreen() {
       if (!image.base64) return;
 
       const fileExt = image.uri.split(".").pop()?.toLowerCase() ?? "jpeg";
-      const fileName = `${session?.user.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -157,15 +119,13 @@ export default function ProfileScreen() {
           contentType: image.mimeType ?? "image/jpeg",
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
       const avatarUrl = data.publicUrl;
 
       const updates = {
-        id: session?.user.id,
+        id: user.id,
         avatar_url: avatarUrl,
         updated_at: new Date(),
       };
@@ -174,11 +134,12 @@ export default function ProfileScreen() {
         .from("profiles")
         .upsert(updates);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      setProfile((prev) => ({ ...prev!, avatar_url: avatarUrl }));
+      queryClient.setQueryData(["userProfile"], (old: any) => ({
+        ...old,
+        avatar_url: avatarUrl,
+      }));
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
@@ -188,7 +149,7 @@ export default function ProfileScreen() {
     }
   }
 
-  if (loading) {
+  if (isProfileLoading || isGroupLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
         <ActivityIndicator size="large" />
@@ -258,7 +219,11 @@ export default function ProfileScreen() {
                   onChangeText={setFullName}
                   placeholder={t("profile.namePlaceholder")}
                 />
-                <Button size="sm" onPress={updateProfile}>
+                <Button
+                  size="sm"
+                  onPress={() => updateProfileMutation.mutate(fullName)}
+                  isDisabled={updateProfileMutation.isPending}
+                >
                   <ButtonText>{t("profile.save")}</ButtonText>
                 </Button>
                 <Button
@@ -284,13 +249,13 @@ export default function ProfileScreen() {
             <Text className="text-sm font-medium text-typography-500">
               {t("profile.mokjang")}
             </Text>
-            {mokjang ? (
+            {userGroup ? (
               <VStack className="space-y-2">
                 <Heading className="text-xl font-bold text-typography-black dark:text-typography-white">
-                  {mokjang.name}
+                  {userGroup.name}
                 </Heading>
                 <Text className="text-typography-500">
-                  {mokjang.description}
+                  {userGroup.description}
                 </Text>
               </VStack>
             ) : (
@@ -302,6 +267,48 @@ export default function ProfileScreen() {
                   <ButtonText>{t("profile.joinMokjang")}</ButtonText>
                 </Button>
               </VStack>
+            )}
+          </VStack>
+
+          {/* My Prayer Requests Section */}
+          <VStack className="space-y-4 rounded-xl p-4">
+            <Text className="text-sm font-medium text-typography-500">
+              {t("profile.myPrayers")}
+            </Text>
+            {isPrayersLoading ? (
+              <ActivityIndicator />
+            ) : myPrayers.length > 0 ? (
+              <VStack className="gap-3">
+                {myPrayers.map((prayer) => (
+                  <TouchableOpacity
+                    key={prayer.id}
+                    onPress={() => router.push(`/prayer-requests/${prayer.id}`)}
+                  >
+                    <Card className="dark:bg-background-card-dark rounded-lg bg-white p-4">
+                      <HStack className="mb-2 items-center justify-between">
+                        <Text className="text-xs text-typography-500">
+                          {new Date(prayer.created_at).toLocaleDateString()}
+                        </Text>
+                        <Text className="text-xs uppercase text-typography-400">
+                          {prayer.visibility === "public"
+                            ? t("common.public", "Public")
+                            : t("common.group", "Group")}
+                        </Text>
+                      </HStack>
+                      <Text
+                        numberOfLines={2}
+                        className="leading-normal text-typography-700"
+                      >
+                        {prayer.content}
+                      </Text>
+                    </Card>
+                  </TouchableOpacity>
+                ))}
+              </VStack>
+            ) : (
+              <Text className="py-4 text-center text-typography-500">
+                {t("community.noPrayerRequests", "No prayer requests yet.")}
+              </Text>
             )}
           </VStack>
         </VStack>

@@ -76,7 +76,8 @@
     "signOut": "로그아웃",
     "mokjang": "목장",
     "noMokjang": "아직 목장에 가입하지 않았습니다.",
-    "joinMokjang": "목장 가입"
+    "joinMokjang": "목장 가입",
+    "myPrayers": "내 기도제목"
   },
   "announcements": {
     "title": "교회 소식",
