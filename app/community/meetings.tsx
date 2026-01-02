@@ -38,15 +38,16 @@ import {
   Meeting,
   volunteerForMeeting,
 } from "@/services/api";
+import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircleIcon, Plus, X } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Box } from "@/components/ui/box";
 import { useLocalSearchParams } from "expo-router";
 
 export default function MeetingsScreen() {
@@ -159,7 +160,13 @@ export default function MeetingsScreen() {
   // --- Filtered Meetings ---
   const filteredMeetings = useMemo(() => {
     return meetings.filter((meeting) =>
-      meeting.meeting_time.startsWith(selectedDate),
+      new Date(meeting.meeting_time)
+        .toLocaleString("sv-SE", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .startsWith(selectedDate),
     );
   }, [meetings, selectedDate]);
 
@@ -189,16 +196,21 @@ export default function MeetingsScreen() {
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <GoBackHeader title={t("community.meetings")} />
 
-      <Calendar
-        current={selectedDate}
-        onDayPress={(day: any) => setSelectedDate(day.dateString)}
-        markedDates={markedDates}
-        theme={{
-          selectedDayBackgroundColor: "#000000", // Customized in markedDates, but good fallback
-          todayTextColor: "#059669",
-          arrowColor: "#059669",
-        }}
-      />
+      <Box className="p-4">
+        <Calendar
+          onCalendarDayPress={(dateId: string) => {
+            setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
+          }}
+          calendarMonthId={toDateId(new Date())}
+          calendarDayHeight={40}
+          calendarActiveDateRanges={[
+            {
+              startId: selectedDate,
+              endId: selectedDate,
+            },
+          ]}
+        />
+      </Box>
 
       <ScrollView contentContainerClassName="p-4 pb-24 gap-4">
         {filteredMeetings.length > 0 ? (
