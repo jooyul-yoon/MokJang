@@ -39,7 +39,7 @@ import {
   volunteerForMeeting,
 } from "@/services/api";
 import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircleIcon, Plus, X } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
@@ -85,7 +85,7 @@ export default function MeetingsScreen() {
     "mokjang",
   );
   const [newMeetingTitle, setNewMeetingTitle] = useState("");
-  const [newMeetingDate, setNewMeetingDate] = useState(new Date());
+  const [newMeetingDate, setNewMeetingDate] = useState(new Date(selectedDate));
   const [isVolunteerOpen, setIsVolunteerOpen] = useState(false);
   const [newMeetingLocation, setNewMeetingLocation] = useState("");
   const [newMeetingMemo, setNewMeetingMemo] = useState("");
@@ -200,6 +200,9 @@ export default function MeetingsScreen() {
         <Calendar
           onCalendarDayPress={(dateId: string) => {
             setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
+            setNewMeetingDate(
+              new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000),
+            );
           }}
           calendarMonthId={toDateId(new Date())}
           calendarDayHeight={40}
@@ -364,12 +367,13 @@ export default function MeetingsScreen() {
                   </FormControlLabelText>
                 </FormControlLabel>
                 <HStack>
-                  <DateTimePicker
+                  <RNDateTimePicker
                     value={newMeetingDate}
                     mode="datetime"
                     display="default"
-                    onChange={onDateChange}
                     themeVariant="light"
+                    minuteInterval={15}
+                    onChange={onDateChange}
                   />
                 </HStack>
               </FormControl>
