@@ -38,7 +38,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Circle, MessageSquare, Plus, X } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 
@@ -57,7 +57,6 @@ export default function PrayerRequestList({
   const [visibility, setVisibility] = useState<"public" | "group">(
     userGroup ? "group" : "public",
   );
-  const [filteredRequests, setFilteredRequests] = useState<PrayerRequest[]>([]);
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["prayerRequests"],
@@ -85,21 +84,21 @@ export default function PrayerRequestList({
     }
   };
 
+  const filteredRequests = useMemo(() => {
+    if (userGroup) {
+      return requests.filter(
+        (request: PrayerRequest) => request.group_id === userGroup?.id,
+      );
+    } else {
+      return requests.filter(
+        (request: PrayerRequest) => request.visibility === "public",
+      );
+    }
+  }, [requests, userGroup]);
+
   if (isLoading) {
     return <ActivityIndicator className="mt-4" />;
   }
-
-  useEffect(() => {
-    if (userGroup) {
-      setFilteredRequests(
-        requests.filter((request) => request.group_id === userGroup?.id),
-      );
-    } else {
-      setFilteredRequests(
-        requests.filter((request) => request.visibility === "public"),
-      );
-    }
-  }, [requests, visibility, userGroup]);
 
   return (
     <VStack className="flex-1 px-4 pb-20">
@@ -109,7 +108,7 @@ export default function PrayerRequestList({
             {t("community.noPrayerRequests", "No prayer requests yet.")}
           </Text>
         ) : (
-          filteredRequests.map((request) => (
+          filteredRequests.map((request: PrayerRequest) => (
             <Pressable
               key={request.id}
               onPress={() => router.push(`/prayer-requests/${request.id}`)}

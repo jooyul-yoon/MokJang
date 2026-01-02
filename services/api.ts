@@ -572,7 +572,7 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching prayer requests:", error);
+    console.error("Error fetching prayer requests:", error.message, error.details, error.hint);
     return [];
   }
 
