@@ -247,18 +247,57 @@ MokJang은 교회 내 “목장 공동체”를 중심으로 소통・기도・�
 
 ---
 
-## 8. Database Schema (Simplified)
+## 8. Database Schema
 
-- **users**: `id`, `name`, `email`, `phone`, `role`, `group_id`, `created_at`, `updated_at`
-- **groups**: `id`, `church_id`, `name`, `leader_id`, `meeting_time`, `meeting_location`, `description`
-- **group_members**: `user_id`, `group_id`, `role`, `status`, `joined_at`
-- **prayer_requests**: `id`, `user_id`, `group_id`, `visibility`, `category`, `content`, `is_anonymous`, `answered`, `answer_note`, `created_at`
-- **bible_reads**: `id`, `user_id`, `group_id`, `church_id`, `date`, `range`, `note`
-- **events**: `id`, `group_id`, `title`, `time`, `location`, `description`
+- **profiles**: `id` (uuid, PK), `full_name` (text), `avatar_url` (text), `role` (text: 'member', 'leader', 'admin'), `updated_at` (timestamptz)
+- **groups**: `id` (uuid, PK), `name` (text), `description` (text), `leader_id` (uuid, FK), `meeting_time` (text), `meeting_day` (text), `meeting_hour` (time), `region` (text), `created_at` (timestamptz)
+- **group_members**: `id` (uuid, PK), `group_id` (uuid, FK), `user_id` (uuid, FK), `role` (text), `status` (text: 'pending', 'approved', 'rejected'), `created_at` (timestamptz)
+- **meetings**: `id` (uuid, PK), `group_id` (uuid, FK), `date` (date), `time` (time), `location` (text), `description` (text), `host_id` (uuid, FK), `created_at` (timestamptz)
+- **prayer_requests**: `id` (uuid, PK), `user_id` (uuid, FK), `group_id` (uuid, FK), `content` (text), `visibility` (text: 'public', 'group'), `created_at` (timestamptz), `updated_at` (timestamptz)
+- **prayer_request_comments**: `id` (uuid, PK), `prayer_request_id` (uuid, FK), `user_id` (uuid, FK), `content` (text), `created_at` (timestamptz)
+- **announcements**: `id` (uuid, PK), `title` (text), `content` (text), `author_id` (uuid, FK), `created_at` (timestamptz)
+- **announcement_reads**: `id` (uuid, PK), `announcement_id` (uuid, FK), `user_id` (uuid, FK), `created_at` (timestamptz)
+- **announcement_comments**: `id` (uuid, PK), `announcement_id` (uuid, FK), `user_id` (uuid, FK), `content` (text), `created_at` (timestamptz)
+- **bible_reads** (Planned): `id`, `user_id`, `group_id`, `date`, `range`, `note`
+- **group_join_requests** (Legacy): `id`, `user_id`, `group_id`, `status`, `created_at` (group_members 테이블로 통합 권장)
 
 ---
 
-## 9. Success Metrics
+## 9. Mobile App Structure (Tabs)
+
+MokJang 모바일 앱은 사용자의 편의성을 위해 4개의 주요 탭으로 구성되어 있습니다.
+
+### 9.1 Home (🏠 홈)
+
+- **공지사항 (Announcements)**: 교회 전체 공지 및 소식을 피드 형태로 확인. 관리자/목자는 공지사항 작성 가능.
+- **기도제목 (Prayers)**: 공동체 전체의 기도제목 확인 및 하트/댓글 소통.
+- **말씀 묵상 (QT)**: 오늘의 말씀 묵상 및 본문 확인.
+
+### 9.2 Community (👥 커뮤니티 / 목장)
+
+- **목장 미가입 시**: 가입 가능한 목장 리스트 확인 및 가입 신청.
+- **목장 가입 시**: 소속 목장 정보(이름, 모임 시간, 지역) 확인.
+  - **Meetings (모임)**: 다가오는 목장 모임 일정, 장소(지도 연동), 호스트 정보 확인 및 RSVP.
+  - **Prayer Requests (목장 기도제목)**: 목원들끼리만 공유하는 프라이빗 기도제목 관리.
+- **목자 권한**: 목장 정보 수정 및 가입 요청 승인/관리 페이지 접근 가능.
+
+### 9.3 Bible (📖 성경)
+
+- **성경 읽기**: 성경 본문 읽기 기능 (준비 중).
+- **통독 기록**: 개인별/목장별 성경 통독 현황 체크 및 통계 확인 (Planned).
+
+### 9.4 Profile (👤 프로필)
+
+- **내 정보**: 이름 수정, 프로필 이미지 업로드(Supabase Storage 연동).
+- **소속 확인**: 현재 내가 소속된 목장 정보 확인 및 바로가기.
+- **설정 (Settings)**:
+  - **언어 설정**: 한국어/영어 전환 (i18next).
+  - **테마 설정**: 라이트 모드/다크 모드/시스템 설정 연동.
+  - **계정 관리**: 로그아웃 및 회원 탈퇴(데이터 삭제).
+
+---
+
+## 10. Success Metrics
 
 ### Community Engagement
 
