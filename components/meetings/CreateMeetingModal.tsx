@@ -1,28 +1,28 @@
 import { Button, ButtonText } from "@/components/ui/button";
 import {
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
 } from "@/components/ui/form-control";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import {
-    Modal,
-    ModalBackdrop,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
 } from "@/components/ui/modal";
 import {
-    Radio,
-    RadioGroup,
-    RadioIcon,
-    RadioIndicator,
-    RadioLabel,
+  Radio,
+  RadioGroup,
+  RadioIcon,
+  RadioIndicator,
+  RadioLabel,
 } from "@/components/ui/radio";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
@@ -30,6 +30,7 @@ import { VStack } from "@/components/ui/vstack";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { TFunction } from "i18next";
 import { CircleIcon, X } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import React from "react";
 
 interface CreateMeetingModalProps {
@@ -62,6 +63,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   onSubmit,
   isSaving,
 }) => {
+  const { colorScheme } = useColorScheme();
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalBackdrop />
@@ -129,9 +131,10 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                   value={formState.date}
                   mode="datetime"
                   display="default"
-                  themeVariant="light"
                   minuteInterval={15}
                   onChange={(_, d) => d && formState.setDate(d)}
+                  themeVariant={colorScheme}
+                  
                 />
               </HStack>
             </FormControl>
