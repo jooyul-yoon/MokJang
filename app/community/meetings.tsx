@@ -8,10 +8,7 @@ import {
   fetchUserProfile,
   Meeting,
 } from "@/services/api";
-import {
-  Calendar,
-  toDateId,
-} from "@marceloterreiro/flash-calendar";
+import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
@@ -54,11 +51,12 @@ export default function MeetingsScreen() {
 
   // --- Main State ---
   const [selectedDate, setSelectedDate] = useState(
-    date || new Date().toLocaleString("sv-SE", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }),
+    date ||
+      new Date().toLocaleString("sv-SE", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
   );
 
   // --- Actions Hook ---
@@ -70,14 +68,13 @@ export default function MeetingsScreen() {
 
   // --- Filtered Meetings ---
   const filteredMeetings = useMemo(() => {
-    return meetings.filter((meeting) =>
-      new Date(meeting.meeting_time)
-        .toLocaleString("sv-SE", {
+    return meetings.filter(
+      (meeting) =>
+        new Date(meeting.meeting_time).toLocaleDateString("sv-SE", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
-        })
-        .startsWith(selectedDate),
+        }) === selectedDate,
     );
   }, [meetings, selectedDate]);
 
@@ -100,7 +97,9 @@ export default function MeetingsScreen() {
           onCalendarDayPress={(dateId: string) => {
             setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
             // Sync new meeting date with selected date (+ offset if needed)
-            createState.setDate(new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000));
+            createState.setDate(
+              new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000),
+            );
           }}
           calendarMonthId={toDateId(new Date())}
           calendarDayHeight={40}

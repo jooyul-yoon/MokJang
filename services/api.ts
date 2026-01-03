@@ -249,7 +249,6 @@ export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
     .from("meetings")
     .select("*, profiles(full_name)")
     .eq("group_id", groupId)
-    .gte("meeting_time", new Date().toISOString()) // Only future meetings? Or maybe recent past too? Let's stick to future + widely used standard.
     .order("meeting_time", { ascending: true });
 
   if (error) {
