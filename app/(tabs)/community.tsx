@@ -13,7 +13,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import {
   fetchGroups,
-  fetchMeetings,
+  fetchUpcomingMeetings,
   fetchUserGroup,
   fetchUserJoinRequests,
   fetchUserProfile,
@@ -64,7 +64,7 @@ export default function CommunityScreen() {
     refetch,
   } = useQuery({
     queryKey: ["meetings", userGroup?.id],
-    queryFn: () => fetchMeetings(userGroup?.id || ""),
+    queryFn: () => fetchUpcomingMeetings(userGroup?.id || ""),
     enabled: !!userGroup?.id,
   });
 

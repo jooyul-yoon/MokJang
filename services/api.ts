@@ -259,11 +259,28 @@ export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
   return data as Meeting[];
 };
 
+export const fetchUpcomingMeetings = async (groupId: string): Promise<Meeting[]> => {
+  const { data, error } = await supabase
+    .from("meetings")
+    .select("*, profiles(full_name)")
+    .eq("group_id", groupId)
+    .order("meeting_time", { ascending: true })
+    .gt("meeting_time", new Date().toISOString());
+
+  if (error) {
+    console.error("Error fetching meetings:", error);
+    return [];
+  }
+
+  return data as Meeting[];
+};
+
 export interface CreateMeetingDTO {
   group_id: string;
   type: "mokjang" | "general";
   title: string;
   meeting_time: string;
+  host_id: string | null;
   location?: string;
   memo?: string;
 }

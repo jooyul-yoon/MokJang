@@ -47,6 +47,7 @@ export const useMeetingActions = (
             : t("community.mokjangMeeting"),
         meeting_time: newMeetingDate.toISOString(),
         location: isVolunteerOpen ? undefined : newMeetingLocation,
+        host_id: isVolunteerOpen ? null : userGroup.leader_id,
         memo: newMeetingMemo,
       });
     },
