@@ -2,24 +2,15 @@ import { CalendarTheme } from "@marceloterreiro/flash-calendar";
 
 export const getCalendarTheme = (
   colorScheme: "light" | "dark" | null | undefined,
-  markedDates: Date[],
   linearAccent: string = "#585ABF",
 ): CalendarTheme => {
   const isDark = colorScheme === "dark";
-  
-  const isDateMarked = (date: Date) => {
-    return markedDates.some(
-      (d) =>
-        d.toLocaleDateString().split("T")[0] ===
-        date.toLocaleDateString().split("T")[0],
-    );
-  };
 
   if (isDark) {
     return {
       rowMonth: {
         content: {
-          textAlign: "left",
+          textAlign: "center",
           color: "rgba(255, 255, 255, 0.5)",
           fontWeight: "700",
         },
@@ -40,24 +31,22 @@ export const getCalendarTheme = (
       itemDay: {
         idle: ({ date }) => ({
           container: {
-            borderColor: isDateMarked(date) ? linearAccent : "transparent",
+            borderColor: "transparent",
             borderWidth: 1,
-            borderRadius: 9999,
+            borderRadius: 8,
           },
           content: {
-            color: isDateMarked(date) ? linearAccent : "rgba(255, 255, 255)",
-            fontWeight: isDateMarked(date) ? "bold" : "normal",
+            color: "rgba(255, 255, 255)",
+            fontWeight: "normal",
           },
         }),
         today: ({ date }) => ({
           container: {
-            borderColor: isDateMarked(date) ? linearAccent : "blue",
-            borderWidth: 1,
-            borderRadius: 9999,
+            borderWidth: 0,
           },
           content: {
-            color: isDateMarked(date) ? linearAccent : "blue",
-            fontWeight: isDateMarked(date) ? "bold" : "normal",
+            color: "#585ABF",
+            fontWeight: "normal",
           },
         }),
         active: ({ isEndOfRange, isStartOfRange }) => ({
@@ -69,7 +58,7 @@ export const getCalendarTheme = (
             borderBottomRightRadius: isEndOfRange ? 9999 : 0,
           },
           content: {
-            color: "#ffffff",
+            color: "red",
           },
         }),
       },
@@ -99,23 +88,23 @@ export const getCalendarTheme = (
       itemDay: {
         idle: ({ date }) => ({
           container: {
-            borderColor: isDateMarked(date) ? linearAccent + "66" : "transparent",
+            borderColor: "transparent",
             borderWidth: 1,
             borderRadius: 9999,
           },
           content: {
-            color: isDateMarked(date) ? linearAccent : "#000000",
-            fontWeight: isDateMarked(date) ? "bold" : "normal",
+            color: "#000000",
+            fontWeight: "normal",
           },
         }),
         today: ({ date }) => ({
           container: {
-            borderColor: isDateMarked(date) ? linearAccent + "66" : "blue",
+            borderColor: "blue",
             borderRadius: 9999,
           },
           content: {
-            color: isDateMarked(date) ? linearAccent : "blue",
-            fontWeight: isDateMarked(date) ? "bold" : "normal",
+            color: "blue",
+            fontWeight: "normal",
           },
         }),
         active: ({ isEndOfRange, isStartOfRange }) => ({

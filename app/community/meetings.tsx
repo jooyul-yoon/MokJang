@@ -3,13 +3,13 @@ import { Box } from "@/components/ui/box";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Text } from "@/components/ui/text";
 import {
-  fetchMeetings,
+  fetchMeetingsByMonth,
   fetchUserGroup,
   fetchUserProfile,
   Meeting,
 } from "@/services/api";
-import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
 import { useQuery } from "@tanstack/react-query";
+import { add, startOfMonth, sub } from "date-fns";
 import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
@@ -20,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // Extracted Components & Hooks
 import { getCalendarTheme } from "@/components/meetings/CalendarTheme";
 import { CreateMeetingModal } from "@/components/meetings/CreateMeetingModal";
+import MeetingCalendar from "@/components/meetings/MeetingCalendar";
 import { MeetingItem } from "@/components/meetings/MeetingItem";
 import { VolunteerModal } from "@/components/meetings/VolunteerModal";
 import { useMeetingActions } from "@/hooks/useMeetingActions";
@@ -40,15 +41,6 @@ export default function MeetingsScreen() {
     queryFn: fetchUserGroup,
   });
 
-  const { data: meetings = [] } = useQuery({
-    queryKey: ["meetings", userGroup?.id],
-    queryFn: () =>
-      userGroup ? fetchMeetings(userGroup.id) : Promise.resolve([]),
-    enabled: !!userGroup,
-  });
-
-  const isLeader = userGroup?.leader_id === userProfile?.id;
-
   // --- Main State ---
   const [selectedDate, setSelectedDate] = useState(
     date ||
@@ -58,6 +50,20 @@ export default function MeetingsScreen() {
         day: "2-digit",
       }),
   );
+
+  const { data: meetings = [] } = useQuery({
+    queryKey: ["meetings", userGroup?.id, selectedDate.substring(0, 7)],
+    queryFn: () =>
+      userGroup
+        ? fetchMeetingsByMonth(
+            userGroup.id,
+            startOfMonth(new Date(selectedDate)),
+          )
+        : Promise.resolve([]),
+    enabled: !!userGroup,
+  });
+
+  const isLeader = userGroup?.leader_id === userProfile?.id;
 
   // --- Actions Hook ---
   const { createState, volunteerState, actions, status } = useMeetingActions(
@@ -84,8 +90,8 @@ export default function MeetingsScreen() {
   }, [meetings]);
 
   const calendarTheme = useMemo(
-    () => getCalendarTheme(colorScheme, markedDates),
-    [colorScheme, markedDates],
+    () => getCalendarTheme(colorScheme),
+    [colorScheme],
   );
 
   return (
@@ -93,7 +99,8 @@ export default function MeetingsScreen() {
       <GoBackHeader title={t("community.meetings")} />
 
       <Box className="p-4">
-        <Calendar
+        <MeetingCalendar
+          calendarMonthId={selectedDate}
           onCalendarDayPress={(dateId: string) => {
             setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
             // Sync new meeting date with selected date (+ offset if needed)
@@ -101,8 +108,20 @@ export default function MeetingsScreen() {
               new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000),
             );
           }}
-          calendarMonthId={toDateId(new Date())}
-          calendarDayHeight={40}
+          onPressPreviousMonth={() => {
+            setSelectedDate(
+              sub(new Date(selectedDate), { months: 1 })
+                .toISOString()
+                .split("T")[0],
+            );
+          }}
+          onPressNextMonth={() => {
+            setSelectedDate(
+              add(new Date(selectedDate), { months: 1 })
+                .toISOString()
+                .split("T")[0],
+            );
+          }}
           calendarActiveDateRanges={[
             {
               startId: selectedDate,

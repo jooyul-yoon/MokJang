@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { endOfMonth, startOfMonth } from "date-fns";
 
 export interface Announcement {
   id: string;
@@ -259,13 +260,38 @@ export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
   return data as Meeting[];
 };
 
-export const fetchUpcomingMeetings = async (groupId: string): Promise<Meeting[]> => {
+export const fetchUpcomingMeetings = async (
+  groupId: string,
+): Promise<Meeting[]> => {
   const { data, error } = await supabase
     .from("meetings")
     .select("*, profiles(full_name)")
     .eq("group_id", groupId)
     .order("meeting_time", { ascending: true })
     .gt("meeting_time", new Date().toISOString());
+
+  if (error) {
+    console.error("Error fetching meetings:", error);
+    return [];
+  }
+
+  return data as Meeting[];
+};
+
+export const fetchMeetingsByMonth = async (
+  groupId: string,
+  date: Date,
+): Promise<Meeting[]> => {
+  const startDate = startOfMonth(date).toISOString();
+  const endDate = endOfMonth(date).toISOString();
+
+  const { data, error } = await supabase
+    .from("meetings")
+    .select("*, profiles(full_name)")
+    .eq("group_id", groupId)
+    .gte("meeting_time", startDate)
+    .lte("meeting_time", endDate)
+    .order("meeting_time", { ascending: true });
 
   if (error) {
     console.error("Error fetching meetings:", error);
@@ -588,7 +614,12 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching prayer requests:", error.message, error.details, error.hint);
+    console.error(
+      "Error fetching prayer requests:",
+      error.message,
+      error.details,
+      error.hint,
+    );
     return [];
   }
 
