@@ -135,6 +135,7 @@ export default function MeetingsScreen() {
           }}
           calendarActiveDateRanges={calendarActiveDateRanges}
           theme={calendarTheme}
+          markedDates={markedDates}
         />
       </Box>
 

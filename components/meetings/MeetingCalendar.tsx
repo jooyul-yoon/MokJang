@@ -1,3 +1,4 @@
+import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import {
@@ -7,6 +8,7 @@ import {
   useCalendar,
 } from "@marceloterreiro/flash-calendar";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import React, { useMemo } from "react";
 
 const WEEK_HEIGHT = 40;
 const DAY_HEIGHT = 50;
@@ -15,6 +17,7 @@ interface IMeetingCalendar extends CalendarProps {
   onPressPreviousMonth: () => void;
   onPressNextMonth: () => void;
   theme: CalendarTheme;
+  markedDates: Date[];
 }
 
 function MeetingCalendar({
@@ -24,11 +27,24 @@ function MeetingCalendar({
   onPressNextMonth,
   theme,
   calendarActiveDateRanges,
+  markedDates,
 }: IMeetingCalendar) {
   const { calendarRowMonth, weekDaysList, weeksList } = useCalendar({
     calendarMonthId,
     calendarActiveDateRanges,
   });
+
+  const markedDateSet = useMemo(() => {
+    return new Set(
+      markedDates.map((date) => {
+        try {
+          return date.toLocaleDateString("sv-SE").split("T")[0];
+        } catch (e) {
+          return "";
+        }
+      }),
+    );
+  }, [markedDates]);
 
   return (
     <Calendar.VStack>
@@ -64,14 +80,19 @@ function MeetingCalendar({
               isStartOfWeek={day.isStartOfWeek}
               key={day.id}
             >
-              <Calendar.Item.Day
-                height={DAY_HEIGHT}
-                metadata={day}
-                onPress={onCalendarDayPress}
-                theme={theme.itemDay}
-              >
-                {day.displayLabel}
-              </Calendar.Item.Day>
+              <Calendar.VStack grow>
+                <Calendar.Item.Day
+                  height={30}
+                  metadata={day}
+                  onPress={onCalendarDayPress}
+                  theme={theme.itemDay}
+                >
+                  {day.displayLabel}
+                </Calendar.Item.Day>
+                {markedDateSet.has(day.id) && (
+                  <Box className="absolute bottom-3 left-1/2 right-1/2 mx-auto h-1 w-1 -translate-x-1/2 transform rounded-full bg-primary-500" />
+                )}
+              </Calendar.VStack>
             </Calendar.Item.Day.Container>
           ))}
         </Calendar.Row.Week>
