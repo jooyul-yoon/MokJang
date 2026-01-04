@@ -24,6 +24,7 @@ import MeetingCalendar from "@/components/meetings/MeetingCalendar";
 import { MeetingItem } from "@/components/meetings/MeetingItem";
 import { VolunteerModal } from "@/components/meetings/VolunteerModal";
 import { useMeetingActions } from "@/hooks/useMeetingActions";
+import { CalendarActiveDateRange } from "@marceloterreiro/flash-calendar";
 
 export default function MeetingsScreen() {
   const { t } = useTranslation();
@@ -64,6 +65,16 @@ export default function MeetingsScreen() {
   });
 
   const isLeader = userGroup?.leader_id === userProfile?.id;
+
+  const calendarActiveDateRanges = useMemo<CalendarActiveDateRange[]>(
+    () => [
+      {
+        startId: selectedDate,
+        endId: selectedDate,
+      },
+    ],
+    [selectedDate],
+  );
 
   // --- Actions Hook ---
   const { createState, volunteerState, actions, status } = useMeetingActions(
@@ -122,12 +133,7 @@ export default function MeetingsScreen() {
                 .split("T")[0],
             );
           }}
-          calendarActiveDateRanges={[
-            {
-              startId: selectedDate,
-              endId: selectedDate,
-            },
-          ]}
+          calendarActiveDateRanges={calendarActiveDateRanges}
           theme={calendarTheme}
         />
       </Box>

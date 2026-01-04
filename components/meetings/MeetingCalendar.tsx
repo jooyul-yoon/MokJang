@@ -16,36 +16,33 @@ interface IMeetingCalendar extends CalendarProps {
   onPressNextMonth: () => void;
   theme: CalendarTheme;
 }
+
 function MeetingCalendar({
   calendarMonthId,
   onCalendarDayPress,
   onPressPreviousMonth,
   onPressNextMonth,
   theme,
+  calendarActiveDateRanges,
 }: IMeetingCalendar) {
   const { calendarRowMonth, weekDaysList, weeksList } = useCalendar({
     calendarMonthId,
+    calendarActiveDateRanges,
   });
 
   return (
     <Calendar.VStack>
-      <Calendar.HStack
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Button style={{ padding: 0 }} onPress={onPressPreviousMonth}>
+      <Calendar.HStack style={theme.rowMonth?.container}>
+        <Button variant="link" onPress={onPressPreviousMonth}>
           <ButtonIcon as={ChevronLeft} />
         </Button>
-        <Text>{calendarRowMonth}</Text>
-        <Button style={{ padding: 0 }} onPress={onPressNextMonth}>
+        <Text style={theme.rowMonth?.content}>{calendarRowMonth}</Text>
+        <Button variant="link" onPress={onPressNextMonth}>
           <ButtonIcon as={ChevronRight} />
         </Button>
       </Calendar.HStack>
 
-      <Calendar.Row.Week theme={theme.rowWeek}>
+      <Calendar.Row.Week spacing={4} theme={theme.rowWeek}>
         {weekDaysList.map((day, i) => (
           <Calendar.Item.WeekName
             height={WEEK_HEIGHT}
@@ -55,8 +52,8 @@ function MeetingCalendar({
             {day}
           </Calendar.Item.WeekName>
         ))}
-        <Calendar.Item.Empty height={WEEK_HEIGHT} />
       </Calendar.Row.Week>
+      <Calendar.Item.Empty height={WEEK_HEIGHT} />
 
       {weeksList.map((week, i) => (
         <Calendar.Row.Week key={i}>

@@ -2,16 +2,21 @@ import { CalendarTheme } from "@marceloterreiro/flash-calendar";
 
 export const getCalendarTheme = (
   colorScheme: "light" | "dark" | null | undefined,
-  linearAccent: string = "#585ABF",
 ): CalendarTheme => {
   const isDark = colorScheme === "dark";
+  const linearAccent = isDark ? "#BB86FC" : "#03DAC6";
+  const todayColor = isDark ? "#03DAC6" : "#BB86FC";
 
   if (isDark) {
     return {
       rowMonth: {
+        container: {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        },
         content: {
-          textAlign: "center",
-          color: "rgba(255, 255, 255, 0.5)",
+          color: "rgba(255, 255, 255, 1)",
           fontWeight: "700",
         },
       },
@@ -19,24 +24,29 @@ export const getCalendarTheme = (
         container: {
           borderBottomWidth: 1,
           borderBottomColor: "rgba(255, 255, 255, 0.1)",
-          borderStyle: "solid",
         },
       },
-      itemWeekName: { content: { color: "rgba(255, 255, 255, 0.5)" } },
+      itemWeekName: {
+        container: { width: 50 },
+        content: { color: "rgba(255, 255, 255, 1)" },
+      },
       itemDayContainer: {
         activeDayFiller: {
           backgroundColor: linearAccent,
         },
       },
       itemDay: {
-        idle: ({ date }) => ({
+        idle: ({ date, isDifferentMonth, isStartOfWeek }) => ({
           container: {
-            borderColor: "transparent",
-            borderWidth: 1,
-            borderRadius: 8,
+            borderWidth: 0,
+            borderRadius: 9999,
           },
           content: {
-            color: "rgba(255, 255, 255)",
+            color: isDifferentMonth
+              ? "rgba(255, 255, 255, 0.2)"
+              : isStartOfWeek
+                ? "#FF0000"
+                : "rgba(255, 255, 255)",
             fontWeight: "normal",
           },
         }),
@@ -45,20 +55,27 @@ export const getCalendarTheme = (
             borderWidth: 0,
           },
           content: {
-            color: "#585ABF",
-            fontWeight: "normal",
+            color: todayColor,
+            fontWeight: "bold",
           },
         }),
-        active: ({ isEndOfRange, isStartOfRange }) => ({
+        active: ({ isEndOfRange, isStartOfRange, isToday, isStartOfWeek }) => ({
           container: {
-            backgroundColor: linearAccent,
+            backgroundColor: "transparent",
+            borderWidth: 1,
+            borderColor: linearAccent,
             borderTopLeftRadius: isStartOfRange ? 9999 : 0,
             borderBottomLeftRadius: isStartOfRange ? 9999 : 0,
             borderTopRightRadius: isEndOfRange ? 9999 : 0,
             borderBottomRightRadius: isEndOfRange ? 9999 : 0,
           },
           content: {
-            color: "red",
+            color: isToday
+              ? todayColor
+              : isStartOfWeek
+                ? "#FF0000"
+                : "rgba(255, 255, 255, 1)",
+            fontWeight: isToday ? "bold" : "normal",
           },
         }),
       },
@@ -86,37 +103,47 @@ export const getCalendarTheme = (
         },
       },
       itemDay: {
-        idle: ({ date }) => ({
+        idle: ({ date, isDifferentMonth, isStartOfWeek }) => ({
           container: {
-            borderColor: "transparent",
-            borderWidth: 1,
+            borderWidth: 0,
             borderRadius: 9999,
           },
           content: {
-            color: "#000000",
+            color: isDifferentMonth
+              ? "rgba(0, 0, 0, 0.2)"
+              : isStartOfWeek
+                ? "#FF0000"
+                : "#000000",
             fontWeight: "normal",
           },
         }),
         today: ({ date }) => ({
           container: {
-            borderColor: "blue",
-            borderRadius: 9999,
+            backgroundColor: "transparent",
+            borderWidth: 0,
           },
           content: {
-            color: "blue",
-            fontWeight: "normal",
+            color: todayColor,
+            fontWeight: "bold",
           },
         }),
-        active: ({ isEndOfRange, isStartOfRange }) => ({
+        active: ({ isEndOfRange, isStartOfRange, isToday, isStartOfWeek }) => ({
           container: {
-            backgroundColor: linearAccent,
+            backgroundColor: "transparent",
+            borderWidth: 1,
+            borderColor: linearAccent,
             borderTopLeftRadius: isStartOfRange ? 9999 : 0,
             borderBottomLeftRadius: isStartOfRange ? 9999 : 0,
             borderTopRightRadius: isEndOfRange ? 9999 : 0,
             borderBottomRightRadius: isEndOfRange ? 9999 : 0,
           },
           content: {
-            color: "#ffffff",
+            color: isToday
+              ? todayColor
+              : isStartOfWeek
+                ? "#FF0000"
+                : "rgba(0, 0, 0, 1)",
+            fontWeight: isToday ? "bold" : "normal",
           },
         }),
       },
