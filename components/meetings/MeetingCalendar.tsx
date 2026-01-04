@@ -49,12 +49,20 @@ function MeetingCalendar({
   return (
     <Calendar.VStack>
       <Calendar.HStack style={theme.rowMonth?.container}>
-        <Button variant="link" onPress={onPressPreviousMonth}>
-          <ButtonIcon as={ChevronLeft} />
+        <Button
+          variant="link"
+          onPress={onPressPreviousMonth}
+          className="rounded-full px-4"
+        >
+          <ButtonIcon as={ChevronLeft} className="text-primary-200" />
         </Button>
         <Text style={theme.rowMonth?.content}>{calendarRowMonth}</Text>
-        <Button variant="link" onPress={onPressNextMonth}>
-          <ButtonIcon as={ChevronRight} />
+        <Button
+          variant="link"
+          onPress={onPressNextMonth}
+          className="rounded-full px-4"
+        >
+          <ButtonIcon as={ChevronRight} className="text-primary-200" />
         </Button>
       </Calendar.HStack>
 
