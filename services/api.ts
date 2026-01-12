@@ -581,7 +581,7 @@ export interface PrayerRequest {
   user_id: string;
   group_id: string | null;
   content: string;
-  visibility: "public" | "group";
+  visibility: "public" | "group" | "private";
   created_at: string;
   profiles?: {
     full_name: string;
@@ -628,7 +628,7 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
 
 export const createPrayerRequest = async (
   content: string,
-  visibility: "public" | "group",
+  visibility: "public" | "group" | "private",
   groupId: string | null,
 ): Promise<{ success: boolean; error?: string }> => {
   const {

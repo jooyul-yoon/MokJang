@@ -211,7 +211,7 @@ export default function CommunityScreen() {
               </VStack>
 
               <VStack className="flex-1">
-                <HStack className="mb-4 border-b border-outline-100 dark:border-outline-800">
+                <HStack className="mb-4 border-b border-outline-100 px-4 dark:border-outline-800">
                   <Pressable
                     className={`flex-1 border-b-2 py-3 ${activeTab === "meetings" ? "border-primary-500" : "border-transparent"}`}
                     onPress={() => setActiveTab("meetings")}
@@ -237,7 +237,11 @@ export default function CommunityScreen() {
                 {activeTab === "meetings" ? (
                   <MeetingSchedule userGroup={userGroup} meetings={meetings} />
                 ) : (
-                  <PrayerRequestList userGroup={userGroup} />
+                  <PrayerRequestList
+                    visibility="group"
+                    userGroup={userGroup}
+                    currentUserId={userProfile?.id}
+                  />
                 )}
               </VStack>
             </VStack>

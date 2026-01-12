@@ -54,7 +54,13 @@ export default function HomeScreen() {
           setActiveTab={setActiveTab}
         />
         {activeTab.value === "announcements" && <AnnouncementList />}
-        {activeTab.value === "prayers" && <PrayerRequestList />}
+        {activeTab.value === "prayers" && (
+          <PrayerRequestList
+            visibility="public"
+            userGroup={userGroup}
+            currentUserId={profile?.id}
+          />
+        )}
       </VStack>
 
       {canCreateAnnouncement && activeTab.value === "announcements" && (

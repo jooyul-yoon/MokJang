@@ -292,7 +292,9 @@ export default function ProfileScreen() {
                         <Text className="text-xs uppercase text-typography-400">
                           {prayer.visibility === "public"
                             ? t("common.public", "Public")
-                            : t("common.group", "Group")}
+                            : prayer.visibility === "private"
+                              ? t("common.private", "Private")
+                              : t("common.group", "Group")}
                         </Text>
                       </HStack>
                       <Text
