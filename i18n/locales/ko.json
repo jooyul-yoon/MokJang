@@ -18,7 +18,9 @@
     "deleteAccount": "계정 삭제",
     "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "title": "제목",
-    "more": "더보기"
+    "more": "더보기",
+    "noComments": "아직 댓글이 없습니다. 첫 댓글을 남겨보세요!",
+    "commentPlaceholder": "댓글을 입력하세요..."
   },
   "tabs": {
     "home": "홈",
@@ -94,5 +96,10 @@
   "login": {
     "signInWithGoogle": "Google로 로그인",
     "signInWithApple": "Apple로 로그인"
+  },
+  "prayer": {
+    "answered": "응답받음",
+    "markAnswered": "응답받음으로 표시",
+    "markUnanswered": "응답대기로 변경"
   }
 }

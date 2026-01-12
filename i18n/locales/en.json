@@ -18,7 +18,9 @@
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
     "title": "Title",
-    "more": "More"
+    "more": "More",
+    "noComments": "No comments yet. Be the first to encourage!",
+    "commentPlaceholder": "Write a comment..."
   },
   "tabs": {
     "home": "Home",
@@ -93,5 +95,10 @@
   "login": {
     "signInWithGoogle": "Sign in with Google",
     "signInWithApple": "Sign in with Apple"
+  },
+  "prayer": {
+    "answered": "Answered",
+    "markAnswered": "Mark as Answered",
+    "markUnanswered": "Mark as Unanswered"
   }
 }

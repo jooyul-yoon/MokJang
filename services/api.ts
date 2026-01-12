@@ -583,6 +583,7 @@ export interface PrayerRequest {
   content: string;
   visibility: "public" | "group" | "private";
   created_at: string;
+  is_answered: boolean;
   profiles?: {
     full_name: string;
     avatar_url: string;
@@ -660,6 +661,22 @@ export const deletePrayerRequest = async (
 
   if (error) {
     console.error("Error deleting prayer request:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
+
+export const togglePrayerRequestAnswered = async (
+  id: string,
+  isAnswered: boolean,
+): Promise<{ success: boolean; error?: string }> => {
+  const { error } = await supabase
+    .from("prayer_requests")
+    .update({ is_answered: isAnswered })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error updating prayer request status:", error);
     return { success: false, error: error.message };
   }
   return { success: true };
