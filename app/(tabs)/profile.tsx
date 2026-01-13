@@ -7,10 +7,12 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
 import {
+  deleteAccount,
   fetchMyPrayerRequests,
   fetchUserGroup,
   fetchUserProfile,
@@ -20,23 +22,94 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   ScrollView,
   TextInput,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// --- Components ---
+
+const SectionHeader = ({ title }: { title: string }) => (
+  <HStack className="mb-2 mt-6 items-center gap-4 px-1">
+    <Text className="text-sm font-medium text-typography-400">{title}</Text>
+    <Divider className="flex-1 bg-outline-100 dark:bg-outline-800" />
+  </HStack>
+);
+
+const MenuItem = ({
+  icon,
+  label,
+  rightElement,
+  onPress,
+  isDestructive = false,
+  iconFamily = "Ionicons",
+  iconColor,
+}: {
+  icon: string;
+  label: string;
+  rightElement?: React.ReactNode;
+  onPress?: () => void;
+  isDestructive?: boolean;
+  iconFamily?: "Ionicons" | "MaterialCommunityIcons";
+  iconColor?: string;
+}) => {
+  const { colorScheme } = useColorScheme();
+  const baseIconColor = iconColor
+    ? iconColor
+    : isDestructive
+      ? "#EF4444"
+      : colorScheme === "dark"
+        ? "#F3F4F6"
+        : "#1F2937";
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className="flex-row items-center justify-between px-2 py-3.5"
+      activeOpacity={0.7}
+    >
+      <HStack className="items-center gap-4">
+        {iconFamily === "MaterialCommunityIcons" ? (
+          <MaterialCommunityIcons
+            name={icon as any}
+            size={22}
+            color={baseIconColor}
+          />
+        ) : (
+          <Ionicons name={icon as any} size={22} color={baseIconColor} />
+        )}
+        <Text
+          className={`text-lg font-medium ${
+            isDestructive ? "text-error-500" : "text-typography-700"
+          }`}
+        >
+          {label}
+        </Text>
+      </HStack>
+      {rightElement || (
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+        />
+      )}
+    </TouchableOpacity>
+  );
+};
+
 export default function ProfileScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
-  const colorScheme = useColorScheme();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -51,12 +124,12 @@ export default function ProfileScreen() {
     },
   });
 
-  const { data: userGroup, isLoading: isGroupLoading } = useQuery({
+  const { data: userGroup } = useQuery({
     queryKey: ["userGroup"],
     queryFn: fetchUserGroup,
   });
 
-  const { data: myPrayers = [], isLoading: isPrayersLoading } = useQuery({
+  const { data: myPrayers = [] } = useQuery({
     queryKey: ["myPrayers"],
     queryFn: fetchMyPrayerRequests,
   });
@@ -85,6 +158,46 @@ export default function ProfileScreen() {
       Alert.alert(error.message);
     },
   });
+
+  const handleSignOut = async () => {
+    Alert.alert(t("profile.signOut"), t("common.confirmSignOut"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("profile.signOut"),
+        style: "destructive",
+        onPress: async () => {
+          await supabase.auth.signOut();
+          router.replace("/login");
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      t("common.deleteAccount"),
+      t("common.deleteAccountConfirmation"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            const { success, error } = await deleteAccount();
+            if (success) {
+              Alert.alert(t("common.success"), t("common.accountDeleted"));
+              router.replace("/login");
+            } else {
+              Alert.alert(
+                t("common.error"),
+                error || "Failed to delete account",
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
 
   async function uploadAvatar() {
     try {
@@ -149,7 +262,7 @@ export default function ProfileScreen() {
     }
   }
 
-  if (isProfileLoading || isGroupLoading) {
+  if (isProfileLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
         <ActivityIndicator size="large" />
@@ -159,27 +272,20 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <ScrollView className="flex-1 p-4">
-        <VStack className="space-y-6 pb-10">
-          <HStack className="mb-4 items-center justify-between">
-            <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">
+      <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
+        <VStack className="pb-10">
+          {/* Header & Avatar */}
+          <HStack className="mb-8 items-center justify-between">
+            <Heading className="text-3xl font-bold text-typography-black dark:text-typography-white">
               {t("tabs.profile")}
             </Heading>
-            <TouchableOpacity onPress={() => router.push("/settings")}>
-              <Ionicons
-                name="settings-outline"
-                size={24}
-                color={colorScheme === "dark" ? "#FFF" : "#000"}
-              />
-            </TouchableOpacity>
           </HStack>
 
-          {/* Avatar Section */}
-          <VStack className="items-center gap-4">
+          <VStack className="mb-8 items-center gap-4">
             <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
               <Avatar
                 size="2xl"
-                className="border-4 border-outline-100 bg-primary-500"
+                className="h-28 w-28 border-2 border-background-200"
               >
                 {profile?.avatar_url ? (
                   <AvatarImage
@@ -187,106 +293,177 @@ export default function ProfileScreen() {
                     alt="Profile Image"
                   />
                 ) : (
-                  <AvatarFallbackText>
+                  <AvatarFallbackText className="text-3xl text-primary-600 dark:text-primary-400">
                     {profile?.full_name || "User"}
                   </AvatarFallbackText>
                 )}
-                <View className="absolute bottom-0 right-0 rounded-full bg-background-light p-2 shadow-sm dark:bg-background-dark">
-                  <Ionicons name="camera" size={20} color="#666" />
+                <View className="dark:bg-background-card-dark absolute bottom-0 right-0 rounded-full border border-outline-100 bg-white p-2 shadow-sm dark:border-outline-800">
+                  <Ionicons
+                    name="camera"
+                    size={16}
+                    color={colorScheme === "dark" ? "#000" : "#666"}
+                  />
                 </View>
               </Avatar>
             </TouchableOpacity>
-            {uploading && <ActivityIndicator size="small" />}
-          </VStack>
 
-          {/* Name Section */}
-          <VStack className="space-y-2 rounded-xl p-4">
-            <HStack className="items-center justify-between">
-              <Text className="text-sm font-medium text-typography-500">
-                {t("profile.name")}
-              </Text>
-              {!isEditing && (
-                <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Text className="text-primary-500">{t("profile.edit")}</Text>
-                </TouchableOpacity>
-              )}
-            </HStack>
+            {/* Name Edit */}
             {isEditing ? (
-              <HStack className="space-x-2">
+              <HStack className="items-center gap-2">
                 <TextInput
-                  className="flex-1 rounded-md border border-outline-300 p-2 text-typography-black dark:border-outline-700 dark:text-typography-white"
+                  className="rounded-lg border border-outline-300 bg-white px-3 py-1.5 text-base text-typography-900 dark:border-outline-700 dark:bg-background-800 dark:text-typography-100"
                   value={fullName}
                   onChangeText={setFullName}
                   placeholder={t("profile.namePlaceholder")}
+                  autoFocus
                 />
                 <Button
-                  size="sm"
+                  size="xs"
                   onPress={() => updateProfileMutation.mutate(fullName)}
                   isDisabled={updateProfileMutation.isPending}
+                  className="rounded-full"
                 >
                   <ButtonText>{t("profile.save")}</ButtonText>
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onPress={() => {
-                    setFullName(profile?.full_name || "");
-                    setIsEditing(false);
-                  }}
-                >
-                  <ButtonText>{t("profile.cancel")}</ButtonText>
-                </Button>
+                <TouchableOpacity onPress={() => setIsEditing(false)}>
+                  <Ionicons name="close-circle" size={24} color="#9CA3AF" />
+                </TouchableOpacity>
               </HStack>
             ) : (
-              <Text className="text-lg font-semibold text-typography-black dark:text-typography-white">
-                {profile?.full_name || "No name set"}
-              </Text>
+              <VStack className="items-center">
+                <TouchableOpacity
+                  onPress={() => setIsEditing(true)}
+                  className="flex-row items-center gap-2"
+                >
+                  <Text className="text-xl font-bold text-typography-900">
+                    {profile?.full_name || "No name set"}
+                  </Text>
+                  <Ionicons name="pencil" size={14} color="#9CA3AF" />
+                </TouchableOpacity>
+                <Text className="text-sm text-typography-500">
+                  {userGroup?.name || t("profile.noMokjang")}
+                </Text>
+              </VStack>
             )}
+
+            {/* Quick Stats or Actions could go here, for now keeping it clean */}
           </VStack>
 
-          <HStack className="mt-4 items-center gap-2 overflow-hidden px-2">
-            <Text className="text-sm text-gray-400 dark:text-gray-200">
-              General
-            </Text>
-            <Divider className="bg-gray-200" />
-          </HStack>
-          {/* My Prayer Requests Link */}
-          <VStack className="rounded-xl p-4">
-            <TouchableOpacity
-              onPress={() => router.push("/prayer-requests/mine")}
-              className="flex-row items-center justify-between"
-            >
-              <HStack className="items-center gap-4">
-                <MaterialCommunityIcons
-                  name="hands-pray"
-                  size={24}
-                  color={colorScheme === "dark" ? "#FFF" : "#000"}
+          {/* General Section */}
+          <SectionHeader title="General" />
+
+          {/* My Prayer Requests */}
+          <MenuItem
+            icon="hands-pray"
+            iconFamily="MaterialCommunityIcons"
+            label={t("profile.myPrayers")}
+            onPress={() => router.push("/prayer-requests/mine")}
+            rightElement={
+              <HStack className="items-center gap-2">
+                <Text className="text-sm text-typography-500">
+                  {myPrayers.length > 0 ? `${myPrayers.length}` : ""}
+                </Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
                 />
-                <VStack>
-                  <Text className="text-lg font-semibold text-typography-900">
-                    {t("profile.myPrayers")}
-                  </Text>
-                  <Text className="text-xs text-typography-500">
-                    {t("profile.myPrayersCount", {
-                      count: myPrayers.length,
-                      defaultValue: `${myPrayers.length} requests`,
-                    })}
-                  </Text>
-                </VStack>
               </HStack>
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={colorScheme === "dark" ? "#AAA" : "#666"}
+            }
+          />
+
+          <MenuItem
+            icon="people-outline"
+            label={t("community.myMokjang")}
+            onPress={() => {
+              if (userGroup) {
+                // Navigate to group details or just community tab
+                router.push("/(tabs)/community");
+              } else {
+                router.push("/(tabs)/community"); // To join
+              }
+            }}
+            rightElement={
+              <HStack className="items-center gap-2">
+                <Text className="text-sm text-typography-500">
+                  {userGroup ? userGroup.name : t("profile.joinMokjang")}
+                </Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+                />
+              </HStack>
+            }
+          />
+
+          {/* General Section */}
+          <SectionHeader title="General" />
+
+          <MenuItem
+            icon="earth-outline"
+            label={t("common.language")}
+            rightElement={
+              <HStack className="items-center gap-2">
+                <Text className="text-sm text-typography-500">
+                  {i18n.language === "ko" ? "한국어" : "English (US)"}
+                </Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+                />
+              </HStack>
+            }
+            onPress={() => {
+              // Simple toggle for now or navigate to settings
+              const nextLang = i18n.language === "ko" ? "en" : "ko";
+              i18n.changeLanguage(nextLang);
+            }}
+          />
+
+          <MenuItem
+            icon={colorScheme === "dark" ? "moon-outline" : "sunny-outline"}
+            label={t("common.dark")} // Using "Theme" or "Dark Mode" key
+            rightElement={
+              <Switch
+                size="md"
+                value={colorScheme === "dark"}
+                onValueChange={toggleColorScheme}
+                trackColor={{ false: "#E5E7EB", true: "#3B82F6" }}
+                thumbColor={
+                  Platform.OS === "ios"
+                    ? "#FFF"
+                    : colorScheme === "dark"
+                      ? "#FFF"
+                      : "#F3F4F6"
+                }
               />
-            </TouchableOpacity>
-          </VStack>
-          <HStack className="items-center gap-2 overflow-hidden px-2">
-            <Text className="text-sm text-gray-400 dark:text-gray-200">
-              Account
-            </Text>
-            <Divider className="bg-gray-200" />
-          </HStack>
+            }
+          />
+
+          {/* Account Section */}
+          <SectionHeader title="Account" />
+
+          <MenuItem
+            icon="log-out-outline"
+            label={t("profile.signOut")}
+            isDestructive
+            onPress={handleSignOut}
+            rightElement={<View />} // Empty view to hide chevron
+          />
+
+          <MenuItem
+            icon="trash-outline"
+            label={t("common.deleteAccount")}
+            isDestructive
+            onPress={handleDeleteAccount}
+            rightElement={<View />} // Empty view to hide chevron
+          />
+
+          <Text className="mt-6 text-center text-xs text-typography-300">
+            Version 1.0.0
+          </Text>
         </VStack>
       </ScrollView>
     </SafeAreaView>

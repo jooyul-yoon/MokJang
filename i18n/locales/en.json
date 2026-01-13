@@ -17,6 +17,8 @@
     "success": "Success",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+    "confirmSignOut": "Are you sure you want to sign out?",
+    "accountDeleted": "Your account has been deleted.",
     "title": "Title",
     "more": "More",
     "noComments": "No comments yet. Be the first to encourage!",

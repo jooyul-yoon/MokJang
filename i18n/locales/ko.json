@@ -17,6 +17,8 @@
     "success": "성공",
     "deleteAccount": "계정 삭제",
     "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "confirmSignOut": "로그아웃 하시겠습니까?",
+    "accountDeleted": "계정이 삭제되었습니다.",
     "title": "제목",
     "more": "더보기",
     "noComments": "아직 댓글이 없습니다. 첫 댓글을 남겨보세요!",
