@@ -15,7 +15,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const tabs = [
   { en: "Announcements", ko: "공지사항", value: "announcements" },
   { en: "Prayers", ko: "기도제목", value: "prayers" },
-  { en: "QT", ko: "말씀 묵상", value: "qt" },
 ];
 
 export default function HomeScreen() {

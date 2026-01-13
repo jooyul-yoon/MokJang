@@ -43,6 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="bible"
         options={{
+          href: null,
           title: t("tabs.bible"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.fill" color={color} />
