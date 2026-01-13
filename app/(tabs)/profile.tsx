@@ -4,6 +4,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
+import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -14,7 +15,7 @@ import {
   fetchUserGroup,
   fetchUserProfile,
 } from "@/services/api";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
 import * as ImagePicker from "expo-image-picker";
@@ -243,56 +244,49 @@ export default function ProfileScreen() {
             )}
           </VStack>
 
-          {/* MokJang Section */}
-          <VStack className="space-y-4 rounded-xl p-4">
-            <Text className="text-sm font-medium text-typography-500">
-              {t("profile.mokjang")}
+          <HStack className="mt-4 items-center gap-2 overflow-hidden px-2">
+            <Text className="text-sm text-gray-400 dark:text-gray-200">
+              General
             </Text>
-            {userGroup ? (
-              <VStack className="space-y-2">
-                <Heading className="text-xl font-bold text-typography-black dark:text-typography-white">
-                  {userGroup.name}
-                </Heading>
-                <Text className="text-typography-500">
-                  {userGroup.description}
-                </Text>
-              </VStack>
-            ) : (
-              <VStack className="items-center space-y-4 py-4">
-                <Text className="text-center text-typography-500">
-                  {t("profile.noMokjang")}
-                </Text>
-                <Button onPress={() => router.push("/(tabs)/community")}>
-                  <ButtonText>{t("profile.joinMokjang")}</ButtonText>
-                </Button>
-              </VStack>
-            )}
-          </VStack>
-
+            <Divider className="bg-gray-200" />
+          </HStack>
           {/* My Prayer Requests Link */}
-          <VStack className="rounded-xl bg-white p-4">
+          <VStack className="rounded-xl p-4">
             <TouchableOpacity
               onPress={() => router.push("/prayer-requests/mine")}
               className="flex-row items-center justify-between"
             >
-              <VStack>
-                <Text className="text-base font-semibold text-typography-900 dark:text-typography-100">
-                  {t("profile.myPrayers")}
-                </Text>
-                <Text className="text-xs text-typography-500">
-                  {t("profile.myPrayersCount", {
-                    count: myPrayers.length,
-                    defaultValue: `${myPrayers.length} requests`,
-                  })}
-                </Text>
-              </VStack>
+              <HStack className="items-center gap-4">
+                <MaterialCommunityIcons
+                  name="hands-pray"
+                  size={24}
+                  color={colorScheme === "dark" ? "#FFF" : "#000"}
+                />
+                <VStack>
+                  <Text className="text-lg font-semibold text-typography-900">
+                    {t("profile.myPrayers")}
+                  </Text>
+                  <Text className="text-xs text-typography-500">
+                    {t("profile.myPrayersCount", {
+                      count: myPrayers.length,
+                      defaultValue: `${myPrayers.length} requests`,
+                    })}
+                  </Text>
+                </VStack>
+              </HStack>
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={colorScheme === "dark" ? "#666" : "#CCC"}
+                color={colorScheme === "dark" ? "#AAA" : "#666"}
               />
             </TouchableOpacity>
           </VStack>
+          <HStack className="items-center gap-2 overflow-hidden px-2">
+            <Text className="text-sm text-gray-400 dark:text-gray-200">
+              Account
+            </Text>
+            <Divider className="bg-gray-200" />
+          </HStack>
         </VStack>
       </ScrollView>
     </SafeAreaView>
