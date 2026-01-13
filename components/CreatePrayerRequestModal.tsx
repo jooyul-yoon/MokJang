@@ -12,21 +12,19 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@/components/ui/modal";
-import {
-  Radio,
-  RadioGroup,
-  RadioIcon,
-  RadioIndicator,
-  RadioLabel,
-} from "@/components/ui/radio";
+import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { createPrayerRequest, Group } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Circle, X } from "lucide-react-native";
+import { Globe, Lock, Users, X } from "lucide-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator } from "react-native";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 interface CreatePrayerRequestModalProps {
   isOpen: boolean;
@@ -50,16 +48,12 @@ export default function CreatePrayerRequestModal({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      // If private, we might still want to associate with group if in group context,
-      // or maybe not. For now, let's keep group_id association as it helps with "My Group" filtering context,
-      // but we must strictly filter by user_id for private items.
       return createPrayerRequest(content, visibility, userGroup?.id ?? null);
     },
     onSuccess: (data) => {
       if (data.success) {
         onClose();
         setContent("");
-        // Reset visibility to default if needed, or keep last selection
         setVisibility(defaultVisibility);
         queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
       } else {
@@ -74,89 +68,167 @@ export default function CreatePrayerRequestModal({
     }
   };
 
+  const VisibilityOption = ({
+    value,
+    label,
+    icon: IconComponent,
+    description,
+  }: {
+    value: "public" | "group" | "private";
+    label: string;
+    icon: any;
+    description: string;
+  }) => {
+    const isSelected = visibility === value;
+    return (
+      <Pressable
+        onPress={() => setVisibility(value)}
+        className={`flex-1 rounded-xl border p-3 ${
+          isSelected
+            ? "border-primary-500 bg-primary-50 dark:border-primary-400 dark:bg-primary-900/20"
+            : "dark:bg-background-card-dark border-outline-200 bg-white dark:border-outline-800"
+        }`}
+      >
+        <VStack className="items-center gap-2">
+          <Icon
+            as={IconComponent}
+            size="md"
+            className={
+              isSelected
+                ? "text-primary-600 dark:text-primary-400"
+                : "text-typography-400"
+            }
+          />
+          <Text
+            className={`font-medium ${
+              isSelected
+                ? "text-primary-900 dark:text-primary-100"
+                : "text-typography-700 dark:text-typography-300"
+            }`}
+          >
+            {label}
+          </Text>
+        </VStack>
+      </Pressable>
+    );
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalBackdrop />
-      <ModalContent>
-        <ModalHeader>
-          <Heading size="md" className="text-typography-900">
-            {t("community.newPrayerRequest", "New Prayer Request")}
-          </Heading>
-          <ModalCloseButton>
-            <Icon as={X} />
-          </ModalCloseButton>
-        </ModalHeader>
-        <ModalBody>
-          <VStack className="gap-4 py-2">
-            <VStack className="gap-1">
-              <Text size="sm" className="font-medium text-typography-900">
-                {t("common.content", "Content")}
-              </Text>
-              <Input size="lg" className="h-24">
-                <InputField
-                  multiline
-                  textAlignVertical="top"
-                  placeholder={t(
-                    "community.prayerRequestPlaceholder",
-                    "Share your prayer request...",
-                  )}
-                  value={content}
-                  onChangeText={setContent}
-                />
-              </Input>
-            </VStack>
-            <VStack className="gap-2">
-              <Text size="sm" className="font-medium text-typography-900">
-                {t("common.visibility", "Visibility")}
-              </Text>
-              <RadioGroup value={visibility} onChange={setVisibility}>
-                <HStack className="gap-4">
-                  <Radio value="public" size="md">
-                    <RadioIndicator>
-                      <RadioIcon as={Circle} />
-                    </RadioIndicator>
-                    <RadioLabel>{t("common.public", "Public")}</RadioLabel>
-                  </Radio>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+        pointerEvents="box-none"
+      >
+        <ModalContent className="rounded-2xl border-0 bg-white dark:bg-background-900">
+          <ModalHeader className="border-b-0 pb-2">
+            <Heading
+              size="md"
+              className="text-typography-900 dark:text-typography-100"
+            >
+              {t("community.newPrayerRequest", "New Prayer Request")}
+            </Heading>
+            <ModalCloseButton>
+              <Icon
+                as={X}
+                className="text-typography-400 hover:text-typography-600"
+              />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <VStack className="gap-6 py-2">
+              {/* Visibility Selection */}
+              <VStack className="gap-2">
+                <Text
+                  size="xs"
+                  className="font-bold uppercase tracking-wider text-typography-500"
+                >
+                  {t("common.visibility", "Visibility")}
+                </Text>
+                <HStack className="gap-3">
+                  <VisibilityOption
+                    value="public"
+                    label={t("common.public", "Public")}
+                    icon={Globe}
+                    description="Visible to everyone"
+                  />
                   {userGroup && (
-                    <Radio value="group" size="md">
-                      <RadioIndicator>
-                        <RadioIcon as={Circle} />
-                      </RadioIndicator>
-                      <RadioLabel>{t("common.group", "Group")}</RadioLabel>
-                    </Radio>
+                    <VisibilityOption
+                      value="group"
+                      label={t("common.group", "Group")}
+                      icon={Users}
+                      description="Visible to group only"
+                    />
                   )}
-                  <Radio value="private" size="md">
-                    <RadioIndicator>
-                      <RadioIcon as={Circle} />
-                    </RadioIndicator>
-                    <RadioLabel>{t("common.private", "Private")}</RadioLabel>
-                  </Radio>
+                  <VisibilityOption
+                    value="private"
+                    label={t("common.private", "Private")}
+                    icon={Lock}
+                    description="Visible only to you"
+                  />
                 </HStack>
-              </RadioGroup>
+              </VStack>
+
+              {/* Content Input */}
+              <VStack className="gap-2">
+                <Text
+                  size="xs"
+                  className="font-bold uppercase tracking-wider text-typography-500"
+                >
+                  {t("common.content", "Content")}
+                </Text>
+                <Input
+                  size="xl"
+                  className="h-32 rounded-xl border-outline-200 bg-background-50 p-1 dark:border-outline-700 dark:bg-background-800"
+                >
+                  <InputField
+                    multiline
+                    textAlignVertical="top"
+                    placeholder={t(
+                      "community.prayerRequestPlaceholder",
+                      "Share your prayer request...",
+                    )}
+                    value={content}
+                    onChangeText={setContent}
+                    className="font-normal leading-relaxed text-typography-900 dark:text-typography-100"
+                  />
+                </Input>
+              </VStack>
             </VStack>
-          </VStack>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            variant="outline"
-            action="secondary"
-            onPress={onClose}
-            className="mr-2"
-          >
-            <ButtonText>{t("common.cancel", "Cancel")}</ButtonText>
-          </Button>
-          <Button
-            onPress={handleCreate}
-            isDisabled={!content.trim() || mutation.isPending}
-          >
-            {mutation.isPending ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <ButtonText>{t("common.post", "Post")}</ButtonText>
-            )}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
+          </ModalBody>
+          <ModalFooter className="border-t-0 pt-2">
+            <Button
+              variant="outline"
+              action="secondary"
+              onPress={onClose}
+              className="mr-2 rounded-full border-outline-200 px-6"
+            >
+              <ButtonText className="font-medium text-typography-600">
+                {t("common.cancel", "Cancel")}
+              </ButtonText>
+            </Button>
+            <Button
+              onPress={handleCreate}
+              isDisabled={!content.trim() || mutation.isPending}
+              className="rounded-full px-6"
+            >
+              {mutation.isPending ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <ButtonText className="font-bold">
+                  {t("common.post", "Post")}
+                </ButtonText>
+              )}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
