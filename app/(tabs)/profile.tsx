@@ -4,7 +4,6 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -270,48 +269,29 @@ export default function ProfileScreen() {
             )}
           </VStack>
 
-          {/* My Prayer Requests Section */}
-          <VStack className="space-y-4 rounded-xl p-4">
-            <Text className="text-sm font-medium text-typography-500">
-              {t("profile.myPrayers")}
-            </Text>
-            {isPrayersLoading ? (
-              <ActivityIndicator />
-            ) : myPrayers.length > 0 ? (
-              <VStack className="gap-3">
-                {myPrayers.map((prayer) => (
-                  <TouchableOpacity
-                    key={prayer.id}
-                    onPress={() => router.push(`/prayer-requests/${prayer.id}`)}
-                  >
-                    <Card className="dark:bg-background-card-dark rounded-lg bg-white p-4">
-                      <HStack className="mb-2 items-center justify-between">
-                        <Text className="text-xs text-typography-500">
-                          {new Date(prayer.created_at).toLocaleDateString()}
-                        </Text>
-                        <Text className="text-xs uppercase text-typography-400">
-                          {prayer.visibility === "public"
-                            ? t("common.public", "Public")
-                            : prayer.visibility === "private"
-                              ? t("common.private", "Private")
-                              : t("common.group", "Group")}
-                        </Text>
-                      </HStack>
-                      <Text
-                        numberOfLines={2}
-                        className="leading-normal text-typography-700"
-                      >
-                        {prayer.content}
-                      </Text>
-                    </Card>
-                  </TouchableOpacity>
-                ))}
+          {/* My Prayer Requests Link */}
+          <VStack className="rounded-xl bg-white p-4">
+            <TouchableOpacity
+              onPress={() => router.push("/prayer-requests/mine")}
+              className="flex-row items-center justify-between"
+            >
+              <VStack>
+                <Text className="text-base font-semibold text-typography-900 dark:text-typography-100">
+                  {t("profile.myPrayers")}
+                </Text>
+                <Text className="text-xs text-typography-500">
+                  {t("profile.myPrayersCount", {
+                    count: myPrayers.length,
+                    defaultValue: `${myPrayers.length} requests`,
+                  })}
+                </Text>
               </VStack>
-            ) : (
-              <Text className="py-4 text-center text-typography-500">
-                {t("community.noPrayerRequests", "No prayer requests yet.")}
-              </Text>
-            )}
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colorScheme === "dark" ? "#666" : "#CCC"}
+              />
+            </TouchableOpacity>
           </VStack>
         </VStack>
       </ScrollView>

@@ -78,7 +78,8 @@
     "mokjang": "Mokjang",
     "noMokjang": "You haven't joined a Mokjang yet.",
     "joinMokjang": "Join a Mokjang",
-    "myPrayers": "My Prayers"
+    "myPrayers": "My Prayers",
+    "myPrayersCount": "{{count}} prayer requests"
   },
   "announcements": {
     "title": "Church Announcements",
