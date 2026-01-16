@@ -30,12 +30,8 @@ import {
 } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import React from "react";
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { Dimensions, ScrollView } from "react-native";
+import { ModalAvoidKeyboardView } from "../shared/ModalAvoidKeyboardView";
 
 interface CreateMeetingModalProps {
   isOpen: boolean;
@@ -115,16 +111,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalBackdrop />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-        }}
-        pointerEvents="box-none"
-      >
+      <ModalAvoidKeyboardView>
         <ModalContent
           className="w-full max-w-[340px] overflow-hidden p-2"
           style={{ height: screenHeight * 0.5 }}
@@ -310,7 +297,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </Button>
           </ModalFooter>
         </ModalContent>
-      </KeyboardAvoidingView>
+      </ModalAvoidKeyboardView>
     </Modal>
   );
 };

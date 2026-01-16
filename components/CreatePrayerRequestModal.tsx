@@ -20,11 +20,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Globe, Lock, Users, X } from "lucide-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { ActivityIndicator } from "react-native";
+import { ModalAvoidKeyboardView } from "./shared/ModalAvoidKeyboardView";
 
 interface CreatePrayerRequestModalProps {
   isOpen: boolean;
@@ -116,16 +113,7 @@ export default function CreatePrayerRequestModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalBackdrop />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-        }}
-        pointerEvents="box-none"
-      >
+      <ModalAvoidKeyboardView>
         <ModalContent className="rounded-2xl border-0 bg-white dark:bg-background-900">
           <ModalHeader className="border-b-0 pb-2">
             <Heading
@@ -228,7 +216,7 @@ export default function CreatePrayerRequestModal({
             </Button>
           </ModalFooter>
         </ModalContent>
-      </KeyboardAvoidingView>
+      </ModalAvoidKeyboardView>
     </Modal>
   );
 }
