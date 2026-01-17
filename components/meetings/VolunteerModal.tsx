@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/form-control";
 import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
-import { Input, InputField } from "@/components/ui/input";
 import {
   Modal,
   ModalBackdrop,
@@ -18,9 +17,11 @@ import {
 } from "@/components/ui/modal";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useRecentLocations } from "@/hooks/useRecentLocations";
 import { TFunction } from "i18next";
-import { X } from "lucide-react-native";
+import { MapPin, X } from "lucide-react-native";
 import React from "react";
+import { LocationInput } from "../shared/LocationInput";
 import { ModalAvoidKeyboardView } from "../shared/ModalAvoidKeyboardView";
 
 interface VolunteerModalProps {
@@ -42,11 +43,20 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({
   onSubmit,
   isSaving,
 }) => {
+  const { addLocation } = useRecentLocations();
+
+  const handleConfirm = async () => {
+    if (locationInput) {
+      await addLocation(locationInput);
+    }
+    onSubmit();
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalBackdrop />
       <ModalAvoidKeyboardView>
-        <ModalContent>
+        <ModalContent className={`h-[360px]`}>
           <ModalHeader>
             <Heading size="lg">{t("community.volunteerTitle")}</Heading>
             <ModalCloseButton>
@@ -62,13 +72,15 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({
                     {t("community.enterLocation")}
                   </FormControlLabelText>
                 </FormControlLabel>
-                <Input>
-                  <InputField
-                    value={locationInput}
-                    onChangeText={setLocationInput}
-                    placeholder={t("community.locationPlaceholder")}
-                  />
-                </Input>
+                <LocationInput
+                  size="sm"
+                  className="h-12 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                  icon={MapPin}
+                  value={locationInput}
+                  onChangeText={setLocationInput}
+                  placeholder={t("community.locationPlaceholder")}
+                  inputFieldClassName="py-0 text-sm"
+                />
               </FormControl>
             </VStack>
           </ModalBody>
@@ -81,7 +93,10 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({
             >
               <ButtonText>{t("common.cancel")}</ButtonText>
             </Button>
-            <Button onPress={onSubmit} isDisabled={isSaving || !locationInput}>
+            <Button
+              onPress={handleConfirm}
+              isDisabled={isSaving || !locationInput}
+            >
               <ButtonText>
                 {isSaving ? t("common.saving") : t("common.confirm")}
               </ButtonText>

@@ -17,6 +17,7 @@ import { Pressable } from "@/components/ui/pressable";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useRecentLocations } from "@/hooks/useRecentLocations";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { TFunction } from "i18next";
 import {
@@ -31,6 +32,7 @@ import {
 import { useColorScheme } from "nativewind";
 import React from "react";
 import { Dimensions, ScrollView } from "react-native";
+import { LocationInput } from "../shared/LocationInput";
 import { ModalAvoidKeyboardView } from "../shared/ModalAvoidKeyboardView";
 
 interface CreateMeetingModalProps {
@@ -61,9 +63,18 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   t,
   formState,
   onSubmit,
+
   isSaving,
 }) => {
+  const { addLocation } = useRecentLocations();
   const { colorScheme } = useColorScheme();
+
+  const handleConfirm = async () => {
+    if (!formState.isVolunteerOpen && formState.location) {
+      await addLocation(formState.location);
+    }
+    onSubmit();
+  };
   const isDark = colorScheme === "dark";
   const screenHeight = Dimensions.get("window").height;
 
@@ -197,28 +208,18 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 </FormControl>
 
                 {/* Location Input & Volunteer Toggle Row */}
-                <HStack space="sm" className="items-center justify-end">
+                <HStack space="sm" className="z-[100] items-center justify-end">
                   {!formState.isVolunteerOpen && (
                     <FormControl className="flex-1" isRequired={true}>
-                      <Input
+                      <LocationInput
                         size="sm"
                         className="h-12 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
-                      >
-                        <InputSlot className="pl-2">
-                          <InputIcon
-                            as={MapPin}
-                            className="text-gray-400"
-                            size="sm"
-                          />
-                        </InputSlot>
-                        <InputField
-                          className="py-0 text-sm"
-                          value={formState.location}
-                          onChangeText={formState.setLocation}
-                          placeholder={t("community.locationPlaceholder")}
-                          accessibilityLanguage="ko"
-                        />
-                      </Input>
+                        icon={MapPin}
+                        value={formState.location}
+                        onChangeText={formState.setLocation}
+                        placeholder={t("community.locationPlaceholder")}
+                        inputFieldClassName="py-0 text-sm"
+                      />
                     </FormControl>
                   )}
 
@@ -243,10 +244,10 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 </HStack>
 
                 {/* Memo Input */}
-                <FormControl>
+                <FormControl className="z-[0]">
                   <Input
                     size="sm"
-                    className="h-14 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                    className="h-20 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
                   >
                     <InputSlot className="self-start pl-2 pt-2">
                       <InputIcon
@@ -283,7 +284,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </Button>
             <Button
               size="sm"
-              onPress={onSubmit}
+              onPress={handleConfirm}
               className="flex-1 rounded-md bg-primary-500 shadow-sm hover:bg-primary-600"
               isDisabled={
                 isSaving ||

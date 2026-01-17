@@ -1,4 +1,9 @@
-import { createMeeting, Group, Meeting, volunteerForMeeting } from "@/services/api";
+import {
+  createMeeting,
+  Group,
+  Meeting,
+  volunteerForMeeting,
+} from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TFunction } from "i18next";
 import { useState } from "react";
@@ -51,8 +56,8 @@ export const useMeetingActions = (
         memo: newMeetingMemo,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["meetings"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["meetings"] });
       setShowCreateModal(false);
       resetCreateForm();
     },
@@ -66,8 +71,8 @@ export const useMeetingActions = (
       if (!selectedMeeting) return;
       await volunteerForMeeting(selectedMeeting, locationInput);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["meetings"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["meetings"] });
       setShowVolunteerModal(false);
       setLocationInput("");
       setSelectedMeeting(null);
@@ -79,7 +84,7 @@ export const useMeetingActions = (
 
   const handleVolunteerClick = (meeting: Meeting) => {
     setSelectedMeeting(meeting);
-    setLocationInput(meeting.location || userGroup?.region || "");
+    setLocationInput(meeting.location || "");
     setShowVolunteerModal(true);
   };
 
