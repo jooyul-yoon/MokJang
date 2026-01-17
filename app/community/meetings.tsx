@@ -14,7 +14,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, useColorScheme } from "react-native";
+import { ActivityIndicator, ScrollView, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Extracted Components & Hooks
@@ -23,6 +23,7 @@ import { CreateMeetingModal } from "@/components/meetings/CreateMeetingModal";
 import MeetingCalendar from "@/components/meetings/MeetingCalendar";
 import { MeetingItem } from "@/components/meetings/MeetingItem";
 import { VolunteerModal } from "@/components/meetings/VolunteerModal";
+import { VStack } from "@/components/ui/vstack";
 import { useMeetingActions } from "@/hooks/useMeetingActions";
 import { CalendarActiveDateRange } from "@marceloterreiro/flash-calendar";
 
@@ -52,7 +53,7 @@ export default function MeetingsScreen() {
       }),
   );
 
-  const { data: meetings = [] } = useQuery({
+  const { data: meetings = [], isLoading } = useQuery({
     queryKey: ["meetings", userGroup?.id, selectedDate.substring(0, 7)],
     queryFn: () =>
       userGroup
@@ -109,52 +110,59 @@ export default function MeetingsScreen() {
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <GoBackHeader title={t("community.meetings")} />
 
-      <Box className="p-4">
-        <MeetingCalendar
-          calendarMonthId={selectedDate}
-          onCalendarDayPress={(dateId: string) => {
-            setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
-            // Sync new meeting date with selected date (+ offset if needed)
-            createState.setDate(
-              new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000),
-            );
-          }}
-          onPressPreviousMonth={() => {
-            setSelectedDate(
-              sub(new Date(selectedDate), { months: 1 })
-                .toISOString()
-                .split("T")[0],
-            );
-          }}
-          onPressNextMonth={() => {
-            setSelectedDate(
-              add(new Date(selectedDate), { months: 1 })
-                .toISOString()
-                .split("T")[0],
-            );
-          }}
-          calendarActiveDateRanges={calendarActiveDateRanges}
-          theme={calendarTheme}
-          markedDates={markedDates}
-        />
-      </Box>
-
-      <ScrollView contentContainerClassName="p-4 pb-24 gap-4">
-        {filteredMeetings.length > 0 ? (
-          filteredMeetings.map((meeting: Meeting) => (
-            <MeetingItem
-              key={meeting.id}
-              meeting={meeting}
-              t={t}
-              onVolunteer={actions.handleVolunteerClick}
+      {isLoading ? (
+        <Box className="flex-1 items-center justify-center">
+          <ActivityIndicator />
+        </Box>
+      ) : (
+        <VStack>
+          <Box className="p-4">
+            <MeetingCalendar
+              calendarMonthId={selectedDate}
+              onCalendarDayPress={(dateId: string) => {
+                setSelectedDate(new Date(dateId).toISOString().split("T")[0]);
+                // Sync new meeting date with selected date (+ offset if needed)
+                createState.setDate(
+                  new Date(new Date(dateId).getTime() + 24 * 60 * 60 * 1000),
+                );
+              }}
+              onPressPreviousMonth={() => {
+                setSelectedDate(
+                  sub(new Date(selectedDate), { months: 1 })
+                    .toISOString()
+                    .split("T")[0],
+                );
+              }}
+              onPressNextMonth={() => {
+                setSelectedDate(
+                  add(new Date(selectedDate), { months: 1 })
+                    .toISOString()
+                    .split("T")[0],
+                );
+              }}
+              calendarActiveDateRanges={calendarActiveDateRanges}
+              theme={calendarTheme}
+              markedDates={markedDates}
             />
-          ))
-        ) : (
-          <Text className="text-center text-typography-500">
-            {t("community.noMeetingsOnDate")}
-          </Text>
-        )}
-      </ScrollView>
+          </Box>
+          <ScrollView contentContainerClassName="p-4 pb-24 gap-4">
+            {filteredMeetings.length > 0 ? (
+              filteredMeetings.map((meeting: Meeting) => (
+                <MeetingItem
+                  key={meeting.id}
+                  meeting={meeting}
+                  t={t}
+                  onVolunteer={actions.handleVolunteerClick}
+                />
+              ))
+            ) : (
+              <Text className="text-center text-typography-500">
+                {t("community.noMeetingsOnDate")}
+              </Text>
+            )}
+          </ScrollView>
+        </VStack>
+      )}
 
       {/* FAB for Leaders */}
       {isLeader && (
