@@ -1,28 +1,71 @@
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import "@/i18n";
+import { supabase } from "@/lib/supabase";
+import { updatePushToken } from "@/services/pushTokenApi";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Session } from "@supabase/supabase-js";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Notifications from "expo-notifications";
+import {
+  Stack,
+  useRootNavigationState,
+  useRouter,
+  useSegments,
+} from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
+import { useEffect, useRef, useState } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "nativewind";
+export function useNotificationObserver() {
+  const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
+  const isReady = !!rootNavigationState?.key;
+  const pendingUrl = useRef<string | null>(null);
 
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import "@/global.css";
-import "@/i18n";
+  const performRedirect = (url: string) => {
+    if (isReady) {
+      setTimeout(() => {
+        router.push(url as any);
+        pendingUrl.current = null;
+      }, 100);
+    } else {
+      pendingUrl.current = url;
+    }
+  };
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
+  useEffect(() => {
+    // 1. Cold Start: 앱이 꺼진 상태에서 알림 클릭
+    const response = Notifications.getLastNotificationResponse();
+    if (response) {
+      const url = response.notification.request.content.data?.url;
+      if (url) performRedirect(url as string);
+    }
 
-import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import { useRouter, useSegments } from "expo-router";
-import { useEffect, useState } from "react";
+    // 2. 알림 클릭 리스너: 앱이 켜져 있을 때
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const url = response.notification.request.content.data?.url;
+        if (url) performRedirect(url as string);
+      },
+    );
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+    return () => subscription.remove();
+  }, [isReady]); // isReady(준비 상태)가 바뀔 때마다 체크
+
+  // 3. 준비가 끝난 시점에 대기 중인 URL이 있다면 이동
+  useEffect(() => {
+    if (isReady && pendingUrl.current) {
+      performRedirect(pendingUrl.current);
+    }
+  }, [isReady]);
+}
 
 const queryClient = new QueryClient();
 
@@ -32,6 +75,16 @@ export default function RootLayout() {
   const [initialized, setInitialized] = useState(false);
   const segments = useSegments();
   const router = useRouter();
+
+  // Push notifications
+  const { expoPushToken } = usePushNotifications();
+  useNotificationObserver();
+
+  useEffect(() => {
+    if (expoPushToken) {
+      updatePushToken(expoPushToken);
+    }
+  }, [expoPushToken]);
 
   useEffect(() => {
     // Check initial session

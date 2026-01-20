@@ -58,7 +58,7 @@ export const fetchAnnouncements = async (): Promise<Announcement[]> => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.log("User not authenticated");
+    console.error("User not authenticated");
     return [];
   }
 
@@ -363,6 +363,7 @@ export interface UserProfile {
   full_name: string;
   avatar_url: string;
   role: string;
+  is_notification_enabled?: boolean;
 }
 
 export const fetchUserProfile = async (): Promise<UserProfile | null> => {
@@ -382,6 +383,27 @@ export const fetchUserProfile = async (): Promise<UserProfile | null> => {
     return null;
   }
   return data as UserProfile;
+};
+
+export const updateNotificationSettings = async (
+  enabled: boolean,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ is_notification_enabled: enabled, updated_at: new Date() })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Error updating notification settings:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 };
 
 export const createAnnouncement = async (

@@ -442,6 +442,48 @@ export default function ProfileScreen() {
             }
           />
 
+          <MenuItem
+            icon="notifications-outline"
+            label={t("profile.notifications", {
+              defaultValue: "Notifications",
+            })}
+            rightElement={
+              <Switch
+                size="md"
+                value={profile?.is_notification_enabled ?? false}
+                onValueChange={async (val) => {
+                  /* Optimistic update could go here, but for now just mutate */
+                  const oldData = queryClient.getQueryData(["userProfile"]);
+                  queryClient.setQueryData(["userProfile"], (old: any) => ({
+                    ...old,
+                    is_notification_enabled: val,
+                  }));
+
+                  const { success, error } =
+                    await updateNotificationSettings(val);
+
+                  if (!success) {
+                    // Revert on error
+                    queryClient.setQueryData(["userProfile"], oldData);
+                    Alert.alert(t("common.error"), error);
+                  } else {
+                    queryClient.invalidateQueries({
+                      queryKey: ["userProfile"],
+                    });
+                  }
+                }}
+                trackColor={{ false: "#E5E7EB", true: "#3B82F6" }}
+                thumbColor={
+                  Platform.OS === "ios"
+                    ? "#FFF"
+                    : colorScheme === "dark"
+                      ? "#FFF"
+                      : "#F3F4F6"
+                }
+              />
+            }
+          />
+
           {/* Account Section */}
           <SectionHeader title="Account" />
 
