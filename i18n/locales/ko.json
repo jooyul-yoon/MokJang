@@ -26,9 +26,10 @@
   },
   "tabs": {
     "home": "홈",
-    "community": "목장",
     "bible": "성경",
-    "profile": "프로필"
+    "profile": "프로필",
+    "notifications": "알림",
+    "mokjang": "목장"
   },
   "community": {
     "mokjangMeeting": "목장 모임",
@@ -104,5 +105,17 @@
     "answered": "응답받음",
     "markAnswered": "응답받음으로 표시",
     "markUnanswered": "응답대기로 변경"
+  },
+  "notification": {
+    "title": "알림",
+    "read": "읽음",
+    "comment": "댓글",
+    "share": "공유",
+    "reads": "읽음",
+    "reads_plural": "읽음",
+    "admin": "관리자",
+    "churchAdmin": "교회 관리자",
+    "create": "새 알림",
+    "markAsRead": "읽음으로 표시"
   }
 }

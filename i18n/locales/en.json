@@ -26,9 +26,10 @@
   },
   "tabs": {
     "home": "Home",
-    "community": "Community",
     "bible": "Bible",
-    "profile": "Profile"
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "mokjang": "MokJang"
   },
   "community": {
     "mokjang": "Explore Mokjang",
@@ -103,5 +104,17 @@
     "answered": "Answered",
     "markAnswered": "Mark as Answered",
     "markUnanswered": "Mark as Unanswered"
+  },
+  "notification": {
+    "title": "Notifications",
+    "read": "Read",
+    "comment": "Comment",
+    "share": "Share",
+    "reads": "read",
+    "reads_plural": "reads",
+    "admin": "Admin",
+    "churchAdmin": "Church Admin",
+    "create": "New Announcement",
+    "markAsRead": "Mark as Read"
   }
 }

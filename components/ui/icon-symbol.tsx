@@ -25,6 +25,8 @@ const MAPPING = {
   "person.fill": "person",
   gear: "settings",
   "bubble.left.and.bubble.right.fill": "forum",
+  "person.2.fill": "people",
+  "bell.fill": "notifications",
 } as IconMapping;
 
 /**
