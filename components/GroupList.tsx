@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/toast";
 import { VStack } from "@/components/ui/vstack";
 import { joinGroup } from "@/services/api";
-import { useEffect, useState } from "react";
+import { onRefreshHelper } from "@/utils/refreshHelper";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { RefreshControl, ScrollView } from "react-native";
 import TabTitle from "./shared/TabTitle";
 
 interface Group {
@@ -34,11 +36,16 @@ export default function GroupList({
   initialRequestedGroups = [],
   isLoading = false,
 }: GroupListProps) {
+  const { t } = useTranslation();
   const toast = useToast();
+  const [refreshing, setRefreshing] = useState(false);
   const [requestedGroups, setRequestedGroups] = useState<Set<string>>(
     new Set(initialRequestedGroups),
   );
-  const { t } = useTranslation();
+
+  const onRefresh = useCallback(() => {
+    onRefreshHelper(setRefreshing, ["user", "userGroups", "groups"]);
+  }, []);
 
   useEffect(() => {
     setRequestedGroups(new Set(initialRequestedGroups));
@@ -113,47 +120,54 @@ export default function GroupList({
   }
 
   return (
-    <VStack className="gap-4">
+    <VStack className="flex-1 gap-4">
       <TabTitle title={t("community.exploreMokjangs")} />
-      {groups.map((group) => {
-        const isRequested = requestedGroups.has(group.id);
-        return (
-          <Card
-            key={group.id}
-            variant="elevated"
-            className="flex-row items-center justify-between rounded-lg p-4"
-          >
-            <VStack className="gap-2">
-              <Text className="text-lg font-bold text-typography-black dark:text-typography-white">
-                {group.name}
-              </Text>
-              <Text className="text-sm text-typography-600 dark:text-typography-400">
-                {group.description}
-              </Text>
-              <VStack className="mt-2">
-                <Text className="text-xs text-typography-500">
-                  🕒 {group.meeting_time}
-                </Text>
-                <Text className="text-xs text-typography-500">
-                  📍 {group.region}
-                </Text>
-              </VStack>
-            </VStack>
-            <Button
-              onPress={() => handleJoinRequest(group.id)}
-              size="sm"
-              action="secondary"
-              isDisabled={isRequested}
+      <ScrollView
+        contentContainerClassName="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {groups.map((group) => {
+          const isRequested = requestedGroups.has(group.id);
+          return (
+            <Card
+              key={group.id}
+              variant="elevated"
+              className="flex-row items-center justify-between rounded-lg p-4"
             >
-              <ButtonText>
-                {isRequested
-                  ? t("community.requested")
-                  : t("community.requestToJoin")}
-              </ButtonText>
-            </Button>
-          </Card>
-        );
-      })}
+              <VStack className="gap-2">
+                <Text className="text-lg font-bold text-typography-black dark:text-typography-white">
+                  {group.name}
+                </Text>
+                <Text className="text-sm text-typography-600 dark:text-typography-400">
+                  {group.description}
+                </Text>
+                <VStack className="mt-2">
+                  <Text className="text-xs text-typography-500">
+                    🕒 {group.meeting_time}
+                  </Text>
+                  <Text className="text-xs text-typography-500">
+                    📍 {group.region}
+                  </Text>
+                </VStack>
+              </VStack>
+              <Button
+                onPress={() => handleJoinRequest(group.id)}
+                size="sm"
+                action="secondary"
+                isDisabled={isRequested}
+              >
+                <ButtonText>
+                  {isRequested
+                    ? t("community.requested")
+                    : t("community.requestToJoin")}
+                </ButtonText>
+              </Button>
+            </Card>
+          );
+        })}
+      </ScrollView>
     </VStack>
   );
 }

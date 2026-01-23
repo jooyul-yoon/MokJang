@@ -71,7 +71,9 @@
     "members": "목장원",
     "enterMemo": "메모 입력 (선택사항)",
     "noMeetingsOnDate": "이 날짜에 예정된 모임이 없습니다.",
-    "meetings": "모임"
+    "meetings": "모임",
+    "feed": "비전청년부 피드",
+    "no_feed": "등록된 게시물이 없습니다."
   },
   "profile": {
     "name": "이름",

@@ -1,3 +1,4 @@
+import { GoBackHeader } from "@/components/GoBackHeader";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -77,6 +78,7 @@ export default function CreateGroupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <GoBackHeader title="Create MokJang" />
       <ScrollView className="flex-1 p-4">
         <VStack className="space-y-6">
           <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">

@@ -1,11 +1,9 @@
-import CreatePrayerRequestModal from "@/components/CreatePrayerRequestModal";
 import {
   Avatar,
   AvatarFallbackText,
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Fab, FabIcon } from "@/components/ui/fab";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
@@ -14,10 +12,12 @@ import { VStack } from "@/components/ui/vstack";
 import { fetchPrayerRequests, Group, PrayerRequest } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { MessageSquare, Plus } from "lucide-react-native";
+import { MessageSquare } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
+import { Center } from "./ui/center";
+import { Heading } from "./ui/heading";
 
 interface PrayerRequestListProps {
   visibility: "public" | "group" | "private";
@@ -67,11 +67,16 @@ export default function PrayerRequestList({
 
   return (
     <VStack className="flex-1 px-4 pb-20">
+      <Heading size="lg" className="font-bold text-gray-900 dark:text-white">
+        {t("community.feed", "Community Feed")}
+      </Heading>
       <VStack className="gap-3">
         {filteredRequests.length === 0 ? (
-          <Text className="text-center text-typography-500">
-            {t("community.noPrayerRequests", "No prayer requests yet.")}
-          </Text>
+          <Center className="h-24">
+            <Text className="text-center text-typography-500">
+              {t("community.no_feed", "No feed.")}
+            </Text>
+          </Center>
         ) : (
           filteredRequests.map((request: PrayerRequest) => (
             <Pressable
@@ -134,7 +139,7 @@ export default function PrayerRequestList({
         )}
       </VStack>
 
-      <Fab
+      {/* <Fab
         size="lg"
         placement="bottom right"
         onPress={() => setShowModal(true)}
@@ -154,7 +159,7 @@ export default function PrayerRequestList({
             ? visibility
             : "public"
         }
-      />
+      /> */}
     </VStack>
   );
 }

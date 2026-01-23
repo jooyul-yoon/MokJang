@@ -70,7 +70,9 @@
     "memo": "Memo",
     "enterMemo": "Enter memo (optional)",
     "noMeetingsOnDate": "No meetings on this date.",
-    "meetings": "Meetings"
+    "meetings": "Meetings",
+    "feed": "Vchung Feed",
+    "no_feed": "No posts."
   },
   "profile": {
     "name": "Name",
