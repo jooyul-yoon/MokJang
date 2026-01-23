@@ -1,50 +1,79 @@
-# Welcome to your Expo app 👋
+# 📱 MokJang (목장)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**모던 & 미니멀 청년부 커뮤니티 플랫폼**
 
-## Get started
+MokJang은 교회 내 “목장 공동체”를 중심으로 소통, 기도, 말씀, 모임 관리가 자연스럽게 이루어지도록 돕는 모던하고 미니멀한 커뮤니티 앱입니다. 특히 미국 한인 청년부의 니즈를 반영하여 설계되었습니다.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ✨ 주요 기능 (Key Features)
 
-2. Start the app
+### 🏠 홈 (Home)
 
-   ```bash
-   npx expo start
-   ```
+- **공지사항**: 교회 전체 소식 및 공지사항을 피드 형태로 확인
+- **기도제목**: 공동체 전체와 소통하며 기도제목 공유 및 응답 기록
+- **QT / 말씀**: 오늘의 말씀 묵상 및 본문 확인
 
-In the output, you'll find options to open the app in a
+### 👥 커뮤니티 / 목장 (Community)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **목장 관리**: 초대 코드 또는 검색을 통한 목장 가입 및 승인 프로세스
+- **모임 일정**: 목장 모임의 날짜, 시간, 장소 조율 및 RSVP 기능
+- **지도 연동**: 구글 맵 딥링크를 통한 모임 장소 확인
+- **프라이빗 소통**: 소속 목원들끼리만 공유하는 기도제목 및 일정 관리
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 📖 성경 통독 (Bible)
 
-## Get a fresh project
+- **개인 통독**: 매일의 성경 읽기 현황 체크 및 기록
+- **공동체 현황**: 목장별/교회 전체 통독 랭킹 및 통계 (Planned)
 
-When you're ready, run:
+### 👤 프로필 & 설정 (Profile)
+
+- **다국어 지원**: 한국어 및 영어 지원 (i18next)
+- **테마 설정**: 라이트/다크 모드 및 시스템 설정 자동 연동
+- **개인화**: 내 기도제목 히스토리 및 통독 리포트 관리
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- **Framework**: [React Native (Expo)](https://expo.dev/)
+- **Routing**: Expo Router (File-based routing)
+- **Styling**: NativeWind (Tailwind CSS for Native)
+- **UI Components**: Gluestack UI, Lucide React Native
+- **State Management**: React Query (TanStack Query)
+- **Internationalization**: i18next / react-i18next
+
+### Backend & Cloud
+
+- **Database / Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Security**: Row Level Security (RLS)
+- **Functions**: Supabase Edge Functions
+- **Storage**: Supabase Storage (Profile images)
+
+---
+
+## 🚀 시작하기 (Getting Started)
+
+### 1. 의존성 설치
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. 환경 변수 설정
 
-## Learn more
+`.env` 파일을 생성하고 필요한 Supabase 설정을 입력합니다.
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. 앱 실행
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📄 License
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is private and for church community use.
