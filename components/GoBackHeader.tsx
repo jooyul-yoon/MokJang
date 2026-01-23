@@ -1,34 +1,37 @@
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, LucideIcon } from "lucide-react-native";
 import React from "react";
+import { TouchableOpacity } from "react-native";
+import { Icon } from "./ui/icon";
+import { Text } from "./ui/text";
 
 interface GoBackHeaderProps {
+  GoBackIcon?: LucideIcon;
   title: string;
   rightElement?: React.ReactNode;
 }
 
-export function GoBackHeader({ title, rightElement }: GoBackHeaderProps) {
+export function GoBackHeader({
+  GoBackIcon,
+  title,
+  rightElement,
+}: GoBackHeaderProps) {
   const router = useRouter();
 
   return (
-    <HStack className="items-center border-b border-outline-100 p-4">
-      <Button
-        variant="link"
-        onPress={() => router.back()}
-        className="mr-4 p-0"
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <ButtonIcon as={ArrowLeft} size="xl" className="text-typography-900" />
-      </Button>
-      <Heading size="lg" className="text-typography-900">
-        {title}
-      </Heading>
-      {rightElement && (
-        <HStack className="ml-auto items-center">{rightElement}</HStack>
-      )}
+    <HStack className="items-center justify-between border-b border-outline-50 p-4 py-2">
+      <HStack className="items-center justify-start ">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Icon as={GoBackIcon ? GoBackIcon : ArrowLeft} size="md" />
+        </TouchableOpacity>
+      </HStack>
+      <HStack className="items-center justify-center">
+        <Text className="text-typography-950" size="lg">
+          {title}
+        </Text>
+      </HStack>
+      <HStack className="items-center justify-end">{rightElement}</HStack>
     </HStack>
   );
 }
