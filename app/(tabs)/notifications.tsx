@@ -1,3 +1,4 @@
+import TabTitle from "@/components/shared/TabTitle";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -97,9 +98,9 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <VStack className="flex-1 pb-10">
-        <Heading className="mb-8 px-4 text-3xl font-bold text-typography-black dark:text-typography-white">
-          {t("tabs.notifications", { defaultValue: "Notifications" })}
-        </Heading>
+        <TabTitle
+          title={t("tabs.notifications", { defaultValue: "Notifications" })}
+        />
         {isLoading ? (
           <Center className="flex-1">
             <ActivityIndicator />

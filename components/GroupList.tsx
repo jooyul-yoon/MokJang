@@ -13,6 +13,7 @@ import { VStack } from "@/components/ui/vstack";
 import { joinGroup } from "@/services/api";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import TabTitle from "./shared/TabTitle";
 
 interface Group {
   id: string;
@@ -112,13 +113,8 @@ export default function GroupList({
   }
 
   return (
-    <VStack className="mt-6 gap-4 p-4">
-      <Heading
-        size="md"
-        className="mb-2 text-xl text-typography-black dark:text-typography-white"
-      >
-        {t("community.exploreMokjangs")}
-      </Heading>
+    <VStack className="gap-4">
+      <TabTitle title={t("community.exploreMokjangs")} />
       {groups.map((group) => {
         const isRequested = requestedGroups.has(group.id);
         return (

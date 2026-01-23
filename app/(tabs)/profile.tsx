@@ -1,3 +1,4 @@
+import TabTitle from "@/components/shared/TabTitle";
 import {
   Avatar,
   AvatarFallbackText,
@@ -5,7 +6,6 @@ import {
 } from "@/components/ui/avatar";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
-import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
@@ -272,15 +272,9 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
+      <TabTitle title={t("tabs.profile")} />
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         <VStack className="pb-10">
-          {/* Header & Avatar */}
-          <HStack className="mb-8 items-center justify-between">
-            <Heading className="text-3xl font-bold text-typography-black dark:text-typography-white">
-              {t("tabs.profile")}
-            </Heading>
-          </HStack>
-
           <VStack className="mb-8 items-center gap-4">
             <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
               <Avatar

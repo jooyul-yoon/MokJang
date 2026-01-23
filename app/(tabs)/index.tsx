@@ -1,6 +1,6 @@
 import AnnouncementCarousel from "@/components/annoucements/AnnouncementCarousel";
 import PrayerRequestList from "@/components/PrayerRequestList";
-import { Heading } from "@/components/ui/heading";
+import TabTitle from "@/components/shared/TabTitle";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements } from "@/services/AnnouncementApi";
 import { fetchUserGroup, fetchUserProfile } from "@/services/api";
@@ -37,17 +37,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <VStack className="flex-1 px-4">
-        <VStack className="mb-4">
-          <Heading size="2xl" className="text-primary">
-            MokJang
-          </Heading>
-        </VStack>
+      <VStack className="flex-1">
+        <TabTitle title="MokJang" className="text-primary" />
 
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          className="px-4"
         >
           <AnnouncementCarousel announcements={announcements} />
           <PrayerRequestList
