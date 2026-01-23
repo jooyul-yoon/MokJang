@@ -1,26 +1,17 @@
-import AnnouncementList from "@/components/AnnouncementList";
-import { HomeTabs } from "@/components/HomeTabs";
+import AnnouncementCarousel from "@/components/annoucements/AnnouncementCarousel";
 import PrayerRequestList from "@/components/PrayerRequestList";
-import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
-import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
+import { fetchAnnouncements } from "@/services/AnnouncementApi";
 import { fetchUserGroup, fetchUserProfile } from "@/services/api";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
-import { Plus } from "lucide-react-native";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useState } from "react";
+import { RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const tabs = [
-  { en: "Announcements", ko: "공지사항", value: "announcements" },
-  { en: "Prayers", ko: "기도제목", value: "prayers" },
-];
-
 export default function HomeScreen() {
-  const { t } = useTranslation();
-  const router = useRouter();
-
+  const [refreshing, setRefreshing] = useState(false);
   const { data: profile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: fetchUserProfile,
@@ -31,50 +22,41 @@ export default function HomeScreen() {
     queryFn: fetchUserGroup,
   });
 
-  const canCreateAnnouncement =
-    profile?.role === "leader" ||
-    profile?.role === "admin" ||
-    profile?.role === "church_leader";
+  const { data: announcements } = useQuery({
+    queryKey: ["announcements"],
+    queryFn: fetchAnnouncements,
+  });
 
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const onRefresh = useCallback(() => {
+    onRefreshHelper(setRefreshing, [
+      "userProfile",
+      "userGroup",
+      "announcements",
+    ]);
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <VStack className="flex-1">
-        <VStack className="mb-4 px-4">
-          <Text className="text-2xl font-bold text-typography-black dark:text-typography-white">
-            VCHUNG
-          </Text>
+      <VStack className="flex-1 px-4">
+        <VStack className="mb-4">
+          <Heading size="2xl" className="text-primary">
+            MokJang
+          </Heading>
         </VStack>
 
-        <HomeTabs
-          tabs={tabs}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-        {activeTab.value === "announcements" && <AnnouncementList />}
-        {activeTab.value === "prayers" && (
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <AnnouncementCarousel announcements={announcements} />
           <PrayerRequestList
             visibility="public"
             userGroup={userGroup}
             currentUserId={profile?.id}
           />
-        )}
+        </ScrollView>
       </VStack>
-
-      {canCreateAnnouncement && activeTab.value === "announcements" && (
-        <Fab
-          size="lg"
-          placement="bottom right"
-          isHovered={false}
-          isDisabled={!canCreateAnnouncement}
-          isPressed={false}
-          onPress={() => router.push("/announcements/create")}
-        >
-          <FabIcon as={Plus} />
-          <FabLabel>{t("announcements.create")}</FabLabel>
-        </Fab>
-      )}
     </SafeAreaView>
   );
 }

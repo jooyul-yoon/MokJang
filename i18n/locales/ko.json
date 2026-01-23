@@ -16,6 +16,7 @@
     "error": "오류",
     "success": "성공",
     "deleteAccount": "계정 삭제",
+    "deleteConfirmation": "정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "deleteAccountConfirmation": "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "confirmSignOut": "로그아웃 하시겠습니까?",
     "accountDeleted": "계정이 삭제되었습니다.",
@@ -86,7 +87,27 @@
     "myPrayersCount": "{{count}}개의 기도제목"
   },
   "announcements": {
-    "title": "교회 소식",
+    "create": {
+      "title": "새 공지 작성",
+      "subtitle": "교회 소식, 행사, 업데이트를 공유해주세요.",
+      "category": "카테고리",
+      "input_title": "제목",
+      "input_title_placeholder": "제목을 입력하세요",
+      "input_content": "내용",
+      "input_content_placeholder": "공지 내용을 작성해주세요...",
+      "post": "게시",
+      "success": "공지가 성공적으로 작성되었습니다.",
+      "error_fill_all": "모든 항목을 입력해주세요.",
+      "error_create": "공지 작성에 실패했습니다.",
+      "ok": "확인"
+    },
+    "category": {
+      "news": "소식",
+      "meeting": "모임",
+      "retreat": "수련회",
+      "picnic": "소풍"
+    },
+    "title": "공지사항",
     "read": "읽음",
     "comment": "댓글",
     "share": "공유",
@@ -94,8 +115,9 @@
     "reads_plural": "읽음",
     "admin": "관리자",
     "churchAdmin": "교회 관리자",
-    "create": "새 공지",
-    "markAsRead": "읽음으로 표시"
+    "markAsRead": "읽음으로 표시",
+    "see_all": "더보기",
+    "no_announcements": "공지가 없습니다."
   },
   "login": {
     "signInWithGoogle": "Google로 로그인",

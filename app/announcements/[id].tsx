@@ -4,6 +4,7 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
@@ -23,17 +24,16 @@ import {
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useAnnouncementRead } from "@/hooks/useAnnouncementRead";
 import { supabase } from "@/lib/supabase";
 import {
   createComment,
   deleteAnnouncement,
   fetchAnnouncements,
   fetchComments,
-} from "@/services/api";
+} from "@/services/AnnouncementApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Check, Eye, MoreVertical, Send, Trash, X } from "lucide-react-native";
+import { MoreVertical, Send, Trash, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -52,7 +52,6 @@ export default function AnnouncementDetailScreen() {
   const [commentText, setCommentText] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const { mutate: handleRead } = useAnnouncementRead();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -95,6 +94,44 @@ export default function AnnouncementDetailScreen() {
     );
   }
 
+  // Determine tag style (reused logic)
+  let tagStyle = {
+    tagText: "NEWS",
+    tagColor: "text-amber-500",
+    dotColor: "bg-amber-500",
+    bgColor: "bg-amber-50",
+    darkBgColor: "dark:bg-amber-900/20",
+  };
+  switch (announcement.type) {
+    case "meeting":
+      tagStyle = {
+        tagText: "MEETING",
+        tagColor: "text-blue-500",
+        dotColor: "bg-blue-500",
+        bgColor: "bg-blue-50",
+        darkBgColor: "dark:bg-blue-900/20",
+      };
+      break;
+    case "retreat":
+      tagStyle = {
+        tagText: "RETREAT",
+        tagColor: "text-green-500",
+        dotColor: "bg-green-500",
+        bgColor: "bg-green-50",
+        darkBgColor: "dark:bg-green-900/20",
+      };
+      break;
+    case "picnic":
+      tagStyle = {
+        tagText: "PICNIC",
+        tagColor: "text-orange-500",
+        dotColor: "bg-orange-500",
+        bgColor: "bg-orange-50",
+        darkBgColor: "dark:bg-orange-900/20",
+      };
+      break;
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
       <KeyboardAvoidingView
@@ -103,10 +140,8 @@ export default function AnnouncementDetailScreen() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
         <VStack className="flex-1">
-          {/* Header */}
-          {/* Header */}
           <GoBackHeader
-            title={t("announcements.create")}
+            title={announcement.title}
             rightElement={
               announcement.author_id === userId && (
                 <Menu
@@ -138,136 +173,140 @@ export default function AnnouncementDetailScreen() {
             }
           />
 
-          <ScrollView className="flex-1 p-4">
-            {/* Announcement Content */}
-            <HStack className="mb-4 items-center gap-3">
-              <Avatar>
-                <AvatarFallbackText>
-                  {announcement.profiles?.full_name || t("announcements.admin")}
-                </AvatarFallbackText>
-                <AvatarImage
-                  source={{
-                    uri:
-                      announcement.profiles?.avatar_url ||
-                      "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-                  }}
-                />
-              </Avatar>
-              <VStack>
-                <Text className="font-bold text-typography-black dark:text-typography-white">
-                  {announcement.profiles?.full_name ||
-                    t("announcements.churchAdmin")}
-                </Text>
-                <Text className="text-xs text-typography-500 dark:text-typography-400">
-                  {new Date(announcement.created_at).toLocaleDateString()} •{" "}
-                  {new Date(announcement.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </VStack>
-            </HStack>
-
-            <Heading
-              size="md"
-              className="mb-2 text-typography-black dark:text-typography-white"
-            >
-              {announcement.title}
-            </Heading>
-            <Text className="text-lg leading-6 text-typography-600 dark:text-typography-400">
-              {announcement.content}
-            </Text>
-
-            <Divider className="my-2 bg-background-100" />
-
-            {/*Read Button*/}
-            <Button
-              onPress={() => {
-                if (!announcement.is_read) {
-                  handleRead({
-                    id: announcement.id,
-                    currentCount: announcement.read_count || 0,
-                  });
-                }
-              }}
-              variant="link"
-              action={announcement.is_read ? "primary" : "secondary"}
-              isDisabled={announcement.is_read}
-              className="flex-row gap-2"
-            >
-              <ButtonIcon as={announcement.is_read ? Check : Eye} />
-              <ButtonText>
-                {announcement.is_read
-                  ? t("announcements.read")
-                  : t("announcements.markAsRead")}
-              </ButtonText>
-            </Button>
-
-            {/* Comments Section */}
-            <VStack className="gap-4 pb-8">
-              <Heading size="sm" className="mb-2 text-typography-900">
-                {t("announcements.comment")} ({comments.length})
-              </Heading>
-
-              {isLoadingComments ? (
-                <ActivityIndicator />
-              ) : (
-                comments.map((comment) => (
-                  <HStack key={comment.id} className="items-start gap-3">
-                    <Avatar size="xs">
-                      <AvatarFallbackText>
-                        {comment.profiles?.full_name}
-                      </AvatarFallbackText>
-                      <AvatarImage
-                        source={{
-                          uri:
-                            comment.profiles?.avatar_url ||
-                            "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-                        }}
+          <ScrollView className="flex-1 px-5 pt-2">
+            <VStack space="sm" className="pb-10">
+              {/* Author & Meta Info */}
+              <HStack className="my-4 items-center justify-between">
+                <HStack space="md" className="items-center">
+                  <Avatar size="md">
+                    <AvatarFallbackText>
+                      {announcement.profiles?.full_name ||
+                        t("announcements.admin")}
+                    </AvatarFallbackText>
+                    <AvatarImage
+                      source={{
+                        uri:
+                          announcement.profiles?.avatar_url ||
+                          "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+                      }}
+                    />
+                  </Avatar>
+                  <VStack space="xs">
+                    {/* Header Section: Tag & Title */}
+                    <HStack space="xs" className="items-center">
+                      <Box
+                        className={`h-2 w-2 rounded-full ${tagStyle.dotColor}`}
                       />
-                    </Avatar>
-                    <VStack className="dark:bg-background-card-dark flex-1 rounded-lg bg-background-50 p-3">
-                      <HStack className="mb-1 items-center justify-between">
-                        <Text className="text-sm font-bold text-typography-900">
-                          {comment.profiles?.full_name}
-                        </Text>
-                        <Text className="text-xs text-typography-400">
-                          {new Date(comment.created_at).toLocaleDateString()}
-                        </Text>
-                      </HStack>
-                      <Text className="text-sm text-typography-700">
-                        {comment.content}
+                      <Text
+                        className={`font-extra-bold text-xs uppercase tracking-wider ${tagStyle.tagColor}`}
+                      >
+                        {tagStyle.tagText}
                       </Text>
-                    </VStack>
-                  </HStack>
-                ))
-              )}
+                    </HStack>
+                    <Text className="text-md font-semibold text-typography-900">
+                      {announcement.profiles?.full_name ||
+                        t("announcements.churchAdmin")}
+                    </Text>
+                    <Text className="text-xs text-typography-600">
+                      {new Date(announcement.created_at).toLocaleDateString()}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </HStack>
+
+              {/* Main Content */}
+              <Text className="text-base leading-7 text-typography-700">
+                {announcement.content}
+              </Text>
+
+              <Divider className="my-2 bg-background-100 dark:bg-background-800" />
+
+              {/* Comments Section */}
+              <VStack space="md">
+                <HStack className="items-center justify-between">
+                  <Heading size="sm" className="text-typography-900">
+                    {t("announcements.comment")}
+                    <Text className="ml-1 text-typography-500">
+                      ({comments.length})
+                    </Text>
+                  </Heading>
+                </HStack>
+
+                {isLoadingComments ? (
+                  <ActivityIndicator className="py-4" />
+                ) : (
+                  <VStack space="md">
+                    {comments.map((comment) => (
+                      <HStack
+                        key={comment.id}
+                        space="md"
+                        className="items-start"
+                      >
+                        <Avatar className="mt-1 h-10 w-10">
+                          <AvatarFallbackText>
+                            {comment.profiles?.full_name}
+                          </AvatarFallbackText>
+                          <AvatarImage
+                            source={{
+                              uri:
+                                comment.profiles?.avatar_url ||
+                                "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+                            }}
+                          />
+                        </Avatar>
+                        <VStack className="flex-1 rounded-2xl rounded-tl-none bg-background-50 px-4 py-3">
+                          <HStack className="mb-1 items-center justify-between">
+                            <Text className="text-xs font-bold text-typography-900">
+                              {comment.profiles?.full_name}
+                            </Text>
+                            <Text className="text-2xs text-typography-500">
+                              {new Date(
+                                comment.created_at,
+                              ).toLocaleDateString()}
+                            </Text>
+                          </HStack>
+                          <Text className="text-typography-600">
+                            {comment.content}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    ))}
+                  </VStack>
+                )}
+              </VStack>
             </VStack>
           </ScrollView>
 
           {/* Comment Input */}
-          <HStack className="items-center gap-2 border-t border-outline-100 bg-white p-4 dark:bg-background-dark">
-            <Input className="flex-1" size="md">
-              <InputField
-                placeholder={t("announcements.comment") + "..."}
-                value={commentText}
-                onChangeText={setCommentText}
-              />
-            </Input>
-            <Button
-              size="md"
-              variant="solid"
-              action="primary"
-              isDisabled={!commentText.trim() || mutation.isPending}
-              onPress={handleSendComment}
-            >
-              {mutation.isPending ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <ButtonIcon as={Send} />
-              )}
-            </Button>
-          </HStack>
+          <Box className="border-t border-outline-100 px-4 py-3 dark:border-outline-200">
+            <HStack space="sm" className="items-center">
+              <Input
+                variant="outline"
+                size="md"
+                className="flex-1 rounded-full border-outline-200 bg-background-50 dark:border-outline-700"
+              >
+                <InputField
+                  placeholder={t("announcements.comment") + "..."}
+                  value={commentText}
+                  onChangeText={setCommentText}
+                />
+              </Input>
+              <Button
+                size="md"
+                className="h-10 w-10 rounded-full p-0"
+                variant="solid"
+                action="primary"
+                isDisabled={!commentText.trim() || mutation.isPending}
+                onPress={handleSendComment}
+              >
+                {mutation.isPending ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <ButtonIcon as={Send} />
+                )}
+              </Button>
+            </HStack>
+          </Box>
         </VStack>
       </KeyboardAvoidingView>
 
@@ -295,6 +334,7 @@ export default function AnnouncementDetailScreen() {
             <Button
               action="secondary"
               onPress={() => setShowDeleteModal(false)}
+              variant="outline"
             >
               <ButtonText>{t("common.cancel")}</ButtonText>
             </Button>
@@ -311,7 +351,6 @@ export default function AnnouncementDetailScreen() {
                   router.back();
                 } else {
                   console.error(error);
-                  // Optionally show error toast
                 }
               }}
               action="negative"

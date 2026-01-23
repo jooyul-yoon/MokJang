@@ -1,20 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { endOfMonth, startOfMonth } from "date-fns";
 
-export interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  read_count?: number;
-  is_read?: boolean;
-  author_id: string;
-  profiles?: {
-    full_name: string;
-    avatar_url: string;
-  };
-}
-
 export interface Group {
   id: string;
   name: string;
@@ -51,125 +37,6 @@ export interface JoinRequest {
     avatar_url: string;
   };
 }
-
-export const fetchAnnouncements = async (): Promise<Announcement[]> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    console.error("User not authenticated");
-    return [];
-  }
-
-  const { data, error } = await supabase.rpc("get_announcements_with_reads", {
-    current_user_id: user.id,
-  });
-
-  if (error) {
-    console.error("Error fetching announcements:", error);
-    return [];
-  }
-
-  // Map the RPC result to match the Announcement interface structure expected by UI
-  return data.map((item: any) => ({
-    id: item.id,
-    title: item.title,
-    content: item.content,
-    created_at: item.created_at,
-    read_count: item.read_count,
-    is_read: item.is_read,
-    author_id: item.author_id,
-    comment_count: item.comment_count || 0,
-    profiles: {
-      full_name: item.author_full_name,
-      avatar_url: item.author_avatar_url,
-    },
-  })) as Announcement[];
-};
-
-export const markAnnouncementAsRead = async (
-  announcementId: string,
-): Promise<{ success: boolean; error?: string }> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "User not authenticated" };
-
-  const { error } = await supabase.from("announcement_reads").insert({
-    announcement_id: announcementId,
-    user_id: user.id,
-  });
-
-  if (error) {
-    // If unique violation, it means already read, which is fine.
-    if (error.code === "23505") {
-      return { success: true };
-    }
-    console.error("Error marking announcement as read:", error);
-    return { success: false, error: error.message };
-  }
-  return { success: true };
-};
-
-export interface Comment {
-  id: string;
-  announcement_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  profiles: {
-    full_name: string;
-    avatar_url: string;
-  };
-}
-
-export const fetchComments = async (
-  announcementId: string,
-): Promise<Comment[]> => {
-  const { data, error } = await supabase
-    .from("announcement_comments")
-    .select(
-      `
-      *,
-      profiles (
-        full_name,
-        avatar_url
-      )
-    `,
-    )
-    .eq("announcement_id", announcementId)
-    .order("created_at", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching comments:", error);
-    return [];
-  }
-
-  return data as Comment[];
-};
-
-export const createComment = async (
-  announcementId: string,
-  content: string,
-): Promise<{ success: boolean; error?: string }> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "User not authenticated" };
-
-  const { error } = await supabase.from("announcement_comments").insert({
-    announcement_id: announcementId,
-    user_id: user.id,
-    content,
-  });
-
-  if (error) {
-    console.error("Error creating comment:", error);
-    return { success: false, error: error.message };
-  }
-  return { success: true };
-};
 
 export const fetchGroups = async (): Promise<Group[]> => {
   const { data, error } = await supabase
@@ -403,46 +270,6 @@ export const updateNotificationSettings = async (
     return { success: false, error: error.message };
   }
 
-  return { success: true };
-};
-
-export const createAnnouncement = async (
-  title: string,
-  content: string,
-): Promise<{ success: boolean; error?: string }> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "User not authenticated" };
-
-  const { error } = await supabase.from("announcements").insert({
-    title,
-    content,
-    author_id: user.id,
-  });
-
-  if (error) {
-    console.error("Error creating announcement:", error);
-    return { success: false, error: error.message };
-  }
-  return { success: true };
-};
-
-export const deleteAnnouncement = async (
-  id: string,
-): Promise<{ success: boolean; error?: string }> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { success: false, error: "User not authenticated" };
-
-  const { error } = await supabase.from("announcements").delete().eq("id", id);
-
-  if (error) {
-    console.error("Error deleting announcement:", error);
-    return { success: false, error: error.message };
-  }
   return { success: true };
 };
 

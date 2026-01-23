@@ -16,6 +16,7 @@
     "error": "Error",
     "success": "Success",
     "deleteAccount": "Delete Account",
+    "deleteConfirmation": "Are you sure you want to delete? This action cannot be undone.",
     "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
     "confirmSignOut": "Are you sure you want to sign out?",
     "accountDeleted": "Your account has been deleted.",
@@ -85,6 +86,26 @@
     "myPrayersCount": "{{count}} prayer requests"
   },
   "announcements": {
+    "create": {
+      "title": "New Announcement",
+      "subtitle": "Share news, events, and updates with the community.",
+      "category": "Category",
+      "input_title": "Title",
+      "input_title_placeholder": "Enter title",
+      "input_content": "Content",
+      "input_content_placeholder": "Write your announcement details here...",
+      "post": "Post",
+      "success": "Announcement created successfully",
+      "error_fill_all": "Please fill in all fields",
+      "error_create": "Failed to create announcement",
+      "ok": "OK"
+    },
+    "category": {
+      "news": "News",
+      "meeting": "Meeting",
+      "retreat": "Retreat",
+      "picnic": "Picnic"
+    },
     "title": "Church Announcements",
     "read": "Read",
     "comment": "Comment",
@@ -93,8 +114,9 @@
     "reads_plural": "reads",
     "admin": "Admin",
     "churchAdmin": "Church Admin",
-    "create": "New Announcement",
-    "markAsRead": "Mark as Read"
+    "markAsRead": "Mark as Read",
+    "see_all": "See All",
+    "no_announcements": "No announcements"
   },
   "login": {
     "signInWithGoogle": "Sign in with Google",

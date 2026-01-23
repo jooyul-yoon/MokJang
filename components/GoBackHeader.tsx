@@ -26,8 +26,8 @@ export function GoBackHeader({
           <Icon as={GoBackIcon ? GoBackIcon : ArrowLeft} size="md" />
         </TouchableOpacity>
       </HStack>
-      <HStack className="items-center justify-center">
-        <Text className="text-typography-950" size="lg">
+      <HStack className="max-w-[300px] items-center justify-center">
+        <Text numberOfLines={1} className="text-typography-950" size="md">
           {title}
         </Text>
       </HStack>

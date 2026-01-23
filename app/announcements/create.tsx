@@ -1,105 +1,192 @@
-import { Button, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
+import { GoBackHeader } from "@/components/GoBackHeader";
+import { Box } from "@/components/ui/box";
+import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { createAnnouncement } from "@/services/api";
+import { createAnnouncement } from "@/services/AnnouncementApi";
+import { AnnouncementType } from "@/types/typeAnnouncement";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { XIcon } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
-  TextInput,
-  useColorScheme,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateAnnouncementScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const colorScheme = useColorScheme();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [type, setType] = useState<AnnouncementType>("news");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim()) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(t("common.error"), t("announcements.create.error_fill_all"));
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const { success, error } = await createAnnouncement(title, content);
+      const { success, error } = await createAnnouncement(title, content, type);
       if (success) {
         await queryClient.invalidateQueries({ queryKey: ["announcements"] });
-        Alert.alert("Success", "Announcement created successfully", [
-          { text: "OK", onPress: () => router.back() },
+        Alert.alert(t("common.success"), t("announcements.create.success"), [
+          { text: t("announcements.create.ok"), onPress: () => router.back() },
         ]);
       } else {
-        Alert.alert("Error", error || "Failed to create announcement");
+        Alert.alert(
+          t("common.error"),
+          error || t("announcements.create.error_create"),
+        );
       }
     } catch (e) {
-      Alert.alert("Error", "An unexpected error occurred");
+      Alert.alert(t("common.error"), t("announcements.create.error_create"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const types: { value: AnnouncementType; label: string; color: string }[] = [
+    { value: "news", label: "News", color: "bg-amber-500" },
+    { value: "meeting", label: "Meeting", color: "bg-blue-500" },
+    { value: "retreat", label: "Retreat", color: "bg-green-500" },
+    { value: "picnic", label: "Picnic", color: "bg-orange-500" },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-background-light p-4 dark:bg-background-dark">
-      <VStack className="space-y-6">
-        <Heading className="text-2xl font-bold text-typography-black dark:text-typography-white">
-          New Announcement
-        </Heading>
+    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+      <GoBackHeader
+        title={t("announcements.create.title")}
+        GoBackIcon={XIcon}
+        rightElement={
+          <TouchableOpacity
+            onPress={handleCreate}
+            disabled={isSubmitting}
+            className="px-2"
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#467CFA" />
+            ) : (
+              <Text className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                OK
+              </Text>
+            )}
+          </TouchableOpacity>
+        }
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            className="flex-1 px-5 pt-4"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flex: 1 }}
+          >
+            <VStack space="lg" className="flex-1 pb-10">
+              {/* Type Selection */}
+              <VStack space="xs">
+                <Text className="text-sm font-bold text-typography-900 dark:text-typography-100">
+                  {t("announcements.create.category")}
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8 }}
+                >
+                  {types.map((t) => {
+                    const isSelected = type === t.value;
+                    return (
+                      <Pressable
+                        key={t.value}
+                        onPress={() => setType(t.value)}
+                        className={`flex-row items-center rounded-full border px-4 py-2 ${
+                          isSelected
+                            ? "border-primary-500 bg-primary-50"
+                            : "border-outline-200 bg-white dark:bg-gray-950"
+                        }`}
+                      >
+                        {isSelected && (
+                          <Box
+                            className={`mr-2 h-2 w-2 rounded-full ${t.color}`}
+                          />
+                        )}
+                        <Text
+                          className={`text-sm font-medium ${
+                            isSelected
+                              ? "text-primary-600"
+                              : "text-typography-600"
+                          }`}
+                        >
+                          {t.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+              </VStack>
 
-        <VStack className="space-y-2">
-          <Text className="text-sm font-medium text-typography-500">Title</Text>
-          <TextInput
-            className="rounded-md border border-outline-300 p-3 text-typography-black dark:border-outline-700 dark:text-typography-white"
-            placeholder="Enter title"
-            placeholderTextColor={colorScheme === "dark" ? "#666" : "#999"}
-            value={title}
-            onChangeText={setTitle}
-          />
-        </VStack>
+              {/* Title Input */}
+              <VStack space="xs">
+                <Text className="text-sm font-bold text-typography-900 dark:text-typography-100">
+                  {t("announcements.create.input_title")}
+                </Text>
+                <Input
+                  variant="underlined"
+                  size="md"
+                  className="border-b border-outline-300 dark:border-outline-700"
+                >
+                  <InputField
+                    placeholder={t(
+                      "announcements.create.input_title_placeholder",
+                    )}
+                    value={title}
+                    onChangeText={setTitle}
+                    className="text-base text-typography-900 dark:text-typography-100"
+                  />
+                </Input>
+              </VStack>
 
-        <VStack className="space-y-2">
-          <Text className="text-sm font-medium text-typography-500">
-            Content
-          </Text>
-          <TextInput
-            className="h-40 rounded-md border border-outline-300 p-3 text-typography-black dark:border-outline-700 dark:text-typography-white"
-            placeholder="Enter announcement content"
-            placeholderTextColor={colorScheme === "dark" ? "#666" : "#999"}
-            multiline
-            textAlignVertical="top"
-            value={content}
-            onChangeText={setContent}
-          />
-        </VStack>
-
-        <Button
-          onPress={handleCreate}
-          isDisabled={isSubmitting}
-          className="mt-4"
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <ButtonText>Post Announcement</ButtonText>
-          )}
-        </Button>
-
-        <Button
-          variant="outline"
-          action="secondary"
-          onPress={() => router.back()}
-          isDisabled={isSubmitting}
-        >
-          <ButtonText>Cancel</ButtonText>
-        </Button>
-      </VStack>
+              {/* Content Input */}
+              <VStack space="xs" className="flex-1">
+                <Text className="text-sm font-bold text-typography-900 dark:text-typography-100">
+                  {t("announcements.create.input_content")}
+                </Text>
+                <Input
+                  variant="underlined"
+                  size="md"
+                  className="h-64 items-start border-b border-outline-300 p-0 dark:border-outline-700"
+                >
+                  <InputField
+                    placeholder={t(
+                      "announcements.create.input_content_placeholder",
+                    )}
+                    multiline
+                    textAlignVertical="top"
+                    value={content}
+                    onChangeText={setContent}
+                    className="h-full text-base leading-6 text-typography-900 dark:text-typography-100"
+                  />
+                </Input>
+              </VStack>
+            </VStack>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
