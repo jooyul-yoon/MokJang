@@ -1,8 +1,4 @@
-import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { Text } from "@/components/ui/text";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Toast,
   ToastDescription,
@@ -12,10 +8,15 @@ import {
 import { VStack } from "@/components/ui/vstack";
 import { joinGroup } from "@/services/api";
 import { onRefreshHelper } from "@/utils/refreshHelper";
+import { Clock, MapPin } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, ScrollView } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import TabTitle from "./shared/TabTitle";
+import { Badge, BadgeIcon, BadgeText } from "./ui/badge";
+import { Button, ButtonText } from "./ui/button";
+import { HStack } from "./ui/hstack";
+import { Text } from "./ui/text";
 
 interface Group {
   id: string;
@@ -44,7 +45,7 @@ export default function GroupList({
   );
 
   const onRefresh = useCallback(() => {
-    onRefreshHelper(setRefreshing, ["user", "userGroups", "groups"]);
+    onRefreshHelper(setRefreshing, ["groups"]);
   }, []);
 
   useEffect(() => {
@@ -92,82 +93,64 @@ export default function GroupList({
     }
   };
 
-  if (isLoading) {
-    return (
-      <VStack className="mt-6 gap-4">
-        <Heading
-          size="md"
-          className="mb-2 text-xl text-typography-black dark:text-typography-white"
-        >
-          {t("community.exploreMokjangs")}
-        </Heading>
-        {[1, 2, 3].map((i) => (
-          <Card
-            key={i}
-            className="dark:bg-background-card-dark rounded-lg bg-white p-4 shadow-sm"
-          >
-            <SkeletonText _lines={1} className="mb-2 h-6 w-1/2" />
-            <SkeletonText _lines={2} className="mb-2 h-4 w-full" />
-            <VStack className="mt-2 gap-1">
-              <SkeletonText _lines={1} className="h-3 w-1/3" />
-              <SkeletonText _lines={1} className="h-3 w-1/3" />
-            </VStack>
-            <Skeleton className="mt-2 h-8 w-32 rounded" />
-          </Card>
-        ))}
-      </VStack>
-    );
-  }
-
   return (
     <VStack className="flex-1 gap-4">
       <TabTitle title={t("community.exploreMokjangs")} />
-      <ScrollView
-        contentContainerClassName="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {groups.map((group) => {
-          const isRequested = requestedGroups.has(group.id);
-          return (
-            <Card
-              key={group.id}
-              variant="elevated"
-              className="flex-row items-center justify-between rounded-lg p-4"
+      {!isLoading ? (
+        <FlatList
+          data={groups}
+          contentContainerClassName="flex-1 px-4"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={({ item }) => (
+            <HStack
+              key={item.id}
+              className="flex-row-reverse items-center justify-between overflow-hidden rounded-lg border-b border-primary-0 px-4 py-6"
+              space="md"
             >
-              <VStack className="gap-2">
-                <Text className="text-lg font-bold text-typography-black dark:text-typography-white">
-                  {group.name}
-                </Text>
-                <Text className="text-sm text-typography-600 dark:text-typography-400">
-                  {group.description}
-                </Text>
-                <VStack className="mt-2">
-                  <Text className="text-xs text-typography-500">
-                    🕒 {group.meeting_time}
-                  </Text>
-                  <Text className="text-xs text-typography-500">
-                    📍 {group.region}
-                  </Text>
-                </VStack>
-              </VStack>
               <Button
-                onPress={() => handleJoinRequest(group.id)}
-                size="sm"
-                action="secondary"
-                isDisabled={isRequested}
+                onPress={() => handleJoinRequest(item.id)}
+                isDisabled={requestedGroups.has(item.id)}
+                className="bg-secondary-500"
               >
-                <ButtonText>
-                  {isRequested
+                <ButtonText className="font-bold text-typography-black">
+                  {requestedGroups.has(item.id)
                     ? t("community.requested")
                     : t("community.requestToJoin")}
                 </ButtonText>
               </Button>
-            </Card>
-          );
-        })}
-      </ScrollView>
+              <VStack className="flex-1 gap-2">
+                <Text
+                  className="text-xl font-bold text-typography-900"
+                  numberOfLines={1}
+                >
+                  {item.name}
+                </Text>
+                <Text className="text-lg text-typography-500" numberOfLines={3}>
+                  {item.description}
+                </Text>
+                <HStack className="mt-2 gap-2">
+                  <Badge action="info" className="rounded-full" size="lg">
+                    <BadgeIcon as={Clock} />
+                    <BadgeText className="ml-2">{item.meeting_time}</BadgeText>
+                  </Badge>
+                  <Badge action="info" className="rounded-full" size="lg">
+                    <BadgeIcon as={MapPin} />
+                    <BadgeText className="ml-2">{item.region}</BadgeText>
+                  </Badge>
+                </HStack>
+              </VStack>
+            </HStack>
+          )}
+        />
+      ) : (
+        <VStack>
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </VStack>
+      )}
     </VStack>
   );
 }

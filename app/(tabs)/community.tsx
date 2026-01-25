@@ -7,7 +7,6 @@ import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import { Pressable } from "@/components/ui/pressable";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import {
@@ -110,144 +109,124 @@ export default function CommunityScreen() {
     );
   };
 
-  if (
-    isGroupLoading ||
-    isMeetingsLoading ||
-    isLoadingGroups ||
-    isLoadingRequests
-  ) {
-    return (
-      <SafeAreaView className="flex-1 bg-background-light p-4 dark:bg-background-dark">
-        <Heading size="xl">{t("community.mokjang")}</Heading>
-        <VStack className="mt-4 gap-4">
-          <Skeleton className="h-40 w-full rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-lg" />
-        </VStack>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <VStack className="flex-1 gap-6">
-        {userGroup ? (
-          <VStack className="flex-1 gap-4">
-            <VStack className="gap-2 p-4">
-              <HStack className="justify-between">
-                <VStack>
+      {userGroup ? (
+        <VStack className="flex-1 gap-4">
+          <VStack className="gap-2 p-4">
+            <HStack className="justify-between">
+              <VStack>
+                <Text className="text-typography-600 dark:text-typography-400">
+                  {userGroup.description}
+                </Text>
+                <Heading
+                  size="xl"
+                  className="text-typography-black dark:text-typography-white"
+                >
+                  {userGroup.name}
+                </Heading>
+                <HStack className="mt-2 items-center gap-2">
                   <Text className="text-typography-600 dark:text-typography-400">
-                    {userGroup.description}
+                    {userGroup.meeting_time}
                   </Text>
-                  <Heading
-                    size="xl"
-                    className="text-typography-black dark:text-typography-white"
-                  >
-                    {userGroup.name}
-                  </Heading>
-                  <HStack className="mt-2 items-center gap-2">
-                    <Text className="text-typography-600 dark:text-typography-400">
-                      {userGroup.meeting_time}
-                    </Text>
-                    <Text className="text-typography-600 dark:text-typography-400">
-                      @{userGroup.region}
-                    </Text>
-                  </HStack>
-                </VStack>
-                {userGroup?.leader_id === userProfile?.id ? (
-                  <Button
-                    size="md"
-                    variant="link"
-                    action="secondary"
-                    onPress={() => router.push("/groups/manage")}
-                    className="p-0"
-                  >
-                    <ButtonIcon
-                      as={Settings}
-                      className="h-6 w-6 text-typography-900 dark:text-typography-100"
-                    />
-                  </Button>
-                ) : (
-                  <Menu
-                    trigger={({ ...trigerProps }) => (
-                      <Button
-                        size="md"
-                        variant="link"
-                        action="secondary"
-                        className="p-0"
-                        {...trigerProps}
-                      >
-                        <ButtonIcon
-                          as={Settings}
-                          className="h-6 w-6 text-typography-900 dark:text-typography-100"
-                        />
-                      </Button>
-                    )}
-                  >
-                    <MenuItem
-                      key="Leave group"
-                      textValue="Leave group"
-                      onPress={handleLeaveGroup}
-                    >
-                      <Icon
-                        as={DeleteIcon}
-                        size="sm"
-                        className="mr-2 text-error-500"
-                      />
-                      <MenuItemLabel size="sm" className="text-error-500">
-                        Leave group
-                      </MenuItemLabel>
-                    </MenuItem>
-                  </Menu>
-                )}
-              </HStack>
-            </VStack>
-
-            <VStack className="flex-1">
-              <HStack className="mb-4 border-b border-outline-100 px-4 dark:border-outline-800">
-                <Pressable
-                  className={`flex-1 border-b-2 py-3 ${activeTab === "meetings" ? "border-primary-500" : "border-transparent"}`}
-                  onPress={() => setActiveTab("meetings")}
+                  <Text className="text-typography-600 dark:text-typography-400">
+                    @{userGroup.region}
+                  </Text>
+                </HStack>
+              </VStack>
+              {userGroup?.leader_id === userProfile?.id ? (
+                <Button
+                  size="md"
+                  variant="link"
+                  action="secondary"
+                  onPress={() => router.push("/groups/manage")}
+                  className="p-0"
                 >
-                  <Text
-                    className={`text-center font-bold ${activeTab === "meetings" ? "text-primary-500" : "text-typography-500"}`}
-                  >
-                    {t("community.meetings", "Meetings")}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  className={`flex-1 border-b-2 py-3 ${activeTab === "prayers" ? "border-primary-500" : "border-transparent"}`}
-                  onPress={() => setActiveTab("prayers")}
-                >
-                  <Text
-                    className={`text-center font-bold ${activeTab === "prayers" ? "text-primary-500" : "text-typography-500"}`}
-                  >
-                    {t("community.prayerRequests", "Prayer Requests")}
-                  </Text>
-                </Pressable>
-              </HStack>
-
-              {activeTab === "meetings" ? (
-                <MeetingSchedule userGroup={userGroup} meetings={meetings} />
+                  <ButtonIcon
+                    as={Settings}
+                    className="h-6 w-6 text-typography-900 dark:text-typography-100"
+                  />
+                </Button>
               ) : (
-                <PrayerRequestList
-                  visibility="group"
-                  userGroup={userGroup}
-                  currentUserId={userProfile?.id}
-                />
+                <Menu
+                  trigger={({ ...trigerProps }) => (
+                    <Button
+                      size="md"
+                      variant="link"
+                      action="secondary"
+                      className="p-0"
+                      {...trigerProps}
+                    >
+                      <ButtonIcon
+                        as={Settings}
+                        className="h-6 w-6 text-typography-900 dark:text-typography-100"
+                      />
+                    </Button>
+                  )}
+                >
+                  <MenuItem
+                    key="Leave group"
+                    textValue="Leave group"
+                    onPress={handleLeaveGroup}
+                  >
+                    <Icon
+                      as={DeleteIcon}
+                      size="sm"
+                      className="mr-2 text-error-500"
+                    />
+                    <MenuItemLabel size="sm" className="text-error-500">
+                      Leave group
+                    </MenuItemLabel>
+                  </MenuItem>
+                </Menu>
               )}
-            </VStack>
+            </HStack>
           </VStack>
-        ) : (
-          <VStack className="flex-1 gap-4">
-            <GroupList
-              groups={groups}
-              initialRequestedGroups={requestedGroupIds}
-              isLoading={isLoadingGroups || isLoadingRequests}
-            />
+
+          <VStack className="flex-1">
+            <HStack className="mb-4 border-b border-outline-100 px-4 dark:border-outline-800">
+              <Pressable
+                className={`flex-1 border-b-2 py-3 ${activeTab === "meetings" ? "border-primary-500" : "border-transparent"}`}
+                onPress={() => setActiveTab("meetings")}
+              >
+                <Text
+                  className={`text-center font-bold ${activeTab === "meetings" ? "text-primary-500" : "text-typography-500"}`}
+                >
+                  {t("community.meetings", "Meetings")}
+                </Text>
+              </Pressable>
+              <Pressable
+                className={`flex-1 border-b-2 py-3 ${activeTab === "prayers" ? "border-primary-500" : "border-transparent"}`}
+                onPress={() => setActiveTab("prayers")}
+              >
+                <Text
+                  className={`text-center font-bold ${activeTab === "prayers" ? "text-primary-500" : "text-typography-500"}`}
+                >
+                  {t("community.prayerRequests", "Prayer Requests")}
+                </Text>
+              </Pressable>
+            </HStack>
+
+            {activeTab === "meetings" ? (
+              <MeetingSchedule userGroup={userGroup} meetings={meetings} />
+            ) : (
+              <PrayerRequestList
+                visibility="group"
+                userGroup={userGroup}
+                currentUserId={userProfile?.id}
+              />
+            )}
           </VStack>
-        )}
-      </VStack>
+        </VStack>
+      ) : (
+        <VStack className="flex-1 gap-4">
+          <GroupList
+            groups={groups}
+            initialRequestedGroups={requestedGroupIds}
+            isLoading={isLoadingGroups || isLoadingRequests}
+          />
+        </VStack>
+      )}
       {/* {!userGroup && (
         <Fab
           size="lg"
