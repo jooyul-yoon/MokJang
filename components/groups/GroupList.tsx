@@ -101,7 +101,9 @@ export default function GroupList({
         </VStack>
       ) : (
         <FlatList
-          data={groups}
+          data={groups.filter(
+            (group) => !myGroups?.map((g) => g.id).includes(group.id),
+          )}
           contentContainerClassName="flex-1 px-4"
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

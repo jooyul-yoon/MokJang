@@ -37,6 +37,17 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="community"
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            const state = navigation.getState();
+            const routeName = state.routes[state.index].name;
+            if (routeName === "community") {
+              navigation.navigate("community", {
+                toggleMode: Date.now(),
+              });
+            }
+          },
+        })}
         options={{
           title: t("tabs.mokjang"),
           tabBarIcon: ({ color }) => (
