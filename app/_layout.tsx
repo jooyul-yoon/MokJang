@@ -2,6 +2,7 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import "@/i18n";
+import { queryClient } from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
 import { updatePushToken } from "@/services/pushTokenApi";
 import {
@@ -10,7 +11,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { Session } from "@supabase/supabase-js";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import {
   Stack,
@@ -66,8 +67,6 @@ export function useNotificationObserver() {
     }
   }, [isReady]);
 }
-
-const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
