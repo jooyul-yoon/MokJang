@@ -33,12 +33,12 @@
     "mokjang": "MokJang"
   },
   "community": {
-    "mokjang": "Explore Mokjang",
-    "mokjangMeeting": "Weekly Mokjang",
-    "myMokjang": "My Mokjang",
+    "mokjang": "MokJang",
+    "mokjangMeeting": "Weekly MokJang",
+    "myMokjang": "My MokJang",
     "meetingTime": "Meeting Time",
     "region": "Location",
-    "createMokjang": "Create New Mokjang",
+    "createMokjang": "Create New MokJang",
     "upcomingMeetings": "Upcoming Meetings",
     "noUpcomingMeetings": "No upcoming meetings.",
     "host": "Host",
