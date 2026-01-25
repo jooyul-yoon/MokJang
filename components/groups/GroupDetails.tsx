@@ -1,8 +1,6 @@
-import { Text } from "@/components/ui/text";
 import { leaveGroup, UserProfile } from "@/services/api";
 import { Group } from "@/types/typeGroups";
 import { onRefreshHelper } from "@/utils/refreshHelper";
-import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { t } from "i18next";
 import { DeleteIcon, Settings } from "lucide-react-native";
@@ -10,7 +8,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Pressable,
   RefreshControl,
   ScrollView,
 } from "react-native";
@@ -21,6 +18,7 @@ import { HStack } from "../ui/hstack";
 import { Icon } from "../ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "../ui/menu";
 import { VStack } from "../ui/vstack";
+import GroupSchedules from "./GroupSchedules";
 
 interface GroupDetailsProps {
   userProfile?: UserProfile | null;
@@ -33,10 +31,6 @@ export default function GroupDetails({
   userProfile,
   isLoading,
 }: GroupDetailsProps) {
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"meetings" | "prayers">(
-    "meetings",
-  );
   const [refreshing, setRefreshing] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
@@ -78,8 +72,6 @@ export default function GroupDetails({
       ],
     );
   };
-
-  console.log(selectedGroup);
 
   useEffect(() => {
     if (myGroups && myGroups.length > 0) {
@@ -161,61 +153,31 @@ export default function GroupDetails({
               variant={selectedGroup.id === group.id ? "solid" : "outline"}
               key={group.id}
               onPress={() => setSelectedGroup(group)}
-              className="rounded-full"
+              className={`rounded-full ${selectedGroup.id === group.id ? "font-bold" : "font-normal"}`}
             >
               <ButtonText>{group.name}</ButtonText>
             </Button>
           ))}
         </HStack>
 
-        <VStack>
-          <Text className="text-typography-600 dark:text-typography-400">
+        {/* <Card className="shadow-xs rounded-md border border-gray-100 bg-primary-50 p-2 dark:border-gray-800 dark:bg-gray-800/50">
+          <Text className="text-center text-lg font-semibold text-typography-800">
             {selectedGroup?.description}
           </Text>
-          <HStack className="mt-2 items-center gap-2">
-            <Text className="text-typography-600 dark:text-typography-400">
-              {selectedGroup?.meeting_time}
-            </Text>
-            <Text className="text-typography-600 dark:text-typography-400">
-              @{selectedGroup?.region}
-            </Text>
+          <HStack className="mt-2 items-center justify-center gap-2">
+            <Badge action="info" className="rounded-full" size="lg">
+              <BadgeIcon as={Clock} />
+              <BadgeText className="ml-2">
+                {selectedGroup?.meeting_time}
+              </BadgeText>
+            </Badge>
+            <Badge action="info" className="rounded-full" size="lg">
+              <BadgeIcon as={MapPin} />
+              <BadgeText className="ml-2">{selectedGroup?.region}</BadgeText>
+            </Badge>
           </HStack>
-        </VStack>
-
-        <VStack className="flex-1">
-          <HStack className="mb-4 border-b border-outline-100 px-4 dark:border-outline-800">
-            <Pressable
-              className={`flex-1 border-b-2 py-3 ${activeTab === "meetings" ? "border-primary-500" : "border-transparent"}`}
-              onPress={() => setActiveTab("meetings")}
-            >
-              <Text
-                className={`text-center font-bold ${activeTab === "meetings" ? "text-primary-500" : "text-typography-500"}`}
-              >
-                {t("community.meetings", "Meetings")}
-              </Text>
-            </Pressable>
-            <Pressable
-              className={`flex-1 border-b-2 py-3 ${activeTab === "prayers" ? "border-primary-500" : "border-transparent"}`}
-              onPress={() => setActiveTab("prayers")}
-            >
-              <Text
-                className={`text-center font-bold ${activeTab === "prayers" ? "text-primary-500" : "text-typography-500"}`}
-              >
-                {t("community.prayerRequests", "Prayer Requests")}
-              </Text>
-            </Pressable>
-          </HStack>
-
-          {/* {activeTab === "meetings" ? (
-          <MeetingSchedule userGroup={selectedGroup} meetings={meetings} />
-        ) : (
-          <PrayerRequestList
-            visibility="group"
-            userGroup={selectedGroup}
-            currentUserId={userProfile?.id}
-          />
-        )} */}
-        </VStack>
+        </Card> */}
+        <GroupSchedules selectedGroup={selectedGroup} />
       </ScrollView>
     </VStack>
   );
