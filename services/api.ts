@@ -1,17 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { endOfMonth, startOfMonth } from "date-fns";
 
-export interface Group {
-  id: string;
-  name: string;
-  description: string;
-  meeting_time: string;
-  region: string;
-  meeting_day: string | null;
-  meeting_hour: string | null;
-  leader_id: string;
-}
-
 export interface Meeting {
   id: string;
   group_id: string;
@@ -37,80 +26,6 @@ export interface JoinRequest {
     avatar_url: string;
   };
 }
-
-export const fetchGroups = async (): Promise<Group[]> => {
-  const { data, error } = await supabase
-    .from("groups")
-    .select("*")
-    .order("name");
-
-  if (error) {
-    console.error("Error fetching groups:", error);
-    return [];
-  }
-  return data as Group[];
-};
-
-export const joinGroup = async (
-  groupId: string,
-): Promise<{ success: boolean; error?: string }> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "User not authenticated" };
-
-  const { error } = await supabase.from("group_join_requests").insert({
-    user_id: user.id,
-    group_id: groupId,
-  });
-
-  if (error) {
-    console.error("Error joining group:", error);
-    return { success: false, error: error.message };
-  }
-  return { success: true };
-};
-
-export const fetchUserJoinRequests = async (): Promise<string[]> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data, error } = await supabase
-    .from("group_join_requests")
-    .select("group_id")
-    .eq("user_id", user.id);
-
-  if (error) {
-    console.error("Error fetching join requests:", error);
-    return [];
-  }
-  return data.map((req: any) => req.group_id);
-};
-
-export const fetchUserGroup = async (): Promise<Group | null> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase
-    .from("group_members")
-    .select("group_id, groups(*)")
-    .eq("user_id", user.id)
-    .single();
-
-  if (error) {
-    if (error.code !== "PGRST116") {
-      // PGRST116 is "The result contains 0 rows"
-      console.error("Error fetching user group:", error);
-    }
-    return null;
-  }
-
-  return data?.groups as unknown as Group;
-};
 
 export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
   const { data, error } = await supabase

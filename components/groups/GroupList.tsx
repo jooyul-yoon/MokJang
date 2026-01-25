@@ -5,17 +5,18 @@ import {
   useToast,
 } from "@/components/ui/toast";
 import { VStack } from "@/components/ui/vstack";
-import { joinGroup } from "@/services/api";
+import { fetchUserJoinRequests, joinGroup } from "@/services/GroupsApi";
 import { onRefreshHelper } from "@/utils/refreshHelper";
+import { useQuery } from "@tanstack/react-query";
 import { Clock, MapPin } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
-import TabTitle from "./shared/TabTitle";
-import { Badge, BadgeIcon, BadgeText } from "./ui/badge";
-import { Button, ButtonText } from "./ui/button";
-import { HStack } from "./ui/hstack";
-import { Text } from "./ui/text";
+import TabTitle from "../shared/TabTitle";
+import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
+import { Button, ButtonText } from "../ui/button";
+import { HStack } from "../ui/hstack";
+import { Text } from "../ui/text";
 
 interface Group {
   id: string;
@@ -27,32 +28,32 @@ interface Group {
 
 interface GroupListProps {
   groups: Group[];
-  initialRequestedGroups?: string[];
+  myGroups?: Group[] | null;
   isLoading?: boolean;
 }
 
 export default function GroupList({
   groups,
-  initialRequestedGroups = [],
+  myGroups,
   isLoading = false,
 }: GroupListProps) {
   const { t } = useTranslation();
   const toast = useToast();
   const [refreshing, setRefreshing] = useState(false);
-  const [requestedGroups, setRequestedGroups] = useState<Set<string>>(
-    new Set(initialRequestedGroups),
-  );
+
+  const { data: requestedGroupIds = [], isLoading: isLoadingRequests } =
+    useQuery({
+      queryKey: ["userJoinRequests"],
+      queryFn: fetchUserJoinRequests,
+      enabled: !myGroups,
+    });
 
   const onRefresh = useCallback(() => {
-    onRefreshHelper(setRefreshing, ["groups", "userJoinRequests"]);
+    onRefreshHelper(setRefreshing, ["myGroups", "groups", "userJoinRequests"]);
   }, []);
 
-  useEffect(() => {
-    setRequestedGroups(new Set(initialRequestedGroups));
-  }, [initialRequestedGroups]);
-
   const handleJoinRequest = async (groupId: string) => {
-    if (requestedGroups.has(groupId)) return;
+    if (requestedGroupIds.includes(groupId)) return;
 
     const { success, error } = await joinGroup(groupId);
 
@@ -73,7 +74,6 @@ export default function GroupList({
         },
       });
     } else {
-      setRequestedGroups((prev) => new Set(prev).add(groupId));
       toast.show({
         placement: "top",
         render: ({ id }) => {
@@ -114,11 +114,11 @@ export default function GroupList({
             >
               <Button
                 onPress={() => handleJoinRequest(item.id)}
-                isDisabled={requestedGroups.has(item.id)}
+                isDisabled={requestedGroupIds.includes(item.id)}
                 className="bg-secondary-500"
               >
                 <ButtonText className="font-bold text-typography-black">
-                  {requestedGroups.has(item.id)
+                  {requestedGroupIds.includes(item.id)
                     ? t("community.requested")
                     : t("community.requestToJoin")}
                 </ButtonText>
