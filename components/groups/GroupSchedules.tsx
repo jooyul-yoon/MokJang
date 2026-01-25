@@ -1,6 +1,6 @@
 import { HStack } from "@/components/ui/hstack";
 import { useMeetingActions } from "@/hooks/useMeetingActions";
-import { fetchMeetingsByMonth } from "@/services/api";
+import { fetchMeetingsByMonth } from "@/services/MeetingApi";
 import { Group } from "@/types/typeGroups";
 import { CalendarActiveDateRange } from "@marceloterreiro/flash-calendar";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +70,7 @@ export default function GroupSchedules({ selectedGroup }: GroupSchedulesProps) {
 
   return (
     <VStack>
-      <HStack className="mb-4 border-b border-outline-100 px-4 dark:border-outline-800">
+      <HStack className="mb-4 px-4">
         <Pressable
           className={`flex-1 border-b-2 py-3 ${activeTab === "upcoming" ? "border-primary-500" : "border-transparent"}`}
           onPress={() => setActiveTab("upcoming")}
@@ -92,8 +92,8 @@ export default function GroupSchedules({ selectedGroup }: GroupSchedulesProps) {
           </Text>
         </Pressable>
       </HStack>
-      <VStack className="h-[320px]">
-        {activeTab === "upcoming" && <UpcomingMeeting />}
+      <VStack>
+        {activeTab === "upcoming" && <UpcomingMeeting meetings={meetings} />}
         {activeTab === "calendar" && (
           <MeetingCalendar
             calendarMonthId={selectedDate}
