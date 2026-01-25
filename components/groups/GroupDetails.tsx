@@ -3,7 +3,7 @@ import { Group } from "@/types/typeGroups";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { router } from "expo-router";
 import { t } from "i18next";
-import { DeleteIcon, Settings } from "lucide-react-native";
+import { CalendarPlus2, DeleteIcon, MenuIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -85,14 +85,26 @@ export default function GroupDetails({
         <ActivityIndicator />
       </Center>
     );
-
+  console.log(selectedGroup.leader_id, userProfile.id);
   return (
     <VStack className="flex-1">
       <TabTitle
         title={t("community.mokjang", "Community")}
         rightElement={
           selectedGroup?.leader_id === userProfile?.id ? (
-            <HStack>
+            <HStack space="md">
+              <Button
+                size="md"
+                variant="link"
+                action="secondary"
+                onPress={() => router.push("/groups/create")}
+                className="p-2"
+              >
+                <ButtonIcon
+                  as={CalendarPlus2}
+                  className="h-7 w-7 text-typography-700"
+                />
+              </Button>
               <Button
                 size="md"
                 variant="link"
@@ -101,8 +113,8 @@ export default function GroupDetails({
                 className="p-0"
               >
                 <ButtonIcon
-                  as={Settings}
-                  className="h-6 w-6 text-typography-900 dark:text-typography-100"
+                  as={MenuIcon}
+                  className="h-7 w-7 text-typography-700"
                 />
               </Button>
             </HStack>
@@ -117,8 +129,8 @@ export default function GroupDetails({
                   {...trigerProps}
                 >
                   <ButtonIcon
-                    as={Settings}
-                    className="h-6 w-6 text-typography-900 dark:text-typography-100"
+                    as={MenuIcon}
+                    className="h-7 w-7 text-typography-700"
                   />
                 </Button>
               )}
@@ -159,24 +171,6 @@ export default function GroupDetails({
             </Button>
           ))}
         </HStack>
-
-        {/* <Card className="shadow-xs rounded-md border border-gray-100 bg-primary-50 p-2 dark:border-gray-800 dark:bg-gray-800/50">
-          <Text className="text-center text-lg font-semibold text-typography-800">
-            {selectedGroup?.description}
-          </Text>
-          <HStack className="mt-2 items-center justify-center gap-2">
-            <Badge action="info" className="rounded-full" size="lg">
-              <BadgeIcon as={Clock} />
-              <BadgeText className="ml-2">
-                {selectedGroup?.meeting_time}
-              </BadgeText>
-            </Badge>
-            <Badge action="info" className="rounded-full" size="lg">
-              <BadgeIcon as={MapPin} />
-              <BadgeText className="ml-2">{selectedGroup?.region}</BadgeText>
-            </Badge>
-          </HStack>
-        </Card> */}
         <GroupSchedules selectedGroup={selectedGroup} />
       </ScrollView>
     </VStack>
