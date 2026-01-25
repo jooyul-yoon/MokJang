@@ -1,4 +1,5 @@
 import { leaveGroup, UserProfile } from "@/services/api";
+import { useGroupStore } from "@/store/groupStore";
 import { Group } from "@/types/typeGroups";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { router } from "expo-router";
@@ -32,7 +33,7 @@ export default function GroupDetails({
   isLoading,
 }: GroupDetailsProps) {
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const { selectedGroup, setSelectedGroup } = useGroupStore();
 
   const handleRefresh = async () => {
     onRefreshHelper(setRefreshing, ["myGroups", "groups"]);
@@ -74,10 +75,10 @@ export default function GroupDetails({
   };
 
   useEffect(() => {
-    if (myGroups && myGroups.length > 0) {
+    if (myGroups && myGroups.length > 0 && !selectedGroup) {
       setSelectedGroup(myGroups[0]);
     }
-  }, [myGroups]);
+  }, [myGroups, selectedGroup, setSelectedGroup]);
 
   if (isLoading || !selectedGroup || !userProfile)
     return (
@@ -85,7 +86,7 @@ export default function GroupDetails({
         <ActivityIndicator />
       </Center>
     );
-  console.log(selectedGroup.leader_id, userProfile.id);
+
   return (
     <VStack className="flex-1">
       <TabTitle

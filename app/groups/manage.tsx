@@ -21,7 +21,7 @@ import {
   approveJoinRequest,
   fetchGroupMembers,
   fetchGroupRequests,
-  fetchUserGroup,
+  fetchMyGroups,
   fetchUserProfile,
   rejectJoinRequest,
 } from "@/services/api";
@@ -39,8 +39,8 @@ export default function GroupManagementScreen() {
   const toast = useToast();
 
   const { data: userGroup } = useQuery({
-    queryKey: ["userGroup"],
-    queryFn: fetchUserGroup,
+    queryKey: ["myGroups"],
+    queryFn: fetchMyGroups,
   });
 
   const { data: userProfile } = useQuery({

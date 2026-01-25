@@ -4,7 +4,7 @@ import { Fab, FabIcon } from "@/components/ui/fab";
 import { Text } from "@/components/ui/text";
 import {
   fetchMeetingsByMonth,
-  fetchUserGroup,
+  fetchMyGroups,
   fetchUserProfile,
   Meeting,
 } from "@/services/api";
@@ -39,8 +39,8 @@ export default function MeetingsScreen() {
   });
 
   const { data: userGroup } = useQuery({
-    queryKey: ["userGroup"],
-    queryFn: fetchUserGroup,
+    queryKey: ["myGroups"],
+    queryFn: fetchMyGroups,
   });
 
   // --- Main State ---

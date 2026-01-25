@@ -3,7 +3,8 @@ import PrayerRequestList from "@/components/PrayerRequestList";
 import TabTitle from "@/components/shared/TabTitle";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements } from "@/services/AnnouncementApi";
-import { fetchUserGroup, fetchUserProfile } from "@/services/api";
+import { fetchUserProfile } from "@/services/api";
+import { fetchMyGroups } from "@/services/GroupsApi";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -18,8 +19,8 @@ export default function HomeScreen() {
   });
 
   const { data: userGroup } = useQuery({
-    queryKey: ["userGroup"],
-    queryFn: fetchUserGroup,
+    queryKey: ["myGroups"],
+    queryFn: fetchMyGroups,
   });
 
   const { data: announcements } = useQuery({
@@ -30,7 +31,7 @@ export default function HomeScreen() {
   const onRefresh = useCallback(() => {
     onRefreshHelper(setRefreshing, [
       "userProfile",
-      "userGroup",
+      "myGroups",
       "announcements",
     ]);
   }, []);

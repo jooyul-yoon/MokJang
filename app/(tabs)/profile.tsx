@@ -14,9 +14,11 @@ import { supabase } from "@/lib/supabase";
 import {
   deleteAccount,
   fetchMyPrayerRequests,
-  fetchUserGroup,
   fetchUserProfile,
+  updateNotificationSettings,
 } from "@/services/api";
+import { fetchMyGroups } from "@/services/GroupsApi";
+import { useGroupStore } from "@/store/groupStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { decode } from "base64-arraybuffer";
@@ -115,6 +117,7 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState("");
 
+  const { selectedGroup } = useGroupStore();
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
@@ -125,8 +128,8 @@ export default function ProfileScreen() {
   });
 
   const { data: userGroup } = useQuery({
-    queryKey: ["userGroup"],
-    queryFn: fetchUserGroup,
+    queryKey: ["myGroups"],
+    queryFn: fetchMyGroups,
   });
 
   const { data: myPrayers = [] } = useQuery({
@@ -335,7 +338,7 @@ export default function ProfileScreen() {
                   <Ionicons name="pencil" size={14} color="#9CA3AF" />
                 </TouchableOpacity>
                 <Text className="text-sm text-typography-500">
-                  {userGroup?.name || t("profile.noMokjang")}
+                  {selectedGroup?.name || t("profile.noMokjang")}
                 </Text>
               </VStack>
             )}
@@ -356,31 +359,6 @@ export default function ProfileScreen() {
               <HStack className="items-center gap-2">
                 <Text className="text-sm text-typography-500">
                   {myPrayers.length > 0 ? `${myPrayers.length}` : ""}
-                </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
-                />
-              </HStack>
-            }
-          />
-
-          <MenuItem
-            icon="people-outline"
-            label={t("community.myMokjang")}
-            onPress={() => {
-              if (userGroup) {
-                // Navigate to group details or just community tab
-                router.push("/(tabs)/community");
-              } else {
-                router.push("/(tabs)/community"); // To join
-              }
-            }}
-            rightElement={
-              <HStack className="items-center gap-2">
-                <Text className="text-sm text-typography-500">
-                  {userGroup ? userGroup.name : t("profile.joinMokjang")}
                 </Text>
                 <Ionicons
                   name="chevron-forward"
