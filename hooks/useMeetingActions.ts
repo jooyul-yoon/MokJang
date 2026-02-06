@@ -1,9 +1,6 @@
-import {
-  createMeeting,
-  Group,
-  Meeting,
-  volunteerForMeeting,
-} from "@/services/api";
+import { createMeeting, volunteerForMeeting } from "@/services/MeetingApi";
+import { Group } from "@/types/typeGroups";
+import { Meeting } from "@/types/typeMeeting";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TFunction } from "i18next";
 import { useState } from "react";
