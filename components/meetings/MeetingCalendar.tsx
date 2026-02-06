@@ -11,7 +11,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import React, { useMemo } from "react";
 
 const WEEK_HEIGHT = 40;
-const DAY_HEIGHT = 50;
+const DAY_HEIGHT = 44;
 
 interface IMeetingCalendar extends CalendarProps {
   onPressPreviousMonth: () => void;
@@ -77,34 +77,35 @@ function MeetingCalendar({
           </Calendar.Item.WeekName>
         ))}
       </Calendar.Row.Week>
-      <Calendar.Item.Empty height={WEEK_HEIGHT} />
 
-      {weeksList.map((week, i) => (
-        <Calendar.Row.Week key={i}>
-          {week.map((day) => (
-            <Calendar.Item.Day.Container
-              dayHeight={DAY_HEIGHT}
-              daySpacing={4}
-              isStartOfWeek={day.isStartOfWeek}
-              key={day.id}
-            >
-              <Calendar.VStack grow>
-                <Calendar.Item.Day
-                  height={30}
-                  metadata={day}
-                  onPress={onCalendarDayPress}
-                  theme={theme.itemDay}
-                >
-                  {day.displayLabel}
-                </Calendar.Item.Day>
-                {markedDateSet.has(day.id) && (
-                  <Box className="absolute bottom-3 left-1/2 right-1/2 mx-auto h-1 w-1 -translate-x-1/2 transform rounded-full bg-primary-500" />
-                )}
-              </Calendar.VStack>
-            </Calendar.Item.Day.Container>
-          ))}
-        </Calendar.Row.Week>
-      ))}
+      <Calendar.VStack spacing={4}>
+        {weeksList.map((week, i) => (
+          <Calendar.Row.Week key={i}>
+            {week.map((day) => (
+              <Calendar.Item.Day.Container
+                dayHeight={DAY_HEIGHT}
+                daySpacing={8}
+                isStartOfWeek={day.isStartOfWeek}
+                key={day.id}
+              >
+                <Calendar.VStack grow>
+                  <Calendar.Item.Day
+                    height={30}
+                    metadata={day}
+                    onPress={onCalendarDayPress}
+                    theme={theme.itemDay}
+                  >
+                    {day.displayLabel}
+                  </Calendar.Item.Day>
+                  {markedDateSet.has(day.id) && (
+                    <Box className="absolute bottom-3 left-1/2 right-1/2 mx-auto h-1 w-1 -translate-x-1/2 transform rounded-full bg-primary-500" />
+                  )}
+                </Calendar.VStack>
+              </Calendar.Item.Day.Container>
+            ))}
+          </Calendar.Row.Week>
+        ))}
+      </Calendar.VStack>
     </Calendar.VStack>
   );
 }
