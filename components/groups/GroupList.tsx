@@ -44,7 +44,6 @@ export default function GroupList({
     useQuery({
       queryKey: ["userJoinRequests"],
       queryFn: fetchUserJoinRequests,
-      enabled: !myGroups,
     });
 
   const onRefresh = useCallback(() => {
@@ -55,6 +54,7 @@ export default function GroupList({
     if (requestedGroupIds.includes(groupId)) return;
 
     const { success, error } = await joinGroup(groupId);
+    onRefresh();
 
     if (!success) {
       toast.show({
@@ -116,6 +116,7 @@ export default function GroupList({
                 onPress={() => handleJoinRequest(item.id)}
                 isDisabled={requestedGroupIds.includes(item.id)}
                 className="bg-secondary-500"
+                size="sm"
               >
                 <ButtonText className="font-bold text-typography-black">
                   {requestedGroupIds.includes(item.id)
@@ -125,20 +126,20 @@ export default function GroupList({
               </Button>
               <VStack className="flex-1 gap-2">
                 <Text
-                  className="text-xl font-bold text-typography-900"
+                  className="text-lg font-bold text-typography-900"
                   numberOfLines={1}
                 >
                   {item.name}
                 </Text>
-                <Text className="text-lg text-typography-500" numberOfLines={3}>
+                <Text className="text-md text-typography-500" numberOfLines={3}>
                   {item.description}
                 </Text>
                 <HStack className="mt-2 gap-2">
-                  <Badge action="info" className="rounded-full" size="lg">
+                  <Badge action="info" className="rounded-full" size="md">
                     <BadgeIcon as={Clock} />
                     <BadgeText className="ml-2">{item.meeting_time}</BadgeText>
                   </Badge>
-                  <Badge action="info" className="rounded-full" size="lg">
+                  <Badge action="info" className="rounded-full" size="md">
                     <BadgeIcon as={MapPin} />
                     <BadgeText className="ml-2">{item.region}</BadgeText>
                   </Badge>
