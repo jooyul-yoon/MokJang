@@ -12,6 +12,7 @@ import { Clock, MapPin } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
+import TabTitle from "../shared/TabTitle";
 import { Badge, BadgeIcon, BadgeText } from "../ui/badge";
 import { Button, ButtonText } from "../ui/button";
 import { HStack } from "../ui/hstack";
@@ -93,6 +94,7 @@ export default function GroupList({
 
   return (
     <VStack className="flex-1 gap-4">
+      <TabTitle title={t("community.mokjang", "Community")} />
       {isLoading ? (
         <VStack className="flex-1 items-center justify-center">
           <ActivityIndicator />

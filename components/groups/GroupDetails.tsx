@@ -4,12 +4,7 @@ import { useGroupStore } from "@/store/groupStore";
 import { Group } from "@/types/typeGroups";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { router } from "expo-router";
-import {
-  CalendarPlus2,
-  DeleteIcon,
-  Grid2X2Plus,
-  MenuIcon,
-} from "lucide-react-native";
+import { CalendarPlus2, DeleteIcon, MenuIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,18 +15,17 @@ import {
 } from "react-native";
 import { CreateMeetingModal } from "../meetings/CreateMeetingModal";
 import TabTitle from "../shared/TabTitle";
-import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { Button, ButtonIcon } from "../ui/button";
 import { Center } from "../ui/center";
 import { HStack } from "../ui/hstack";
 import { Icon } from "../ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "../ui/menu";
 import { VStack } from "../ui/vstack";
-import GroupList from "./GroupList";
 import GroupSchedules from "./GroupSchedules";
 
 interface GroupDetailsProps {
   userProfile?: UserProfile | null;
-  myGroups?: Group[];
+  myGroups: Group[];
   isLoadingMyGroups?: boolean;
   groups: Group[];
   isLoadingGroups?: boolean;
@@ -49,6 +43,7 @@ export default function GroupDetails({
   const { selectedGroup, setSelectedGroup } = useGroupStore();
   const [viewMode, setViewMode] = useState<"schedule" | "list">("schedule");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [hasMokjang, setHasMokjang] = useState(myGroups?.length > 0);
 
   const [selectedDate, setSelectedDate] = useState(
     new Date().toLocaleString("sv-SE", {
@@ -68,9 +63,24 @@ export default function GroupDetails({
     onRefreshHelper(setRefreshing, ["myGroups", "groups"]);
   };
 
+  useEffect(() => {
+    if (myGroups && myGroups.length > 0 && !selectedGroup) {
+      setSelectedGroup(myGroups[0]);
+    } else if (myGroups && myGroups.length === 0 && viewMode === "schedule") {
+      setViewMode("list");
+    }
+  }, [myGroups, selectedGroup, setSelectedGroup, viewMode]);
+
+  if (isLoadingMyGroups || !userProfile)
+    return (
+      <Center className="flex-1">
+        <ActivityIndicator />
+      </Center>
+    );
+
   const handleLeaveGroup = async () => {
-    if (!selectedGroup) return;
-    if (!selectedGroup?.id) return;
+    if (!myGroups) return;
+    if (!myGroups[0]?.id) return;
 
     Alert.alert(
       t("community.leaveGroupTitle", "Leave Group"),
@@ -87,7 +97,7 @@ export default function GroupDetails({
           text: t("common.leave", "Leave"),
           style: "destructive",
           onPress: async () => {
-            const { success, error } = await leaveGroup(selectedGroup.id);
+            const { success, error } = await leaveGroup(myGroups[0].id);
             if (success) {
               onRefreshHelper(setRefreshing, ["myGroups", "groups"]);
             } else {
@@ -103,56 +113,25 @@ export default function GroupDetails({
     );
   };
 
-  useEffect(() => {
-    if (myGroups && myGroups.length > 0 && !selectedGroup) {
-      setSelectedGroup(myGroups[0]);
-    } else if (myGroups && myGroups.length === 0 && viewMode === "schedule") {
-      setViewMode("list");
-    }
-  }, [myGroups, selectedGroup, setSelectedGroup, viewMode]);
-
-  if (isLoadingMyGroups || !userProfile)
-    return (
-      <Center className="flex-1">
-        <ActivityIndicator />
-      </Center>
-    );
-
   return (
     <VStack className="flex-1">
       <TabTitle
-        title={t("community.mokjang", "Community")}
+        title={myGroups[0].name}
         rightElement={
-          selectedGroup?.leader_id === userProfile?.id ? (
+          myGroups[0]?.leader_id === userProfile?.id ? (
             <HStack space="md">
-              {viewMode === "schedule" && (
-                <Button
-                  size="md"
-                  variant="link"
-                  action="secondary"
-                  onPress={() => createState.setShowModal(true)}
-                  className="p-2"
-                >
-                  <ButtonIcon
-                    as={CalendarPlus2}
-                    className="h-7 w-7 text-typography-700"
-                  />
-                </Button>
-              )}
-              {viewMode === "list" && (
-                <Button
-                  size="md"
-                  variant="link"
-                  action="secondary"
-                  onPress={() => createState.setShowModal(true)}
-                  className="p-2"
-                >
-                  <ButtonIcon
-                    as={CalendarPlus2}
-                    className="h-7 w-7 text-typography-700"
-                  />
-                </Button>
-              )}
+              <Button
+                size="md"
+                variant="link"
+                action="secondary"
+                className="p-2"
+              >
+                <ButtonIcon
+                  as={CalendarPlus2}
+                  className="h-7 w-7 text-typography-700"
+                />
+              </Button>
+
               <Button
                 size="md"
                 variant="link"
@@ -201,67 +180,20 @@ export default function GroupDetails({
           )
         }
       />
-      <VStack className="px-4 pb-2">
-        <HStack className="justify-between px-2">
-          <HStack className="mb-4" space="md">
-            {myGroups?.map((group) => (
-              <Button
-                variant={
-                  viewMode === "schedule" && selectedGroup?.id === group.id
-                    ? "solid"
-                    : "outline"
-                }
-                key={group.id}
-                onPress={() => {
-                  setSelectedGroup(group);
-                  setViewMode("schedule");
-                }}
-                className={`rounded-full ${
-                  viewMode === "schedule" && selectedGroup?.id === group.id
-                    ? "font-bold"
-                    : "font-normal"
-                }`}
-              >
-                <ButtonText>{group.name}</ButtonText>
-              </Button>
-            ))}
-          </HStack>
-          <Button
-            variant={viewMode === "list" ? "solid" : "outline"}
-            size="md"
-            onPress={() => setViewMode("list")}
-            className="rounded-full p-2"
-          >
-            <ButtonIcon as={Grid2X2Plus} />
-          </Button>
-        </HStack>
-      </VStack>
-
       <VStack className="flex-1">
-        {viewMode === "list" || !selectedGroup ? (
-          <GroupList
-            myGroups={myGroups}
-            groups={groups}
-            isLoading={isLoadingGroups}
+        <ScrollView
+          className="flex-1 px-4"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        >
+          <GroupSchedules
+            selectedGroup={myGroups[0]}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            onDateChange={createState.setDate}
           />
-        ) : (
-          <ScrollView
-            className="flex-1 px-4"
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
-          >
-            <GroupSchedules
-              selectedGroup={selectedGroup}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              onDateChange={createState.setDate}
-            />
-          </ScrollView>
-        )}
+        </ScrollView>
       </VStack>
       <CreateMeetingModal
         isOpen={createState.showModal}

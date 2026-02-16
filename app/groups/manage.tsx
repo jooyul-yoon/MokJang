@@ -21,10 +21,10 @@ import {
   approveJoinRequest,
   fetchGroupMembers,
   fetchGroupRequests,
-  fetchMyGroups,
   fetchUserProfile,
   rejectJoinRequest,
 } from "@/services/api";
+import { fetchMyGroups } from "@/services/GroupsApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -49,15 +49,15 @@ export default function GroupManagementScreen() {
   });
 
   const { data: requests = [], isLoading } = useQuery({
-    queryKey: ["groupRequests", userGroup?.id],
-    queryFn: () => fetchGroupRequests(userGroup?.id || ""),
-    enabled: !!userGroup?.id,
+    queryKey: ["groupRequests", userGroup?.[0].id],
+    queryFn: () => fetchGroupRequests(userGroup?.[0].id || ""),
+    enabled: !!userGroup?.[0].id,
   });
 
   const { data: members = [] } = useQuery({
-    queryKey: ["groupMembers", userGroup?.id],
-    queryFn: () => fetchGroupMembers(userGroup?.id || ""),
-    enabled: !!userGroup?.id,
+    queryKey: ["groupMembers", userGroup?.[0].id],
+    queryFn: () => fetchGroupMembers(userGroup?.[0].id || ""),
+    enabled: !!userGroup?.[0].id,
   });
 
   const handleApprove = async (requestId: string, userId: string) => {
@@ -65,9 +65,16 @@ export default function GroupManagementScreen() {
 
     const { success, error } = await approveJoinRequest(
       requestId,
-      userGroup.id,
+      userGroup?.[0].id || "",
       userId,
     );
+
+    await queryClient.invalidateQueries({
+      queryKey: ["groupRequests", userGroup?.[0].id],
+    });
+    await queryClient.invalidateQueries({
+      queryKey: ["groupMembers"],
+    });
 
     if (success) {
       toast.show({
@@ -83,7 +90,9 @@ export default function GroupManagementScreen() {
           </Toast>
         ),
       });
-      queryClient.invalidateQueries({ queryKey: ["groupRequests"] });
+      queryClient.invalidateQueries({
+        queryKey: ["groupRequests", "groupMembers"],
+      });
     } else {
       toast.show({
         placement: "top",
@@ -136,7 +145,7 @@ export default function GroupManagementScreen() {
     }
   };
 
-  if (userGroup && userProfile && userGroup.leader_id !== userProfile.id) {
+  if (userGroup && userProfile && userGroup?.[0].leader_id !== userProfile.id) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
         <Text className="text-typography-black dark:text-typography-white">

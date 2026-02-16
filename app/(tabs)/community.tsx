@@ -1,17 +1,20 @@
 import GroupDetails from "@/components/groups/GroupDetails";
+import GroupList from "@/components/groups/GroupList";
 import { fetchUserProfile } from "@/services/api";
 import { fetchGroups, fetchMyGroups } from "@/services/GroupsApi";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CommunityScreen() {
+  const { t } = useTranslation();
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile"],
     queryFn: fetchUserProfile,
   });
 
-  const { data: myGroups, isLoading: isLoadingMyGroups } = useQuery({
+  const { data: myGroups = [], isLoading: isLoadingMyGroups } = useQuery({
     queryKey: ["myGroups"],
     queryFn: () => fetchMyGroups(),
     enabled: !!userProfile?.id,
@@ -24,13 +27,17 @@ export default function CommunityScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-      <GroupDetails
-        userProfile={userProfile}
-        groups={groups}
-        myGroups={myGroups}
-        isLoadingGroups={isLoadingGroups}
-        isLoadingMyGroups={isLoadingMyGroups}
-      />
+      {myGroups?.length > 0 ? (
+        <GroupDetails
+          userProfile={userProfile}
+          groups={groups}
+          myGroups={myGroups || []}
+          isLoadingGroups={isLoadingGroups}
+          isLoadingMyGroups={isLoadingMyGroups}
+        />
+      ) : (
+        <GroupList groups={groups} />
+      )}
     </SafeAreaView>
   );
 }

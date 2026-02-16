@@ -13,7 +13,7 @@ export default function TabTitle({
 }) {
   return (
     <HStack className="my-4 px-4">
-      <Heading size="2xl" className={className}>
+      <Heading size="xl" className={className}>
         {title}
       </Heading>
       {rightElement && <HStack className="ml-auto">{rightElement}</HStack>}
