@@ -134,8 +134,8 @@ export const config = {
 
     /* Background */
     /* Background */
-    "--color-background-0": "247 248 250",
-    "--color-background-50": "247 248 250",
+    "--color-background-0": "240 242 245",
+    "--color-background-50": "240 242 245",
     "--color-background-100": "242 241 241",
     "--color-background-200": "220 219 219",
     "--color-background-300": "213 212 212",
