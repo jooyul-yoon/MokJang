@@ -114,3 +114,32 @@ export const volunteerForMeeting = async (
 
   return { success: true };
 };
+
+export const fetchMeetingById = async (id: string): Promise<Meeting | null> => {
+  const { data, error } = await supabase
+    .from("meetings")
+    .select("*, profiles(full_name)")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching meeting details:", error);
+    return null;
+  }
+
+  return data as Meeting;
+};
+
+export const updateMeeting = async (
+  id: string,
+  data: Partial<Meeting>,
+): Promise<{ success: boolean; error?: string }> => {
+  const { error } = await supabase.from("meetings").update(data).eq("id", id);
+
+  if (error) {
+    console.error("Error updating meeting:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+};

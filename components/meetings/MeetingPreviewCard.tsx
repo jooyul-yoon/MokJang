@@ -1,4 +1,5 @@
 import { Meeting } from "@/types/typeMeeting";
+import { router } from "expo-router";
 import { CalendarDays, MapPin } from "lucide-react-native";
 import { TouchableOpacity } from "react-native";
 import { HStack } from "../ui/hstack";
@@ -28,7 +29,10 @@ const formatTime = (dateString: string, lang: string = "ko") => {
 
 export default function MeetingPreviewCard({ item }: { item: Meeting }) {
   return (
-    <TouchableOpacity activeOpacity={0.5}>
+    <TouchableOpacity
+      activeOpacity={0.5}
+      onPress={() => router.push(`/community/meetings/${item.id}`)}
+    >
       <VStack space="sm" className="border-l border-primary-500 pl-2">
         <HStack space="md" className="mt-1 items-center">
           <HStack space="xs" className="items-center">
