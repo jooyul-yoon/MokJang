@@ -23,7 +23,8 @@
     "title": "제목",
     "more": "더보기",
     "noComments": "아직 댓글이 없습니다. 첫 댓글을 남겨보세요!",
-    "commentPlaceholder": "댓글을 입력하세요..."
+    "commentPlaceholder": "댓글을 입력하세요...",
+    "empty": "없음"
   },
   "tabs": {
     "home": "홈",
@@ -78,7 +79,10 @@
     "noMeetingsOnDate": "이 날짜에 예정된 모임이 없습니다.",
     "meetings": "모임",
     "feed": "비전청년부 피드",
-    "no_feed": "등록된 게시물이 없습니다."
+    "no_feed": "등록된 게시물이 없습니다.",
+    "deleteMeetingTitle": "모임 삭제",
+    "deleteMeetingMessage": "이 모임을 정말 삭제하시겠습니까?",
+    "deleteMeetingError": "모임 삭제에 실패했습니다."
   },
   "profile": {
     "name": "이름",

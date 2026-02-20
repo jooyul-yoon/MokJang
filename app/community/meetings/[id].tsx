@@ -1,9 +1,10 @@
 import { GoBackHeader } from "@/components/GoBackHeader";
 import { fetchMyGroups } from "@/services/GroupsApi";
-import { fetchMeetingById } from "@/services/MeetingApi";
+import { deleteMeeting, fetchMeetingById } from "@/services/MeetingApi";
 import { fetchUserProfile } from "@/services/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { t } from "i18next";
 import {
   AlignLeft,
   ArrowLeft,
@@ -11,10 +12,16 @@ import {
   Clock,
   MapPin,
   Pencil,
+  Trash2,
 } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card } from "../../../components/ui/card";
 import { Center } from "../../../components/ui/center";
@@ -63,26 +70,25 @@ function EditableRow({
   const content = (
     <HStack
       space="sm"
-      className={`items-center ${!isLast ? "border-b border-outline-100 pb-4" : ""} pt-2`}
+      className={`items-center justify-between ${!isLast ? "border-b border-outline-100 pb-4" : ""} pt-2`}
     >
-      <Icon
-        as={IconComponent}
-        size="md"
-        className="mt-1 self-start text-primary-500"
-      />
-      <VStack className="flex-1">
-        <Text className="text-xs text-typography-500">{label}</Text>
+      <HStack className="items-center" space="sm">
+        <Icon as={IconComponent} size="md" className="text-primary-500" />
+        <Text className="text-typography-800">{label}</Text>
+      </HStack>
+      <HStack className="items-center" space="sm">
         <Text
-          className={`font-medium text-typography-900 ${isMultiline ? "mt-1 leading-6" : ""}`}
+          className={`font-medium text-typography-900 ${value ? "" : "text-typography-400"} ${isMultiline ? "mt-1 leading-6" : ""}`}
         >
-          {value || "-"}
+          {value || t("common.empty")}
         </Text>
-      </VStack>
-      {isEditable && onPress && (
-        <TouchableOpacity className="-mr-2 p-2" onPress={onPress}>
-          <Icon as={Pencil} size="md" className="text-typography-400" />
-        </TouchableOpacity>
-      )}
+
+        {isEditable && onPress && (
+          <TouchableOpacity className="-mr-2 p-2" onPress={onPress}>
+            <Icon as={Pencil} size="md" className="text-typography-400" />
+          </TouchableOpacity>
+        )}
+      </HStack>
     </HStack>
   );
 
@@ -95,6 +101,7 @@ export default function MeetingDetailScreen() {
   const language = i18n.language === "en" ? "en-US" : "ko-KR";
 
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: myGroups, isLoading: isMyGroupsLoading } = useQuery({
     queryKey: ["myGroups"],
     queryFn: fetchMyGroups,
@@ -117,9 +124,41 @@ export default function MeetingDetailScreen() {
         group.id === meeting?.group_id && group.leader_id === userProfile?.id,
     ) || false;
 
+  const handleDeleteMeeting = async () => {
+    if (!myGroups) return;
+    if (!myGroups[0]?.id) return;
+
+    Alert.alert(
+      t("community.deleteMeetingTitle"),
+      t("community.deleteMeetingMessage"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            const error = await deleteMeeting(id);
+            if (!error) {
+              queryClient.invalidateQueries({ queryKey: ["meetings"] });
+              router.back();
+            } else {
+              Alert.alert(
+                t("common.error"),
+                error || t("community.deleteMeetingError"),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   if (isLoading || isMyGroupsLoading || isProfileLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
         <Stack.Screen
           options={{
             title: t("community.meetings", "모임"),
@@ -135,7 +174,7 @@ export default function MeetingDetailScreen() {
 
   if (!meeting) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
         <Stack.Screen
           options={{ title: t("common.error", "Error"), headerShown: false }}
         />
@@ -158,9 +197,22 @@ export default function MeetingDetailScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
       <Stack.Screen options={{ title: meeting.title, headerShown: false }} />
-      <GoBackHeader title={meeting.title} />
+      <GoBackHeader
+        title={meeting.title}
+        rightElement={
+          isLeader && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              className="p-2"
+              onPress={handleDeleteMeeting}
+            >
+              <Icon as={Trash2} size="md" className="text-error-500" />
+            </TouchableOpacity>
+          )
+        }
+      />
 
       <ScrollView className="flex-1 p-4">
         <Card variant="outline" className="mb-4 p-4">

@@ -143,3 +143,11 @@ export const updateMeeting = async (
 
   return { success: true };
 };
+
+export const deleteMeeting = async (
+  id: string,
+): Promise<string | undefined> => {
+  const { error } = await supabase.from("meetings").delete().eq("id", id);
+
+  return error?.message;
+};
