@@ -3,11 +3,14 @@ import { Group } from "@/types/typeGroups";
 import { CalendarActiveDateRange } from "@marceloterreiro/flash-calendar";
 import { useQuery } from "@tanstack/react-query";
 import { add, startOfMonth, sub } from "date-fns";
+import { t } from "i18next";
 import { useMemo } from "react";
 import { useColorScheme } from "react-native";
 import { getCalendarTheme } from "../meetings/CalendarTheme";
 import MeetingCalendar from "../meetings/MeetingCalendar";
 import UpcomingMeeting from "../meetings/UpcomingMeeting";
+import { HStack } from "../ui/hstack";
+import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface GroupSchedulesProps {
@@ -84,7 +87,20 @@ export default function GroupSchedules({
         theme={calendarTheme}
         markedDates={markedDates}
       />
-      <UpcomingMeeting meetings={meetings} />
+
+      <HStack space="md" className="my-4 w-full justify-between">
+        {/* Upcoming Meetings */}
+        <VStack className="w-1/2 overflow-hidden">
+          <Text className="text-typography-700">
+            {t("community.upcomingMeetings")}
+          </Text>
+          <UpcomingMeeting meetings={meetings} />
+        </VStack>
+        {/* selected date */}
+        <VStack className="w-1/2 overflow-hidden">
+          <Text className="text-typography-700">{selectedDate}</Text>
+        </VStack>
+      </HStack>
     </VStack>
   );
 }

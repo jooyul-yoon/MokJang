@@ -56,7 +56,7 @@ export default function AnnouncementCarousel({
 
     return (
       <Card
-        className="shadow-xs mr-4 w-72 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800/50"
+        className="mr-4 w-72 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800/50"
         variant="elevated"
       >
         <TouchableOpacity

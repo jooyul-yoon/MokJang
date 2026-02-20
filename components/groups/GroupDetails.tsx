@@ -42,8 +42,6 @@ export default function GroupDetails({
   const [refreshing, setRefreshing] = useState(false);
   const { selectedGroup, setSelectedGroup } = useGroupStore();
   const [viewMode, setViewMode] = useState<"schedule" | "list">("schedule");
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [hasMokjang, setHasMokjang] = useState(myGroups?.length > 0);
 
   const [selectedDate, setSelectedDate] = useState(
     new Date().toLocaleString("sv-SE", {
@@ -125,6 +123,7 @@ export default function GroupDetails({
                 variant="link"
                 action="secondary"
                 className="p-2"
+                onPress={() => createState.setShowModal(true)}
               >
                 <ButtonIcon
                   as={CalendarPlus2}

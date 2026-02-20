@@ -26,7 +26,7 @@ export default function CommunityScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
       {myGroups?.length > 0 ? (
         <GroupDetails
           userProfile={userProfile}
