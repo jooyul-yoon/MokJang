@@ -5,12 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { add, startOfMonth, sub } from "date-fns";
 import { t } from "i18next";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useColorScheme } from "react-native";
 import { getCalendarTheme } from "../meetings/CalendarTheme";
 import MeetingCalendar from "../meetings/MeetingCalendar";
+import SelectedDateMeetings from "../meetings/SelectedDateMeetings";
 import UpcomingMeeting from "../meetings/UpcomingMeeting";
+import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
-import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 interface GroupSchedulesProps {
@@ -27,6 +29,7 @@ export default function GroupSchedules({
   onDateChange,
 }: GroupSchedulesProps) {
   const colorScheme = useColorScheme();
+  const { language } = useTranslation().i18n;
 
   const { data: meetings = [], isLoading } = useQuery({
     queryKey: ["meetings", selectedGroup?.id, selectedDate.substring(0, 7)],
@@ -88,17 +91,33 @@ export default function GroupSchedules({
         markedDates={markedDates}
       />
 
-      <HStack space="md" className="my-4 w-full justify-between">
+      <HStack
+        space="md"
+        className="my-4 max-h-[300px] min-h-[200px] w-full justify-between"
+      >
         {/* Upcoming Meetings */}
         <VStack className="w-1/2 overflow-hidden">
-          <Text className="text-typography-700">
+          <Heading size="sm" className="text-typography-800">
             {t("community.upcomingMeetings")}
-          </Text>
+          </Heading>
           <UpcomingMeeting meetings={meetings} />
         </VStack>
         {/* selected date */}
         <VStack className="w-1/2 overflow-hidden">
-          <Text className="text-typography-700">{selectedDate}</Text>
+          <Heading size="sm" className="mb-4 text-typography-800">
+            {new Date(selectedDate).toLocaleDateString(
+              language == "ko" ? "ko-KR" : "en-US",
+              {
+                month: "long",
+                day: "numeric",
+                weekday: "short",
+              },
+            )}
+          </Heading>
+          <SelectedDateMeetings
+            meetings={meetings}
+            selectedDate={selectedDate}
+          />
         </VStack>
       </HStack>
     </VStack>
