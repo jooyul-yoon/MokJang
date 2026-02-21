@@ -12,3 +12,15 @@ export interface Meeting {
     full_name: string;
   };
 }
+
+export interface MeetingAttendance {
+  id: string;
+  meeting_id: string;
+  user_id: string;
+  status: "attending" | "absent";
+  created_at: string;
+  profiles?: {
+    full_name: string;
+    avatar_url?: string;
+  };
+}

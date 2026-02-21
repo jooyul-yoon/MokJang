@@ -1,8 +1,13 @@
 import { GoBackHeader } from "@/components/GoBackHeader";
 import { fetchMyGroups } from "@/services/GroupsApi";
-import { deleteMeeting, fetchMeetingById } from "@/services/MeetingApi";
+import {
+  deleteMeeting,
+  fetchMeetingAttendances,
+  fetchMeetingById,
+  upsertMeetingAttendance,
+} from "@/services/MeetingApi";
 import { fetchUserProfile } from "@/services/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { t } from "i18next";
 import {
@@ -21,8 +26,10 @@ import {
   Alert,
   ScrollView,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, ButtonText } from "../../../components/ui/button";
 import { Center } from "../../../components/ui/center";
 import { Heading } from "../../../components/ui/heading";
 import { HStack } from "../../../components/ui/hstack";
@@ -117,6 +124,24 @@ export default function MeetingDetailScreen() {
     enabled: !!id,
   });
 
+  const { data: attendances = [], isLoading: isAttendancesLoading } = useQuery({
+    queryKey: ["meetingAttendances", id],
+    queryFn: () => fetchMeetingAttendances(id),
+    enabled: !!id,
+  });
+
+  const attendanceMutation = useMutation({
+    mutationFn: (status: "attending" | "absent") =>
+      upsertMeetingAttendance(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["meetingAttendances", id] });
+    },
+  });
+
+  const handleAttendance = (status: "attending" | "absent") => {
+    attendanceMutation.mutate(status);
+  };
+
   const isLeader =
     myGroups?.some(
       (group) =>
@@ -155,7 +180,12 @@ export default function MeetingDetailScreen() {
     );
   };
 
-  if (isLoading || isMyGroupsLoading || isProfileLoading) {
+  if (
+    isLoading ||
+    isMyGroupsLoading ||
+    isProfileLoading ||
+    isAttendancesLoading
+  ) {
     return (
       <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
         <Stack.Screen
@@ -276,6 +306,83 @@ export default function MeetingDetailScreen() {
               </Text>
             </VStack>
           )}
+
+          <VStack space="md" className="mt-4 border-t border-outline-100 pt-4">
+            <HStack space="md" className="justify-center">
+              <Button
+                variant={
+                  attendances.find((a) => a.user_id === userProfile?.id)
+                    ?.status === "attending"
+                    ? "solid"
+                    : "outline"
+                }
+                action="primary"
+                onPress={() => handleAttendance("attending")}
+                className="flex-1"
+              >
+                <ButtonText size="md" className="font-bold">
+                  {t("community.attending")}
+                </ButtonText>
+              </Button>
+              <Button
+                variant={
+                  attendances.find((a) => a.user_id === userProfile?.id)
+                    ?.status === "absent"
+                    ? "solid"
+                    : "outline"
+                }
+                action="secondary"
+                onPress={() => handleAttendance("absent")}
+                className="flex-1"
+              >
+                <ButtonText size="md" className="font-bold">
+                  {t("community.absent")}
+                </ButtonText>
+              </Button>
+            </HStack>
+
+            <VStack space="sm" className="mt-4">
+              <Text className="font-bold text-typography-900">
+                {t("community.attendees")} (
+                {attendances.filter((a) => a.status === "attending").length})
+              </Text>
+              <HStack className="flex-wrap gap-2">
+                {attendances
+                  .filter((a) => a.status === "attending")
+                  .map((a) => (
+                    <View
+                      key={a.id}
+                      className="rounded-full bg-primary-100 px-3 py-1"
+                    >
+                      <Text className="text-sm text-primary-900">
+                        {a.profiles?.full_name || t("common.unknown")}
+                      </Text>
+                    </View>
+                  ))}
+              </HStack>
+            </VStack>
+
+            <VStack space="sm" className="mt-2 text-typography-500">
+              <Text className="font-bold text-typography-500">
+                {t("community.absentees")} (
+                {attendances.filter((a) => a.status === "absent").length})
+              </Text>
+              <HStack className="flex-wrap gap-2">
+                {attendances
+                  .filter((a) => a.status === "absent")
+                  .map((a) => (
+                    <View
+                      key={a.id}
+                      className="rounded-full border border-outline-100 bg-background-100 px-3 py-1"
+                    >
+                      <Text className="text-sm text-typography-500">
+                        {a.profiles?.full_name || t("common.unknown")}
+                      </Text>
+                    </View>
+                  ))}
+              </HStack>
+            </VStack>
+          </VStack>
         </VStack>
       </ScrollView>
     </SafeAreaView>

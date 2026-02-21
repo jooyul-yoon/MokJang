@@ -82,7 +82,11 @@
     "no_feed": "등록된 게시물이 없습니다.",
     "deleteMeetingTitle": "모임 삭제",
     "deleteMeetingMessage": "이 모임을 정말 삭제하시겠습니까?",
-    "deleteMeetingError": "모임 삭제에 실패했습니다."
+    "deleteMeetingError": "모임 삭제에 실패했습니다.",
+    "attending": "참석",
+    "absent": "불참",
+    "attendees": "참석자",
+    "absentees": "불참자"
   },
   "profile": {
     "name": "이름",

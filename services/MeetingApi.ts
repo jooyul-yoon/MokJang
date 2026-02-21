@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { Meeting } from "@/types/typeMeeting";
+import { Meeting, MeetingAttendance } from "@/types/typeMeeting";
 import { endOfMonth, startOfMonth } from "date-fns";
 
 export const fetchMeetings = async (groupId: string): Promise<Meeting[]> => {
@@ -150,4 +150,46 @@ export const deleteMeeting = async (
   const { error } = await supabase.from("meetings").delete().eq("id", id);
 
   return error?.message;
+};
+
+export const fetchMeetingAttendances = async (
+  meetingId: string,
+): Promise<MeetingAttendance[]> => {
+  const { data, error } = await supabase
+    .from("meeting_attendances")
+    .select("*, profiles(full_name, avatar_url)")
+    .eq("meeting_id", meetingId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching meeting attendances:", error);
+    return [];
+  }
+
+  return data as unknown as MeetingAttendance[];
+};
+
+export const upsertMeetingAttendance = async (
+  meetingId: string,
+  status: "attending" | "absent",
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase
+    .from("meeting_attendances")
+    .upsert(
+      { meeting_id: meetingId, user_id: user.id, status },
+      { onConflict: "meeting_id,user_id" },
+    );
+
+  if (error) {
+    console.error("Error upserting meeting attendance:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 };

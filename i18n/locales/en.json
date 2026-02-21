@@ -81,7 +81,11 @@
     "no_feed": "No posts.",
     "deleteMeetingTitle": "Delete Meeting",
     "deleteMeetingMessage": "Are you sure you want to delete this meeting?",
-    "deleteMeetingError": "Failed to delete meeting."
+    "deleteMeetingError": "Failed to delete meeting.",
+    "attending": "Attending",
+    "absent": "Absent",
+    "attendees": "Attendees",
+    "absentees": "Absentees"
   },
   "profile": {
     "name": "Name",
