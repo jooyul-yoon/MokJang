@@ -23,7 +23,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Card } from "../../../components/ui/card";
 import { Center } from "../../../components/ui/center";
 import { Heading } from "../../../components/ui/heading";
 import { HStack } from "../../../components/ui/hstack";
@@ -35,9 +34,9 @@ const formatDate = (dateString: string, language: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString(language, {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
-    weekday: "long",
+    weekday: "short",
   });
 };
 
@@ -74,11 +73,11 @@ function EditableRow({
     >
       <HStack className="items-center" space="sm">
         <Icon as={IconComponent} size="md" className="text-primary-500" />
-        <Text className="text-typography-800">{label}</Text>
+        <Text className="text-lg text-typography-800">{label}</Text>
       </HStack>
       <HStack className="items-center" space="sm">
         <Text
-          className={`font-medium text-typography-900 ${value ? "" : "text-typography-400"} ${isMultiline ? "mt-1 leading-6" : ""}`}
+          className={`text-lg font-medium text-typography-900 ${value ? "" : "text-typography-400"} ${isMultiline ? "mt-1 leading-6" : ""}`}
         >
           {value || t("common.empty")}
         </Text>
@@ -215,75 +214,69 @@ export default function MeetingDetailScreen() {
       />
 
       <ScrollView className="flex-1 p-4">
-        <Card variant="outline" className="mb-4 p-4">
-          <VStack space="md">
+        <VStack space="md" className="p-4">
+          <EditableRow
+            icon={CalendarDays}
+            label={t("community.meetingName")}
+            value={meeting.title}
+            isEditable={isLeader}
+            onPress={() => router.push(`/community/meetings/${id}/edit-title`)}
+          />
+
+          <EditableRow
+            icon={CalendarDays}
+            label={t("community.meetingDate")}
+            value={formatDate(meeting.meeting_time, language)}
+            isEditable={isLeader}
+            onPress={() =>
+              router.push(`/community/meetings/${id}/edit-datetime`)
+            }
+          />
+
+          <EditableRow
+            icon={Clock}
+            label={t("community.meetingTime")}
+            value={formatTime(meeting.meeting_time, language)}
+            isEditable={isLeader}
+            onPress={() =>
+              router.push(`/community/meetings/${id}/edit-datetime`)
+            }
+          />
+
+          <EditableRow
+            icon={MapPin}
+            label={t("community.location")}
+            value={meeting.location || ""}
+            isEditable={isLeader}
+            onPress={() =>
+              router.push(`/community/meetings/${id}/edit-location`)
+            }
+            isLast={!meeting.memo && !meeting.profiles?.full_name}
+          />
+
+          {(meeting.memo || isLeader) && (
             <EditableRow
-              icon={CalendarDays}
-              label={t("community.meetingName")}
-              value={meeting.title}
+              icon={AlignLeft}
+              label={t("community.memo")}
+              value={meeting.memo || ""}
               isEditable={isLeader}
-              onPress={() =>
-                router.push(`/community/meetings/${id}/edit-title`)
-              }
+              onPress={() => router.push(`/community/meetings/${id}/edit-memo`)}
+              isMultiline
+              isLast={!meeting.profiles?.full_name}
             />
+          )}
 
-            <EditableRow
-              icon={CalendarDays}
-              label={t("community.meetingDate")}
-              value={formatDate(meeting.meeting_time, language)}
-              isEditable={isLeader}
-              onPress={() =>
-                router.push(`/community/meetings/${id}/edit-datetime`)
-              }
-            />
-
-            <EditableRow
-              icon={Clock}
-              label={t("community.meetingTime")}
-              value={formatTime(meeting.meeting_time, language)}
-              isEditable={isLeader}
-              onPress={() =>
-                router.push(`/community/meetings/${id}/edit-datetime`)
-              }
-            />
-
-            <EditableRow
-              icon={MapPin}
-              label={t("community.location")}
-              value={meeting.location || ""}
-              isEditable={isLeader}
-              onPress={() =>
-                router.push(`/community/meetings/${id}/edit-location`)
-              }
-              isLast={!meeting.memo && !meeting.profiles?.full_name}
-            />
-
-            {(meeting.memo || isLeader) && (
-              <EditableRow
-                icon={AlignLeft}
-                label={t("community.memo")}
-                value={meeting.memo || ""}
-                isEditable={isLeader}
-                onPress={() =>
-                  router.push(`/community/meetings/${id}/edit-memo`)
-                }
-                isMultiline
-                isLast={!meeting.profiles?.full_name}
-              />
-            )}
-
-            {meeting.profiles?.full_name && (
-              <VStack space="xs" className="mt-2 rounded-lg bg-primary-50 p-3">
-                <Text className="text-xs text-primary-600">
-                  {t("community.host")}
-                </Text>
-                <Text className="text-sm font-bold text-primary-900">
-                  {meeting.profiles.full_name}
-                </Text>
-              </VStack>
-            )}
-          </VStack>
-        </Card>
+          {meeting.profiles?.full_name && (
+            <VStack space="xs" className="mt-2 rounded-lg bg-primary-50 p-3">
+              <Text className="text-xs text-primary-600">
+                {t("community.host")}
+              </Text>
+              <Text className="text-sm font-bold text-primary-900">
+                {meeting.profiles.full_name}
+              </Text>
+            </VStack>
+          )}
+        </VStack>
       </ScrollView>
     </SafeAreaView>
   );
