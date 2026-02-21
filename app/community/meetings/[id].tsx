@@ -7,6 +7,7 @@ import {
   upsertMeetingAttendance,
 } from "@/services/MeetingApi";
 import { fetchUserProfile } from "@/services/api";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { t } from "i18next";
@@ -19,11 +20,12 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  RefreshControl,
   ScrollView,
   TouchableOpacity,
   View,
@@ -105,6 +107,7 @@ export default function MeetingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const language = i18n.language === "en" ? "en-US" : "ko-KR";
+  const [refreshing, setRefreshing] = useState(false);
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -147,6 +150,10 @@ export default function MeetingDetailScreen() {
       (group) =>
         group.id === meeting?.group_id && group.leader_id === userProfile?.id,
     ) || false;
+
+  const onRefresh = useCallback(() => {
+    onRefreshHelper(setRefreshing, ["meeting", "meetingAttendances"]);
+  }, []);
 
   const handleDeleteMeeting = async () => {
     if (!myGroups) return;
@@ -243,7 +250,12 @@ export default function MeetingDetailScreen() {
         }
       />
 
-      <ScrollView className="flex-1 p-4">
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        className="flex-1 p-4"
+      >
         <VStack space="md" className="p-4">
           <EditableRow
             icon={CalendarDays}
