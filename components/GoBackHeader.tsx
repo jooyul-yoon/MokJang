@@ -27,7 +27,7 @@ export function GoBackHeader({
         </TouchableOpacity>
       </HStack>
       <HStack className="max-w-[300px] items-center justify-center">
-        <Text numberOfLines={1} className="text-typography-950" size="md">
+        <Text numberOfLines={1} className="text-typography-950" size="lg">
           {title}
         </Text>
       </HStack>
