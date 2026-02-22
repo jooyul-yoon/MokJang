@@ -28,7 +28,6 @@ import {
   RefreshControl,
   ScrollView,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, ButtonText } from "../../../components/ui/button";
@@ -328,11 +327,18 @@ export default function MeetingDetailScreen() {
                     ? "solid"
                     : "outline"
                 }
-                action="primary"
                 onPress={() => handleAttendance("attending")}
                 className="flex-1"
               >
-                <ButtonText size="md" className="font-bold">
+                <ButtonText
+                  size="md"
+                  className={`font-bold ${
+                    attendances.find((a) => a.user_id === userProfile?.id)
+                      ?.status === "attending"
+                      ? "text-white dark:text-typography-50"
+                      : "text-typography-500 dark:text-typography-300"
+                  }`}
+                >
                   {t("community.attending")}
                 </ButtonText>
               </Button>
@@ -343,57 +349,66 @@ export default function MeetingDetailScreen() {
                     ? "solid"
                     : "outline"
                 }
-                action="secondary"
                 onPress={() => handleAttendance("absent")}
                 className="flex-1"
               >
-                <ButtonText size="md" className="font-bold">
+                <ButtonText
+                  size="md"
+                  className={`font-bold ${
+                    attendances.find((a) => a.user_id === userProfile?.id)
+                      ?.status === "absent"
+                      ? "text-white dark:text-typography-50"
+                      : "text-typography-500 dark:text-typography-300"
+                  }`}
+                >
                   {t("community.absent")}
                 </ButtonText>
               </Button>
             </HStack>
 
-            <VStack space="sm" className="mt-4">
-              <Text className="font-bold text-typography-900">
-                {t("community.attendees")} (
-                {attendances.filter((a) => a.status === "attending").length})
-              </Text>
-              <HStack className="flex-wrap gap-2">
-                {attendances
-                  .filter((a) => a.status === "attending")
-                  .map((a) => (
-                    <View
-                      key={a.id}
-                      className="rounded-full bg-primary-100 px-3 py-1"
-                    >
-                      <Text className="text-sm text-primary-900">
-                        {a.profiles?.full_name || t("common.unknown")}
-                      </Text>
-                    </View>
-                  ))}
-              </HStack>
-            </VStack>
+            <HStack className="mt-4 h-full">
+              <VStack space="sm" className="flex-1">
+                <Text className="text-lg font-bold text-typography-900">
+                  {t("community.attendees")} (
+                  {attendances.filter((a) => a.status === "attending").length})
+                </Text>
+                <VStack className="gap-4">
+                  {attendances
+                    .filter((a) => a.status === "attending")
+                    .map((a) => (
+                      <HStack
+                        key={a.id}
+                        className="h-6 items-center border-l-2 border-primary-500 px-3"
+                      >
+                        <Text className="text-medium text-primary-900">
+                          {a.profiles?.full_name || t("common.unknown")}
+                        </Text>
+                      </HStack>
+                    ))}
+                </VStack>
+              </VStack>
 
-            <VStack space="sm" className="mt-2 text-typography-500">
-              <Text className="font-bold text-typography-500">
-                {t("community.absentees")} (
-                {attendances.filter((a) => a.status === "absent").length})
-              </Text>
-              <HStack className="flex-wrap gap-2">
-                {attendances
-                  .filter((a) => a.status === "absent")
-                  .map((a) => (
-                    <View
-                      key={a.id}
-                      className="rounded-full border border-outline-100 bg-background-100 px-3 py-1"
-                    >
-                      <Text className="text-sm text-typography-500">
-                        {a.profiles?.full_name || t("common.unknown")}
-                      </Text>
-                    </View>
-                  ))}
-              </HStack>
-            </VStack>
+              <VStack space="sm" className="flex-1 text-typography-500 ">
+                <Text className="text-lg font-bold text-typography-500">
+                  {t("community.absentees")} (
+                  {attendances.filter((a) => a.status === "absent").length})
+                </Text>
+                <VStack className="gap-4">
+                  {attendances
+                    .filter((a) => a.status === "absent")
+                    .map((a) => (
+                      <HStack
+                        key={a.id}
+                        className="h-6 items-center border-l-2 border-secondary-500 px-3"
+                      >
+                        <Text className="text-medium text-typography-500">
+                          {a.profiles?.full_name || t("common.unknown")}
+                        </Text>
+                      </HStack>
+                    ))}
+                </VStack>
+              </VStack>
+            </HStack>
           </VStack>
         </VStack>
       </ScrollView>
