@@ -33,6 +33,10 @@ const performOAuth = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
+      queryParams: {
+        prompt: "select_account",
+        access_type: "offline",
+      },
       redirectTo: REDIRECT_URI,
     },
   });
