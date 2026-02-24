@@ -1,4 +1,5 @@
 import { Meeting } from "@/types/typeMeeting";
+import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { Center } from "../ui/center";
 import { Text } from "../ui/text";
@@ -23,6 +24,7 @@ interface UpcomingMeetingProps {
 }
 
 export default function UpcomingMeeting({ meetings }: UpcomingMeetingProps) {
+  const { t } = useTranslation();
   const upcomingMeetings = meetings
     .filter((meeting) => new Date(meeting.meeting_time) > new Date())
     .sort(
@@ -32,7 +34,9 @@ export default function UpcomingMeeting({ meetings }: UpcomingMeetingProps) {
 
   return upcomingMeetings.length === 0 ? (
     <Center className="h-[100px] rounded-xl bg-background-50">
-      <Text className="text-gray-400">예정된 모임이 없습니다</Text>
+      <Text className="text-gray-400">
+        {t("community.no_upcoming_meeting")}
+      </Text>
     </Center>
   ) : (
     <VStack className="mt-4">

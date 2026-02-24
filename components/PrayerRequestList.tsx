@@ -9,13 +9,15 @@ import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { fetchPrayerRequests, Group, PrayerRequest } from "@/services/api";
+import { fetchPrayerRequests, PrayerRequest } from "@/services/api";
+import { Group } from "@/types/typeGroups";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { MessageSquare } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
+import { Button, ButtonText } from "./ui/button";
 import { Center } from "./ui/center";
 import { Heading } from "./ui/heading";
 
@@ -66,16 +68,38 @@ export default function PrayerRequestList({
   }
 
   return (
-    <VStack className="flex-1 px-4 pb-20">
-      <Heading size="lg" className="font-bold text-gray-900 dark:text-white">
-        {t("community.feed", "Community Feed")}
+    <VStack className="flex-1 pb-20">
+      <Heading
+        size="lg"
+        className="mb-2 font-bold text-gray-900 dark:text-white"
+      >
+        {t("community.mokjang_prayer_requests")}
       </Heading>
       <VStack className="gap-3">
         {filteredRequests.length === 0 ? (
-          <Center className="h-24">
-            <Text className="text-center text-typography-500">
-              {t("community.no_feed", "No feed.")}
-            </Text>
+          <Center className="mt-4 rounded-2xl border border-dashed border-gray-200 bg-gray-50/80 px-6 py-16 dark:border-gray-800 dark:bg-gray-800/20">
+            <VStack className="items-center gap-4">
+              <Center className="mb-2 h-16 w-16 rounded-full bg-blue-50 dark:bg-blue-900/20">
+                <Icon as={MessageSquare} className="h-8 w-8 text-blue-500" />
+              </Center>
+              <VStack className="items-center gap-2">
+                <Text className="text-center text-lg font-bold text-gray-900 dark:text-white">
+                  {t("community.no_prayer_request")}
+                </Text>
+                <Text className="px-4 text-center text-sm leading-5 text-gray-500 dark:text-gray-400">
+                  {t("community.post_first_prayer_request")}
+                </Text>
+              </VStack>
+              <Button
+                size="md"
+                className="mt-4 rounded-full bg-blue-500 px-8 shadow-sm hover:bg-blue-600 active:bg-blue-700"
+                onPress={() => router.push("/prayer-requests/create")}
+              >
+                <ButtonText className="font-bold text-white">
+                  {t("community.post_prayer_request")}
+                </ButtonText>
+              </Button>
+            </VStack>
           </Center>
         ) : (
           filteredRequests.map((request: PrayerRequest) => (

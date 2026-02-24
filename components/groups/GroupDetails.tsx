@@ -14,6 +14,7 @@ import {
   ScrollView,
 } from "react-native";
 import { CreateMeetingModal } from "../meetings/CreateMeetingModal";
+import PrayerRequestList from "../PrayerRequestList";
 import TabTitle from "../shared/TabTitle";
 import { Button, ButtonIcon } from "../ui/button";
 import { Center } from "../ui/center";
@@ -185,6 +186,7 @@ export default function GroupDetails({
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
+          contentContainerClassName="gap-4"
         >
           <GroupSchedules
             selectedGroup={myGroups[0]}
@@ -192,6 +194,8 @@ export default function GroupDetails({
             setSelectedDate={setSelectedDate}
             onDateChange={createState.setDate}
           />
+
+          <PrayerRequestList visibility={"group"} />
         </ScrollView>
       </VStack>
       <CreateMeetingModal
