@@ -23,7 +23,7 @@ import { Center } from "./ui/center";
 import { Heading } from "./ui/heading";
 
 interface PrayerRequestListProps {
-  visibility: "public" | "group" | "private";
+  visibility: "group" | "private";
   userGroup?: Group | null;
   currentUserId?: string;
 }
@@ -42,11 +42,6 @@ export default function PrayerRequestList({
   });
 
   const filteredRequests = useMemo(() => {
-    if (visibility === "public") {
-      return requests.filter((request: PrayerRequest) => {
-        return request.visibility === "public";
-      });
-    }
     if (visibility === "group") {
       return requests.filter((request: PrayerRequest) => {
         return (

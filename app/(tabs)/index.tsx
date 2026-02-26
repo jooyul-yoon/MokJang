@@ -1,9 +1,6 @@
 import AnnouncementCarousel from "@/components/annoucements/AnnouncementCarousel";
-import PrayerRequestList from "@/components/PrayerRequestList";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements } from "@/services/AnnouncementApi";
-import { fetchUserProfile } from "@/services/api";
-import { fetchMyGroups } from "@/services/GroupsApi";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
@@ -14,15 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const [refreshing, setRefreshing] = useState(false);
-  const { data: profile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: fetchUserProfile,
-  });
-
-  const { data: userGroup } = useQuery({
-    queryKey: ["myGroups"],
-    queryFn: fetchMyGroups,
-  });
 
   const { data: announcements } = useQuery({
     queryKey: ["announcements"],
@@ -30,11 +18,7 @@ export default function HomeScreen() {
   });
 
   const onRefresh = useCallback(() => {
-    onRefreshHelper(setRefreshing, [
-      "userProfile",
-      "myGroups",
-      "announcements",
-    ]);
+    onRefreshHelper(setRefreshing, ["announcements"]);
   }, []);
 
   const logoSource =
@@ -57,11 +41,6 @@ export default function HomeScreen() {
           className="px-4"
         >
           <AnnouncementCarousel announcements={announcements} />
-          <PrayerRequestList
-            visibility="public"
-            userGroup={userGroup}
-            currentUserId={profile?.id}
-          />
         </ScrollView>
       </VStack>
     </SafeAreaView>
