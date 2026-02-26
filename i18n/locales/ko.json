@@ -24,7 +24,13 @@
     "more": "더보기",
     "noComments": "아직 댓글이 없습니다. 첫 댓글을 남겨보세요!",
     "commentPlaceholder": "댓글을 입력하세요...",
-    "empty": "없음"
+    "empty": "없음",
+    "public": "전체 공개",
+    "group": "목장원 공개",
+    "private": "나만 보기",
+    "visibility": "공개 범위",
+    "category": "카테고리",
+    "unexpected_error": "예기치 않은 오류가 발생했습니다"
   },
   "tabs": {
     "home": "홈",
@@ -90,7 +96,9 @@
     "attending": "참석",
     "absent": "불참",
     "attendees": "참석자",
-    "absentees": "불참자"
+    "absentees": "불참자",
+    "enter_prayer_request": "기도제목을 입력해주세요...",
+    "error_create_prayer_request": "기도제목 등록에 실패했습니다"
   },
   "profile": {
     "name": "이름",

@@ -9,12 +9,13 @@ import { Icon } from "@/components/ui/icon";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { fetchPrayerRequests, PrayerRequest } from "@/services/api";
+import { fetchPrayerRequests } from "@/services/PrayerRequestApi";
 import { Group } from "@/types/typeGroups";
+import { PrayerRequest } from "@/types/typePrayerRequest";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { MessageSquare } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import { Button, ButtonText } from "./ui/button";
@@ -34,9 +35,8 @@ export default function PrayerRequestList({
 }: PrayerRequestListProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [showModal, setShowModal] = useState(false);
 
-  const { data: requests = [], isLoading } = useQuery({
+  const { data: requests = [], isLoading } = useQuery<PrayerRequest[]>({
     queryKey: ["prayerRequests"],
     queryFn: fetchPrayerRequests,
   });
@@ -77,7 +77,7 @@ export default function PrayerRequestList({
       </Heading>
       <VStack className="gap-3">
         {filteredRequests.length === 0 ? (
-          <Center className="mt-4 rounded-2xl border border-dashed border-gray-200 bg-gray-50/80 px-6 py-16 dark:border-gray-800 dark:bg-gray-800/20">
+          <Center className="mt-4 rounded-2xl border border-dashed border-gray-300 px-6 py-16 dark:border-gray-800">
             <VStack className="items-center gap-4">
               <Center className="mb-2 h-16 w-16 rounded-full bg-blue-50 dark:bg-blue-900/20">
                 <Icon as={MessageSquare} className="h-8 w-8 text-blue-500" />
@@ -162,28 +162,6 @@ export default function PrayerRequestList({
           ))
         )}
       </VStack>
-
-      {/* <Fab
-        size="lg"
-        placement="bottom right"
-        onPress={() => setShowModal(true)}
-        className="mb-4 mr-4"
-      >
-        <FabIcon as={Plus} />
-      </Fab>
-
-      <CreatePrayerRequestModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        userGroup={userGroup}
-        defaultVisibility={
-          visibility === "group" ||
-          visibility === "public" ||
-          visibility === "private"
-            ? visibility
-            : "public"
-        }
-      /> */}
     </VStack>
   );
 }

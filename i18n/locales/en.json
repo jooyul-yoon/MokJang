@@ -24,7 +24,13 @@
     "more": "More",
     "noComments": "No comments yet. Be the first to encourage!",
     "commentPlaceholder": "Write a comment...",
-    "empty": "Empty"
+    "empty": "Empty",
+    "public": "Public",
+    "group": "Group",
+    "private": "Private",
+    "visibility": "Visibility",
+    "category": "Category",
+    "unexpected_error": "An unexpected error occurred"
   },
   "tabs": {
     "home": "Home",
@@ -89,7 +95,9 @@
     "attending": "Attending",
     "absent": "Absent",
     "attendees": "Attendees",
-    "absentees": "Absentees"
+    "absentees": "Absentees",
+    "enter_prayer_request": "Enter your prayer request...",
+    "error_create_prayer_request": "Failed to create prayer request"
   },
   "profile": {
     "name": "Name",
