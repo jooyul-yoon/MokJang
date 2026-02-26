@@ -160,7 +160,7 @@ export default function CreatePrayerRequest() {
           />
         </Center>
         <Center>
-          <Text className="text-xl font-medium text-typography-900 dark:text-typography-50">
+          <Text className="text-xl font-medium text-typography-900">
             {t("community.post_prayer_request")}
           </Text>
         </Center>
@@ -185,7 +185,7 @@ export default function CreatePrayerRequest() {
             <VStack className="mt-4 flex-1" space="xl">
               <FormControl isInvalid={content.length > 500} className="w-full">
                 <HStack className="mb-4 items-center justify-between">
-                  <Text className="text-base text-typography-600 dark:text-typography-400">
+                  <Text className="text-base text-typography-600">
                     {new Date().toLocaleDateString(language, {
                       year: "numeric",
                       month: "short",
@@ -206,7 +206,7 @@ export default function CreatePrayerRequest() {
                     placeholder={t("community.enter_prayer_request")}
                     value={content}
                     onChangeText={setContent}
-                    className="h-full text-xl leading-6 text-typography-900 dark:text-typography-100"
+                    className="h-full text-xl leading-6 text-typography-900"
                   />
                 </Input>
               </FormControl>
@@ -215,10 +215,7 @@ export default function CreatePrayerRequest() {
             <VStack space="md">
               {/* Visibility Toggle */}
               <HStack className="items-center justify-between px-1">
-                <Heading
-                  size="sm"
-                  className="text-typography-900 dark:text-typography-50"
-                >
+                <Heading size="sm" className="text-typography-900">
                   {t("common.visibility")}
                 </Heading>
                 <TouchableOpacity
@@ -228,74 +225,70 @@ export default function CreatePrayerRequest() {
                     )
                   }
                   activeOpacity={0.7}
-                  className="rounded-full bg-primary-50 p-2 dark:bg-primary-900/30"
+                  className="flex-row items-center gap-2 rounded-full bg-primary-50 px-4 py-2"
                 >
                   <Icon
                     as={visibility === "group" ? Users : Lock}
-                    className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                    className="h-6 w-6 text-primary-600"
                   />
+                  <Text>{t("common." + visibility)}</Text>
                 </TouchableOpacity>
               </HStack>
               {/* Category Selection */}
               <HStack className="items-center justify-between px-1">
-                <Heading
-                  size="sm"
-                  className="text-typography-900 dark:text-typography-50"
-                >
+                <Heading size="sm" className="text-typography-900">
                   {t("common.category")}
                 </Heading>
                 <HStack space="sm" className="items-center">
                   <TouchableOpacity
                     onPress={() => setShowCategorySheet(true)}
                     activeOpacity={0.7}
-                    className="rounded-full bg-primary-50 p-2 dark:bg-primary-900/30"
+                    className="flex-row items-center gap-2 rounded-full bg-primary-50 px-5 py-2"
                     style={{
                       backgroundColor: category
                         ? `${prayerRequestCategories[category].color}1A`
                         : "",
                     }}
                   >
-                    <VStack space="xs" className="items-center justify-center">
-                      {category ? (
-                        <>
-                          <Icon
-                            as={getCategoryIcon(category)}
-                            className="h-4 w-4"
-                            style={{
-                              color: prayerRequestCategories[category].color,
-                            }}
-                          />
-                          <Text
-                            className="font-semibold"
-                            style={{
-                              color: prayerRequestCategories[category].color,
-                            }}
-                          >
-                            {i18n.language === "ko"
-                              ? prayerRequestCategories[category].ko
-                              : prayerRequestCategories[category].en
-                                  .charAt(0)
-                                  .toUpperCase() +
-                                prayerRequestCategories[category].en.slice(1)}
-                          </Text>
-                        </>
-                      ) : (
-                        <>
-                          <Icon
-                            as={FolderOpen}
-                            className="h-6 w-6 text-primary-600 dark:text-primary-400"
-                          />
-                          <Text>선택</Text>
-                        </>
-                      )}
-                    </VStack>
+                    {category ? (
+                      <>
+                        <Icon
+                          as={getCategoryIcon(category)}
+                          className="h-6 w-6"
+                          style={{
+                            color: prayerRequestCategories[category].color,
+                          }}
+                        />
+                        <Text
+                          className="font-semibold"
+                          style={{
+                            color: prayerRequestCategories[category].color,
+                          }}
+                        >
+                          {i18n.language === "ko"
+                            ? prayerRequestCategories[category].ko
+                            : prayerRequestCategories[category].en
+                                .charAt(0)
+                                .toUpperCase() +
+                              prayerRequestCategories[category].en.slice(1)}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Icon
+                          as={FolderOpen}
+                          className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                        />
+                        <Text>선택</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                 </HStack>
               </HStack>
             </VStack>
             {/* Submit Button */}
             <Button
-              className="mt-8 h-12 w-full rounded-full bg-primary-500"
+              className="mt-8 h-12 w-full rounded-full bg-primary-400"
               onPress={handleSubmit}
               isDisabled={
                 isSubmitting || content.length === 0 || content.length > 500
@@ -308,7 +301,7 @@ export default function CreatePrayerRequest() {
                   <ButtonText className="text-lg font-bold text-white">
                     {t("community.post_prayer_request")}
                   </ButtonText>
-                  <ButtonIcon as={Forward} />
+                  <ButtonIcon as={Forward} className="text-white" />
                 </>
               )}
             </Button>
@@ -321,7 +314,7 @@ export default function CreatePrayerRequest() {
         onClose={() => setShowCategorySheet(false)}
       >
         <ActionsheetBackdrop />
-        <ActionsheetContent>
+        <ActionsheetContent className="dark:bg-background-dark">
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
@@ -345,7 +338,7 @@ export default function CreatePrayerRequest() {
                       style={{ color: cat.color }}
                     />
                   </Center>
-                  <ActionsheetItemText className="font-semibold text-typography-800 dark:text-typography-200">
+                  <ActionsheetItemText className="font-semibold text-typography-800">
                     {i18n.language === "ko"
                       ? cat.ko
                       : cat.en.charAt(0).toUpperCase() + cat.en.slice(1)}
