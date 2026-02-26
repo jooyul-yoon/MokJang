@@ -20,6 +20,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
+import { Toast, ToastDescription, useToast } from "@/components/ui/toast";
 import { VStack } from "@/components/ui/vstack";
 import { fetchMyGroups } from "@/services/GroupsApi";
 import { createPrayerRequest } from "@/services/PrayerRequestApi";
@@ -79,6 +80,7 @@ export default function CreatePrayerRequest() {
   const { t, i18n } = useTranslation();
   const language = i18n.language === "ko" ? "ko-KR" : "en-US";
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const [content, setContent] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -114,6 +116,18 @@ export default function CreatePrayerRequest() {
         category,
       );
       if (success) {
+        toast.show({
+          placement: "bottom",
+          render: ({ id }) => (
+            <Toast nativeID={"toast-" + id} variant="solid">
+              <VStack space="xs">
+                <ToastDescription>
+                  {t("community.success_create_prayer_request")}
+                </ToastDescription>
+              </VStack>
+            </Toast>
+          ),
+        });
         await queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
         router.back();
       } else {

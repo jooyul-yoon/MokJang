@@ -98,7 +98,8 @@
     "attendees": "참석자",
     "absentees": "불참자",
     "enter_prayer_request": "기도제목을 입력해주세요...",
-    "error_create_prayer_request": "기도제목 등록에 실패했습니다"
+    "error_create_prayer_request": "기도제목 등록에 실패했습니다",
+    "success_create_prayer_request": "기도제목이 성공적으로 등록되었습니다"
   },
   "profile": {
     "name": "이름",
