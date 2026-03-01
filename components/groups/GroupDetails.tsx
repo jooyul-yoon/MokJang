@@ -194,8 +194,7 @@ export default function GroupDetails({
             setSelectedDate={setSelectedDate}
             onDateChange={createState.setDate}
           />
-
-          <PrayerRequestList visibility={"group"} />
+          <PrayerRequestList visibility={"group"} userGroup={myGroups[0]} />
         </ScrollView>
       </VStack>
       <CreateMeetingModal
