@@ -93,18 +93,18 @@ export default function GroupSchedules({
 
       <HStack
         space="md"
-        className="my-4 max-h-[300px] min-h-[200px] w-full justify-between"
+        className="my-4 max-h-[300px] min-h-[100px] w-full justify-between"
       >
         {/* Upcoming Meetings */}
         <VStack className="w-1/2 overflow-hidden">
-          <Heading size="sm" className="text-typography-800">
+          <Heading size="sm" className="mb-2 text-typography-800">
             {t("community.upcomingMeetings")}
           </Heading>
           <UpcomingMeeting meetings={meetings} />
         </VStack>
         {/* selected date */}
         <VStack className="w-1/2 overflow-hidden">
-          <Heading size="sm" className="mb-4 text-typography-800">
+          <Heading size="sm" className="mb-2 text-typography-800">
             {new Date(selectedDate).toLocaleDateString(
               language == "ko" ? "ko-KR" : "en-US",
               {
