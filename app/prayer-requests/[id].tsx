@@ -29,7 +29,7 @@ import {
   fetchPrayerRequestComments,
   fetchPrayerRequests,
   togglePrayerRequestAnswered,
-} from "@/services/api";
+} from "@/services/PrayerRequestApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -116,14 +116,14 @@ export default function PrayerRequestDetailScreen() {
 
   if (!request) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-background-dark">
         <ActivityIndicator />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -164,11 +164,11 @@ export default function PrayerRequestDetailScreen() {
           />
 
           <ScrollView
-            className="flex-1 bg-background-50 dark:bg-background-950"
-            contentContainerClassName="p-4 gap-4"
+            className="flex-1 bg-white dark:bg-background-dark"
+            contentContainerClassName="p-4 gap-6"
           >
-            {/* Main Request Card */}
-            <VStack className="dark:bg-background-card-dark rounded-2xl border border-outline-100 bg-white p-5 shadow-sm dark:border-outline-800">
+            {/* Main Request Content */}
+            <VStack className="border-b border-outline-100 pb-6 dark:border-outline-800">
               {/* Header: Author & Meta */}
               <HStack className="mb-4 items-start justify-between">
                 <HStack className="items-center gap-3">
@@ -291,7 +291,7 @@ export default function PrayerRequestDetailScreen() {
                         }}
                       />
                     </Avatar>
-                    <VStack className="dark:bg-background-card-dark flex-1 rounded-2xl rounded-tl-none bg-white p-3 shadow-sm">
+                    <VStack className="dark:bg-background-card-dark flex-1 rounded-2xl rounded-tl-none bg-background-50 p-3">
                       <HStack className="mb-1 items-center justify-between">
                         <Text className="text-sm font-semibold text-typography-900 dark:text-typography-100">
                           {comment.profiles?.full_name}
@@ -311,7 +311,7 @@ export default function PrayerRequestDetailScreen() {
           </ScrollView>
 
           {/* Comment Input */}
-          <HStack className="dark:bg-background-card-dark items-center gap-3 border-t border-outline-100 bg-white px-4 py-3 pb-8 shadow-sm dark:border-outline-800">
+          <HStack className="dark:bg-background-card-dark items-center gap-3 border-t border-outline-100 bg-white px-4 py-3 pb-8 dark:border-outline-800">
             <Input
               className="flex-1 rounded-full border-outline-200 bg-background-50 dark:border-outline-700 dark:bg-background-900"
               size="md"
