@@ -4,6 +4,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { Divider } from "@/components/ui/divider";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
@@ -13,10 +14,10 @@ import { Group } from "@/types/typeGroups";
 import { PrayerRequest } from "@/types/typePrayerRequest";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { MessageSquare } from "lucide-react-native";
+import { ChevronRight, MessageSquare } from "lucide-react-native";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { Button, ButtonText } from "./ui/button";
 import { Center } from "./ui/center";
 import { Heading } from "./ui/heading";
@@ -95,13 +96,8 @@ export default function PrayerRequestList({
             </VStack>
           </Center>
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="-mx-4 overflow-visible px-4"
-            contentContainerStyle={{ paddingVertical: 4 }}
-          >
-            <HStack space="md" className="pr-8">
+          <Card className="dark:bg-background-card-dark rounded-xl border border-gray-100 bg-white p-0 shadow-sm dark:border-gray-800">
+            <VStack>
               {[...filteredRequests]
                 .sort(
                   (a, b) =>
@@ -109,72 +105,75 @@ export default function PrayerRequestList({
                     new Date(a.created_at).getTime(),
                 )
                 .slice(0, 5)
-                .map((request: PrayerRequest) => (
-                  <TouchableOpacity
-                    key={request.id}
-                    onPress={() =>
-                      router.push(`/prayer-requests/${request.id}`)
-                    }
-                    activeOpacity={0.7}
-                    className="w-[280px]"
-                  >
-                    <Card className="dark:bg-background-card-dark h-full rounded-xl border border-gray-100 bg-gray-50 p-4 shadow-sm dark:border-gray-800">
-                      <HStack className="mb-2 items-center justify-between">
-                        <HStack className="items-center gap-2">
-                          <Avatar size="xs">
-                            <AvatarFallbackText>
-                              {request.profiles?.full_name}
-                            </AvatarFallbackText>
-                            <AvatarImage
-                              source={{
-                                uri:
-                                  request.profiles?.avatar_url ||
-                                  "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-                              }}
-                            />
-                          </Avatar>
-                          <VStack>
-                            <Text className="text-sm font-bold text-typography-900">
-                              {request.profiles?.full_name}
-                            </Text>
-                            <Text className="text-xs text-typography-500">
-                              {new Date(
-                                request.created_at,
-                              ).toLocaleDateString()}
-                            </Text>
-                          </VStack>
-                        </HStack>
-                        <Text className="text-xs uppercase text-typography-400">
-                          {request.visibility === "public"
-                            ? t("common.public", "Public")
-                            : request.visibility === "group"
-                              ? t("common.group", "Group")
-                              : t("common.private", "Private")}
-                        </Text>
-                      </HStack>
-                      <Text
-                        numberOfLines={3}
-                        className="mb-3 leading-normal text-typography-700"
-                      >
-                        {request.content}
-                      </Text>
-                      <HStack className="justify-end">
-                        <HStack className="items-center gap-1">
-                          <Icon
-                            as={MessageSquare}
-                            size="xs"
-                            className="text-typography-400"
+                .map((request: PrayerRequest, index: number) => (
+                  <React.Fragment key={request.id}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push(`/prayer-requests/${request.id}`)
+                      }
+                      activeOpacity={0.7}
+                    >
+                      <HStack className="items-center gap-3 p-4">
+                        <Avatar size="sm">
+                          <AvatarFallbackText>
+                            {request.profiles?.full_name}
+                          </AvatarFallbackText>
+                          <AvatarImage
+                            source={{
+                              uri:
+                                request.profiles?.avatar_url ||
+                                "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+                            }}
                           />
-                          <Text className="text-xs text-typography-400">
-                            {t("common.comments", "Comments")}
+                        </Avatar>
+
+                        <VStack className="flex-1 justify-center">
+                          <HStack className="items-center justify-between">
+                            <HStack className="items-center gap-2">
+                              <Text className="text-sm font-bold text-typography-900">
+                                {request.profiles?.full_name}
+                              </Text>
+                              <Text className="text-[11px] text-typography-400">
+                                {new Date(
+                                  request.created_at,
+                                ).toLocaleDateString()}
+                              </Text>
+                            </HStack>
+                          </HStack>
+                          <Text
+                            numberOfLines={1}
+                            className="mt-0.5 text-[13px] leading-normal text-typography-600"
+                          >
+                            {request.content}
                           </Text>
-                        </HStack>
+                        </VStack>
                       </HStack>
-                    </Card>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
+                    {index < Math.min(filteredRequests.length - 1, 4) && (
+                      <Divider className="mx-4 bg-gray-100 dark:bg-gray-800" />
+                    )}
+                  </React.Fragment>
                 ))}
-            </HStack>
-          </ScrollView>
+              {filteredRequests.length > 5 && (
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => router.push("/prayer-requests")}
+                  className="border-t border-gray-100 p-3 dark:border-gray-800"
+                >
+                  <HStack className="items-center justify-center space-x-1">
+                    <Text className="text-sm font-medium text-blue-500">
+                      {t("common.seeMore", "더보기")}
+                    </Text>
+                    <Icon
+                      as={ChevronRight}
+                      size="sm"
+                      className="text-blue-500"
+                    />
+                  </HStack>
+                </TouchableOpacity>
+              )}
+            </VStack>
+          </Card>
         )}
       </VStack>
     </VStack>
