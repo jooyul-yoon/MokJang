@@ -4,7 +4,15 @@ import { useGroupStore } from "@/store/groupStore";
 import { Group } from "@/types/typeGroups";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { router } from "expo-router";
-import { CalendarPlus2, DeleteIcon, MenuIcon } from "lucide-react-native";
+import {
+  CalendarPlus2,
+  ChevronRight,
+  DeleteIcon,
+  Heart,
+  Images,
+  MenuIcon,
+  NotebookPen,
+} from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,15 +20,17 @@ import {
   Alert,
   RefreshControl,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { CreateMeetingModal } from "../meetings/CreateMeetingModal";
-import PrayerRequestList from "../PrayerRequestList";
 import TabTitle from "../shared/TabTitle";
 import { Button, ButtonIcon } from "../ui/button";
 import { Center } from "../ui/center";
+import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { Icon } from "../ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "../ui/menu";
+import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 import GroupSchedules from "./GroupSchedules";
 
@@ -199,7 +209,58 @@ export default function GroupDetails({
             setSelectedDate={setSelectedDate}
             onDateChange={createState.setDate}
           />
-          <PrayerRequestList visibility={"group"} userGroup={myGroups[0]} />
+          <VStack className="mt-4 pb-10">
+            <Heading className="mb-2 px-1 text-typography-800">
+              {t("community.groupActivities")}
+            </Heading>
+            <VStack className="overflow-hidden rounded-xl">
+              <TouchableOpacity
+                activeOpacity={0.5}
+                className="h-14 w-full flex-row items-center justify-between px-2"
+                onPress={() => router.push(`/groups/${myGroups[0].id}/prayers`)}
+              >
+                <HStack space="md" className="items-center">
+                  <Icon as={Heart} size="md" className="text-typography-500" />
+                  <Text className="text-lg font-medium text-typography-800">
+                    {t("community.prayers")}
+                  </Text>
+                </HStack>
+                <Icon as={ChevronRight} className="text-typography-400" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                className="h-14 w-full flex-row items-center justify-between px-2"
+                onPress={() => router.push(`/groups/${myGroups[0].id}/feeds`)}
+              >
+                <HStack space="md" className="items-center">
+                  <Icon as={Images} size="md" className="text-typography-500" />
+                  <Text className="text-lg font-medium text-typography-800">
+                    {t("community.feeds")}
+                  </Text>
+                </HStack>
+                <Icon as={ChevronRight} className="text-typography-400" />
+              </TouchableOpacity>
+              {myGroups[0]?.leader_id === userProfile?.id && (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  className="h-14 w-full flex-row items-center justify-between px-2"
+                  onPress={() => router.push(`/groups/${myGroups[0].id}/diary`)}
+                >
+                  <HStack space="md" className="items-center">
+                    <Icon
+                      as={NotebookPen}
+                      size="md"
+                      className="text-typography-500"
+                    />
+                    <Text className="text-lg font-medium text-typography-800">
+                      {t("community.diary")}
+                    </Text>
+                  </HStack>
+                  <Icon as={ChevronRight} className="text-typography-400" />
+                </TouchableOpacity>
+              )}
+            </VStack>
+          </VStack>
         </ScrollView>
       </VStack>
       <CreateMeetingModal

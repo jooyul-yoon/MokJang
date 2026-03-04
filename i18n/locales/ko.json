@@ -100,7 +100,11 @@
     "absentees": "불참자",
     "enter_prayer_request": "기도제목을 입력해주세요...",
     "error_create_prayer_request": "기도제목 등록에 실패했습니다",
-    "success_create_prayer_request": "기도제목이 성공적으로 등록되었습니다"
+    "success_create_prayer_request": "기도제목이 성공적으로 등록되었습니다",
+    "groupActivities": "목장 활동",
+    "prayers": "기도제목",
+    "feeds": "목장 피드",
+    "diary": "목회 일기"
   },
   "profile": {
     "name": "이름",
