@@ -59,7 +59,12 @@ export default function GroupDetails({
   );
 
   const handleRefresh = async () => {
-    onRefreshHelper(setRefreshing, ["myGroups", "groups"]);
+    onRefreshHelper(setRefreshing, [
+      "myGroups",
+      "groups",
+      "meetings",
+      "prayerRequests",
+    ]);
   };
 
   useEffect(() => {

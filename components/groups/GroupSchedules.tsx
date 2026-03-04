@@ -61,8 +61,6 @@ export default function GroupSchedules({
     [colorScheme],
   );
 
-  console.log("selectedDate", selectedDate);
-
   return (
     <VStack>
       <MeetingCalendar
