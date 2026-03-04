@@ -61,6 +61,8 @@ export default function GroupSchedules({
     [colorScheme],
   );
 
+  console.log("selectedDate", selectedDate);
+
   return (
     <VStack>
       <MeetingCalendar
@@ -108,6 +110,7 @@ export default function GroupSchedules({
             {new Date(selectedDate).toLocaleDateString(
               language == "ko" ? "ko-KR" : "en-US",
               {
+                timeZone: "UTC",
                 month: "long",
                 day: "numeric",
                 weekday: "short",

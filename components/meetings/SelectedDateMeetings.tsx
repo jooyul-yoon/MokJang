@@ -19,19 +19,17 @@ export default function SelectedDateMeetings({
 
   const selectedDateMeetings = useMemo(() => {
     return meetings
-      .filter((meeting) => {
-        const mDate = new Date(meeting.meeting_time);
-        const year = mDate.getFullYear();
-        const month = String(mDate.getMonth() + 1).padStart(2, "0");
-        const day = String(mDate.getDate()).padStart(2, "0");
-        const localDateString = `${year}-${month}-${day}`;
-        return localDateString === selectedDate;
-      })
+      .filter(
+        (meeting) =>
+          new Date(meeting.meeting_time).toLocaleDateString("sv-SE") ===
+          selectedDate,
+      )
       .sort(
         (a, b) =>
           new Date(a.meeting_time).getTime() -
           new Date(b.meeting_time).getTime(),
-      );
+      )
+      .slice(0, 3);
   }, [meetings, selectedDate]);
 
   if (selectedDateMeetings.length === 0) {
