@@ -186,6 +186,7 @@
     "yesterday": "어제",
     "daysAgo": "{{count}}일 전",
     "amen": "아멘",
-    "prayed": "명이 기도함"
+    "prayed": "명이 기도함",
+    "praying": "기도중"
   }
 }

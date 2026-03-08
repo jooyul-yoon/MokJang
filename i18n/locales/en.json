@@ -185,6 +185,7 @@
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
     "amen": "Amen!",
-    "prayed": "prayed"
+    "prayed": "prayed",
+    "praying": "Praying"
   }
 }

@@ -1,4 +1,5 @@
 import { GoBackHeader } from "@/components/GoBackHeader";
+import { PrayerRequestBadges } from "@/components/PrayerRequestBadges";
 import {
   Avatar,
   AvatarFallbackText,
@@ -94,6 +95,7 @@ export default function PrayerRequestDetailScreen() {
     mutationFn: (isAnswered: boolean) =>
       togglePrayerRequestAnswered(id as string, isAnswered),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
       queryClient.invalidateQueries({ queryKey: ["prayerRequest", id] });
     },
   });
@@ -102,6 +104,7 @@ export default function PrayerRequestDetailScreen() {
     const { success, error } = await deletePrayerRequest(id as string);
     if (success) {
       setShowDeleteModal(false);
+      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
       queryClient.invalidateQueries({ queryKey: ["prayerRequest", id] });
       router.back();
     } else {
@@ -196,27 +199,7 @@ export default function PrayerRequestDetailScreen() {
                   </VStack>
                 </HStack>
 
-                <HStack className="items-center gap-2">
-                  {request.is_answered && (
-                    <HStack className="items-center gap-1.5 rounded-full bg-success-100 px-2.5 py-1 dark:bg-success-900/50">
-                      <Icon
-                        as={CheckCircle}
-                        size="xs"
-                        className="text-success-600 dark:text-success-400"
-                      />
-                      <Text className="text-xs font-bold text-success-700 dark:text-success-300">
-                        {t("prayer.answered", "Answered")}
-                      </Text>
-                    </HStack>
-                  )}
-                  <Text className="rounded-full bg-background-100 px-2.5 py-1 text-xs font-medium text-typography-600 dark:bg-background-800 dark:text-typography-400">
-                    {request.visibility === "public"
-                      ? t("common.public", "Public")
-                      : request.visibility === "private"
-                        ? t("common.private", "Private")
-                        : t("common.group", "Group")}
-                  </Text>
-                </HStack>
+                <PrayerRequestBadges request={request} />
               </HStack>
 
               {/* Content */}
@@ -227,12 +210,12 @@ export default function PrayerRequestDetailScreen() {
               {/* Action Button (Owner only) */}
               {userId === request.user_id && (
                 <Button
-                  variant="outline"
+                  variant="link"
                   action={request.is_answered ? "secondary" : "primary"}
                   onPress={() =>
                     toggleAnsweredMutation.mutate(!request.is_answered)
                   }
-                  className="self-end"
+                  className="self-center"
                   size="sm"
                   isDisabled={toggleAnsweredMutation.isPending}
                 >

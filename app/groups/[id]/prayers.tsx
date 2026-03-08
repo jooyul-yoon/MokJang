@@ -1,3 +1,4 @@
+import { PrayerRequestBadges } from "@/components/PrayerRequestBadges";
 import {
   Avatar,
   AvatarFallbackText,
@@ -15,10 +16,7 @@ import {
   fetchPrayerRequests,
   togglePrayerRequestAmen,
 } from "@/services/PrayerRequestApi";
-import {
-  PrayerRequest,
-  prayerRequestCategories,
-} from "@/types/typePrayerRequest";
+import { PrayerRequest } from "@/types/typePrayerRequest";
 import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -131,7 +129,7 @@ export default function PrayerBoardScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="px-5"
+          className="px-3"
           contentContainerStyle={{ gap: 8, paddingRight: 40 }}
         >
           {filters.map((f) => {
@@ -162,7 +160,7 @@ export default function PrayerBoardScreen() {
 
       {/* Cards List */}
       <ScrollView
-        className="flex-1 px-4 pt-4"
+        className="flex-1 pt-4"
         contentContainerStyle={{ paddingBottom: 40, gap: 16 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -180,14 +178,6 @@ export default function PrayerBoardScreen() {
           </Center>
         ) : (
           filteredRequests.map((request: PrayerRequest, index: number) => {
-            const categoryId =
-              typeof request.category === "string"
-                ? request.category
-                : request.category?.id;
-            const categoryObj =
-              prayerRequestCategories[categoryId || "general"] ||
-              prayerRequestCategories.general;
-
             const amens = request.prayer_request_amens || [];
             const amenCount = amens.length;
             const hasAmened = userProfile
@@ -198,7 +188,7 @@ export default function PrayerBoardScreen() {
               <TouchableOpacity
                 key={request.id}
                 onPress={() => router.push(`/prayer-requests/${request.id}`)}
-                className="border-b border-outline-100 p-5"
+                className="border-b border-outline-100 p-4 px-5"
               >
                 {/* User Info & Badge */}
                 <HStack className="mb-4 items-start justify-between">
@@ -216,27 +206,15 @@ export default function PrayerBoardScreen() {
                       </AvatarFallbackText>
                     </Avatar>
                     <VStack>
-                      <Text className="text-[15px] font-bold text-typography-900">
+                      <Text className="text-md font-bold text-typography-900">
                         {request.profiles?.full_name}
                       </Text>
-                      <Text className="text-[12px] text-typography-400">
+                      <Text className="text-sm text-typography-500">
                         {timeAgo(request.created_at)}
                       </Text>
                     </VStack>
                   </HStack>
-                  {categoryObj && (
-                    <VStack
-                      style={{ backgroundColor: categoryObj.color + "1A" }}
-                      className="items-center justify-center rounded-full px-2.5 py-1"
-                    >
-                      <Text
-                        style={{ color: categoryObj.color }}
-                        className="text-[10px] font-bold uppercase"
-                      >
-                        {categoryObj.en}
-                      </Text>
-                    </VStack>
-                  )}
+                  <PrayerRequestBadges request={request} disableVisibility />
                 </HStack>
 
                 {/* Content */}
