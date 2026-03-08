@@ -1,9 +1,12 @@
 import { GoBackHeader } from "@/components/GoBackHeader";
+import { PrayerRequestBadges } from "@/components/PrayerRequestBadges";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { fetchMyPrayerRequests } from "@/services/api";
+import { fetchUserProfile } from "@/services/api";
+import { fetchMyPrayerRequests } from "@/services/PrayerRequestApi";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -14,6 +17,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function MyPrayerRequestsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: fetchUserProfile,
+  });
 
   const { data: myPrayers = [], isLoading } = useQuery({
     queryKey: ["myPrayers"],
@@ -29,41 +37,60 @@ export default function MyPrayerRequestsScreen() {
           {isLoading ? (
             <ActivityIndicator className="mt-10" />
           ) : myPrayers.length > 0 ? (
-            myPrayers.map((prayer) => (
+            myPrayers.map((prayer, index) => (
               <TouchableOpacity
                 key={prayer.id}
                 onPress={() => router.push(`/prayer-requests/${prayer.id}`)}
               >
-                <Card className="dark:bg-background-card-dark rounded-xl bg-white p-5 shadow-sm">
+                <Card className="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-800">
                   <HStack className="mb-3 items-center justify-between">
                     <Text className="text-xs font-medium text-typography-500">
                       {new Date(prayer.created_at).toLocaleDateString()}
                     </Text>
-                    <HStack className="items-center gap-2">
-                      {prayer.is_answered && (
-                        <VStack className="rounded-full bg-success-100 px-2 py-0.5 dark:bg-success-900/30">
-                          <Text className="text-[10px] font-bold text-success-700 dark:text-success-400">
-                            {t("prayer.answered", "Answered")}
-                          </Text>
-                        </VStack>
-                      )}
-                      <VStack className="rounded-full bg-background-100 px-2 py-0.5 dark:bg-background-800">
-                        <Text className="text-[10px] font-bold uppercase text-typography-500">
-                          {prayer.visibility === "public"
-                            ? t("common.public", "Public")
-                            : prayer.visibility === "private"
-                              ? t("common.private", "Private")
-                              : t("common.group", "Group")}
-                        </Text>
-                      </VStack>
-                    </HStack>
+                    <PrayerRequestBadges request={prayer} />
                   </HStack>
                   <Text
                     numberOfLines={4}
-                    className="text-base leading-relaxed text-typography-800 dark:text-typography-200"
+                    className="text-base leading-relaxed text-typography-800"
                   >
                     {prayer.content}
                   </Text>
+
+                  {/* Footer Actions */}
+                  <HStack className="mt-4 items-center justify-between">
+                    {prayer.prayer_request_amens.length > 0 ? (
+                      <HStack className="items-center gap-2">
+                        <HStack className="-space-x-1.5">
+                          {prayer.prayer_request_amens
+                            .slice(0, 3)
+                            .map((amen, i) => (
+                              <Avatar
+                                key={amen.id || i}
+                                size="xs"
+                                className="z-10 h-6 w-6 border-[2px] border-white"
+                              >
+                                <AvatarImage
+                                  source={{
+                                    uri:
+                                      amen.profiles?.avatar_url ||
+                                      `https://i.pravatar.cc/100?img=${
+                                        i + index * 2 + 10
+                                      }`,
+                                  }}
+                                />
+                              </Avatar>
+                            ))}
+                        </HStack>
+                        <Text className="ml-1 text-[12px] font-medium text-typography-500">
+                          {prayer.prayer_request_amens.length}{" "}
+                          {t("prayerBoard.prayed")}
+                        </Text>
+                      </HStack>
+                    ) : (
+                      <HStack></HStack>
+                    )}
+                    <HStack></HStack>
+                  </HStack>
                 </Card>
               </TouchableOpacity>
             ))

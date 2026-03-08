@@ -13,11 +13,10 @@ import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
 import {
   deleteAccount,
-  fetchMyPrayerRequests,
   fetchUserProfile,
   updateNotificationSettings,
 } from "@/services/api";
-import { fetchMyGroups } from "@/services/GroupsApi";
+import { fetchMyPrayerRequests } from "@/services/PrayerRequestApi";
 import { useGroupStore } from "@/store/groupStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -125,11 +124,6 @@ export default function ProfileScreen() {
       if (p) setFullName(p.full_name || "");
       return p;
     },
-  });
-
-  const { data: userGroup } = useQuery({
-    queryKey: ["myGroups"],
-    queryFn: fetchMyGroups,
   });
 
   const { data: myPrayers = [] } = useQuery({
@@ -265,16 +259,17 @@ export default function ProfileScreen() {
     }
   }
 
+  console.log(myPrayers);
   if (isProfileLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-background-dark">
         <ActivityIndicator size="large" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
       <TabTitle title={t("tabs.profile")} />
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         <VStack className="pb-10">
