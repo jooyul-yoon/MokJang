@@ -172,5 +172,20 @@
     "churchAdmin": "교회 관리자",
     "create": "새 알림",
     "markAsRead": "읽음으로 표시"
+  },
+  "prayerBoard": {
+    "allRequests": "전체 보기",
+    "myPrayers": "내 기도제목",
+    "answered": "응답받음",
+    "urgent": "긴급",
+    "mokjangCommunity": "목장 공동체",
+    "title": "기도 게시판",
+    "noPrayerRequests": "등록된 기도제목이 없습니다.",
+    "justNow": "방금 전",
+    "hoursAgo": "{{count}}시간 전",
+    "yesterday": "어제",
+    "daysAgo": "{{count}}일 전",
+    "amen": "아멘!",
+    "prayed": "명이 기도함"
   }
 }

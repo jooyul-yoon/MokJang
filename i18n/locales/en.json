@@ -171,5 +171,20 @@
     "churchAdmin": "Church Admin",
     "create": "New Announcement",
     "markAsRead": "Mark as Read"
+  },
+  "prayerBoard": {
+    "allRequests": "All Requests",
+    "myPrayers": "My Prayers",
+    "answered": "Answered",
+    "urgent": "Urgent",
+    "mokjangCommunity": "MOKJANG COMMUNITY",
+    "title": "Prayer Board",
+    "noPrayerRequests": "No prayer requests",
+    "justNow": "Just now",
+    "hoursAgo": "{{count}} hours ago",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago",
+    "amen": "Amen!",
+    "prayed": "prayed"
   }
 }
