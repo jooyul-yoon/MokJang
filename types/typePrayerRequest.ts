@@ -33,6 +33,7 @@ export interface PrayerRequestAmen {
   user_id: string;
   created_at: string;
   profiles?: {
+    id: string;
     avatar_url: string;
   };
 }

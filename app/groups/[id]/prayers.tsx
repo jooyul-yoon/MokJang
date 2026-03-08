@@ -71,7 +71,7 @@ export default function PrayerBoardScreen() {
     onRefreshHelper(setRefreshing, ["prayerRequests"]);
   };
 
-  const filteredRequests = useMemo(() => {
+  const filteredRequests = useMemo<PrayerRequest[]>(() => {
     let groupRequests = requests.filter(
       (r: PrayerRequest) => r.group_id === groupId && r.visibility === "group",
     );
@@ -191,7 +191,7 @@ export default function PrayerBoardScreen() {
             const amens = request.prayer_request_amens || [];
             const amenCount = amens.length;
             const hasAmened = userProfile
-              ? amens.some((a) => a.user_id === userProfile.id)
+              ? amens.some((a) => a.profiles?.id === userProfile?.id)
               : false;
 
             return (
@@ -246,7 +246,7 @@ export default function PrayerBoardScreen() {
 
                 {/* Footer Actions */}
                 <HStack className="items-center justify-between">
-                  {amenCount > 0 && (
+                  {amenCount > 0 ? (
                     <HStack className="items-center gap-2">
                       <HStack className="-space-x-1.5">
                         {amens.slice(0, 3).map((amen, i) => (
@@ -271,9 +271,11 @@ export default function PrayerBoardScreen() {
                         {amenCount} {t("prayerBoard.prayed")}
                       </Text>
                     </HStack>
+                  ) : (
+                    <HStack></HStack>
                   )}
-                  {request.user_id !== userProfile?.id ? (
-                    <HStack className="items-center gap-2">
+                  <HStack>
+                    {request.user_id !== userProfile?.id ? (
                       <TouchableOpacity
                         activeOpacity={0.8}
                         disabled={toggleAmenMutation.isPending}
@@ -286,6 +288,7 @@ export default function PrayerBoardScreen() {
                             });
                           }
                         }}
+                        className="flex-row items-center gap-1 px-2"
                       >
                         <Icon
                           as={Heart}
@@ -293,14 +296,14 @@ export default function PrayerBoardScreen() {
                             hasAmened ? "fill-primary-600" : ""
                           }`}
                         />
+                        <Text className="font-bold text-primary-600">
+                          {t("prayerBoard.amen")}
+                        </Text>
                       </TouchableOpacity>
-                      <Text className="text-[13px] font-bold text-primary-600">
-                        {t("prayerBoard.amen")}
-                      </Text>
-                    </HStack>
-                  ) : (
-                    <HStack></HStack>
-                  )}
+                    ) : (
+                      <HStack></HStack>
+                    )}
+                  </HStack>
                 </HStack>
               </TouchableOpacity>
             );

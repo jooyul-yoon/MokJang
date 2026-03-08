@@ -10,7 +10,7 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
   const { data, error } = await supabase
     .from("prayer_requests")
     .select(
-      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(avatar_url)), prayer_request_comments(id, profiles(full_name, avatar_url))",
+      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(id, avatar_url)), prayer_request_comments(id, profiles(full_name, avatar_url))",
     )
     .order("created_at", { ascending: false });
 
@@ -33,7 +33,7 @@ export const fetchPrayerRequest = async (
   const { data, error } = await supabase
     .from("prayer_requests")
     .select(
-      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(avatar_url)), prayer_request_comments(id, content, created_at, profiles(full_name, avatar_url))",
+      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(id, avatar_url)), prayer_request_comments(id, content, created_at, profiles(full_name, avatar_url))",
     )
     .eq("id", id)
     .single();
