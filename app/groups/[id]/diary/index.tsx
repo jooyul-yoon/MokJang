@@ -124,7 +124,7 @@ export default function GroupDiaryScreen() {
       <Fab
         size="lg"
         placement="bottom right"
-        className="mb-4 mr-2 bg-primary-600 shadow-md hover:bg-primary-700 active:bg-primary-800"
+        className="mb-4 mr-2 bg-primary-600 shadow-md active:bg-primary-800 dark:bg-primary-100"
         onPress={() => router.push(`/groups/${groupId}/diary/create`)}
       >
         <FabIcon as={Plus} className="text-white" />

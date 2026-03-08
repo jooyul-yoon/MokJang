@@ -68,7 +68,7 @@ export default function CreateDiaryScreen() {
         {/* Top Bar */}
         <HStack className="items-center justify-between px-5 pb-2 pt-4">
           {/* Left Icon (Tt equivalent) */}
-          <Center className="h-10 w-10 rounded-full bg-outline-100 dark:bg-outline-800">
+          <Center className="h-10 w-10 rounded-full bg-outline-100 dark:bg-primary-100">
             <Icon as={Type} size="md" className="text-typography-900" />
           </Center>
 
@@ -79,7 +79,7 @@ export default function CreateDiaryScreen() {
 
           {/* Right Close Button */}
           <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <Center className="h-10 w-10 rounded-full bg-outline-100 dark:bg-outline-800">
+            <Center className="h-10 w-10 rounded-full bg-outline-100 dark:bg-primary-100">
               <Icon as={X} size="md" className="text-typography-900" />
             </Center>
           </TouchableOpacity>
@@ -89,7 +89,7 @@ export default function CreateDiaryScreen() {
           <VStack className="gap-4">
             {/* Title Input */}
             <TextInput
-              className="text-3xl font-bold text-typography-900 dark:text-typography-100"
+              className="text-3xl font-bold text-typography-900"
               placeholder={t("community.diary_title_placeholder")}
               placeholderTextColor="#A3A3A3"
               value={title}
@@ -104,7 +104,7 @@ export default function CreateDiaryScreen() {
 
             {/* Content Input */}
             <TextInput
-              className="mt-4 text-left text-lg leading-7 text-typography-800 dark:text-typography-200"
+              className="mt-4 text-left text-lg leading-7 text-typography-800"
               placeholder={t("community.diary_content_placeholder")}
               placeholderTextColor="#D4D4D4"
               value={content}

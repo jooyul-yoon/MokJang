@@ -166,14 +166,14 @@ export default function PrayerRequestDetailScreen() {
           />
 
           <ScrollView
-            className="flex-1 bg-white dark:bg-background-dark"
+            className="flex-1"
             contentContainerClassName="p-4 gap-6"
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
           >
             {/* Main Request Content */}
-            <VStack className="border-b border-outline-100 pb-6 dark:border-outline-800">
+            <VStack className="border-b border-outline-100 pb-6">
               {/* Header: Author & Meta */}
               <HStack className="mb-4 items-start justify-between">
                 <HStack className="items-center gap-3">
@@ -190,10 +190,10 @@ export default function PrayerRequestDetailScreen() {
                     />
                   </Avatar>
                   <VStack>
-                    <Text className="font-bold text-typography-900 dark:text-typography-100">
+                    <Text className="font-bold text-typography-900">
                       {request.profiles?.full_name}
                     </Text>
-                    <Text className="text-xs text-typography-500 dark:text-typography-400">
+                    <Text className="text-xs text-typography-500">
                       {new Date(request.created_at).toLocaleDateString()}
                     </Text>
                   </VStack>
@@ -203,7 +203,7 @@ export default function PrayerRequestDetailScreen() {
               </HStack>
 
               {/* Content */}
-              <Text className="mb-6 text-lg leading-relaxed text-typography-800 dark:text-typography-200">
+              <Text className="mb-6 text-lg leading-relaxed text-typography-800">
                 {request.content}
               </Text>
 
@@ -241,10 +241,7 @@ export default function PrayerRequestDetailScreen() {
             {/* Comments Section */}
             <VStack className="gap-4 pb-4">
               <HStack className="items-center justify-between px-1">
-                <Heading
-                  size="sm"
-                  className="text-typography-700 dark:text-typography-300"
-                >
+                <Heading size="sm" className="text-typography-700">
                   {t("common.comments", "Comments")}
                 </Heading>
                 <Text className="text-sm font-medium text-typography-500">
@@ -274,16 +271,16 @@ export default function PrayerRequestDetailScreen() {
                         }}
                       />
                     </Avatar>
-                    <VStack className="dark:bg-background-card-dark flex-1 rounded-2xl rounded-tl-none bg-background-50 p-3">
+                    <VStack className="flex-1 rounded-2xl rounded-tl-none bg-background-50 p-3">
                       <HStack className="mb-1 items-center justify-between">
-                        <Text className="text-sm font-semibold text-typography-900 dark:text-typography-100">
+                        <Text className="text-sm font-semibold text-typography-900">
                           {comment.profiles?.full_name}
                         </Text>
                         <Text className="text-xs text-typography-400">
                           {new Date(comment.created_at).toLocaleDateString()}
                         </Text>
                       </HStack>
-                      <Text className="text-sm leading-snug text-typography-700 dark:text-typography-300">
+                      <Text className="text-sm leading-snug text-typography-700">
                         {comment.content}
                       </Text>
                     </VStack>
@@ -294,9 +291,9 @@ export default function PrayerRequestDetailScreen() {
           </ScrollView>
 
           {/* Comment Input */}
-          <HStack className="dark:bg-background-card-dark items-center gap-3 border-t border-outline-100 bg-white px-4 py-3 pb-8 dark:border-outline-800">
+          <HStack className="items-center gap-3 bg-white px-4 py-3 pb-8 dark:bg-background-dark">
             <Input
-              className="flex-1 rounded-full border-outline-200 bg-background-50 dark:border-outline-700 dark:bg-background-900"
+              className="flex-1 rounded-full border-outline-200 bg-background-50"
               size="md"
             >
               <InputField

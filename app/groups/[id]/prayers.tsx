@@ -141,8 +141,8 @@ export default function PrayerBoardScreen() {
                 activeOpacity={0.8}
                 className={`rounded-full border px-4 py-2 ${
                   isActive
-                    ? "border-primary-600 bg-primary-600"
-                    : "border-outline-200 bg-white"
+                    ? "border-primary-600 bg-primary-600 dark:border-primary-100 dark:bg-primary-100"
+                    : "border-outline-200 bg-white dark:border-outline-800 dark:bg-background-dark"
                 }`}
               >
                 <Text
@@ -231,7 +231,7 @@ export default function PrayerBoardScreen() {
                           <Avatar
                             key={amen.id || i}
                             size="xs"
-                            className="z-10 h-6 w-6 border-[2px] border-white"
+                            className="z-10 h-6 w-6"
                           >
                             <AvatarImage
                               source={{
@@ -293,7 +293,7 @@ export default function PrayerBoardScreen() {
       <Fab
         size="lg"
         placement="bottom right"
-        className="mb-4 mr-2 bg-primary-600 shadow-md hover:bg-primary-700 active:bg-primary-800"
+        className="mb-4 mr-2 bg-primary-600 shadow-md hover:bg-primary-700 active:bg-primary-800 dark:bg-primary-100"
         onPress={() => router.push("/prayer-requests/create")}
       >
         <FabIcon as={Plus} className="text-white" />

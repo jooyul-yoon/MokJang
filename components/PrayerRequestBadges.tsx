@@ -62,20 +62,17 @@ export function PrayerRequestBadges({
   return (
     <HStack className="items-center gap-2">
       {!disableVisibility && (
-        <Badge
-          size="sm"
-          className="gap-1 rounded-full bg-background-100 dark:bg-background-800"
-        >
+        <Badge size="sm" className="gap-1 rounded-full bg-background-100">
           <BadgeIcon
             as={request.visibility === "private" ? Lock : Users}
-            className="text-typography-600 dark:text-typography-400"
+            className="text-typography-600"
           />
           {request.visibility === "private" ? (
-            <BadgeText className="font-medium text-typography-600 dark:text-typography-400">
+            <BadgeText className="font-medium text-typography-600">
               {t("common.private")}
             </BadgeText>
           ) : (
-            <BadgeText className="font-medium text-typography-600 dark:text-typography-400">
+            <BadgeText className="font-medium text-typography-600">
               {t("common.group")}
             </BadgeText>
           )}
@@ -85,23 +82,23 @@ export function PrayerRequestBadges({
         size="sm"
         className={`gap-1 rounded-full ${
           request.is_answered
-            ? "bg-success-100 dark:bg-success-900/50"
-            : "bg-warning-100 dark:bg-warning-900/50"
+            ? "bg-success-100 dark:bg-success-50/50"
+            : "bg-warning-100 dark:bg-warning-50/50"
         }`}
       >
         <BadgeIcon
           as={request.is_answered ? CheckCircle : Droplet}
           className={
             request.is_answered
-              ? "text-success-600 dark:text-success-400"
-              : "text-warning-600 dark:text-warning-400"
+              ? "text-success-600 dark:text-success-900"
+              : "text-warning-600 dark:text-warning-900"
           }
         />
         <BadgeText
           className={`font-medium ${
             request.is_answered
-              ? "text-success-700 dark:text-success-300"
-              : "text-warning-700 dark:text-warning-300"
+              ? "text-success-700 dark:text-success-900"
+              : "text-warning-700 dark:text-warning-900"
           }`}
         >
           {request.is_answered

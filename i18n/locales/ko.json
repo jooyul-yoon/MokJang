@@ -163,8 +163,8 @@
   },
   "prayer": {
     "answered": "응답받음",
-    "markAnswered": "응답받음으로 표시",
-    "markUnanswered": "응답대기로 변경"
+    "markAnswered": "'응답받음'으로 표시",
+    "markUnanswered": "'기도중'으로 변경"
   },
   "notification": {
     "title": "알림",
