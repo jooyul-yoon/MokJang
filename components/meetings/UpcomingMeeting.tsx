@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { Center } from "../ui/center";
 import { Text } from "../ui/text";
-import { VStack } from "../ui/vstack";
 import MeetingPreviewCard from "./MeetingPreviewCard";
 
 const formatTime = (dateString: string, lang: string = "ko") => {
@@ -39,14 +38,12 @@ export default function UpcomingMeeting({ meetings }: UpcomingMeetingProps) {
       </Text>
     </Center>
   ) : (
-    <VStack className="mt-4">
-      <FlatList
-        data={upcomingMeetings.slice(0, 3)}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={false}
-        contentContainerStyle={{ gap: 12 }}
-        renderItem={({ item }) => <MeetingPreviewCard item={item} />}
-      />
-    </VStack>
+    <FlatList
+      data={upcomingMeetings.slice(0, 2)}
+      keyExtractor={(item) => item.id}
+      scrollEnabled={false}
+      contentContainerStyle={{ gap: 12 }}
+      renderItem={({ item }) => <MeetingPreviewCard item={item} />}
+    />
   );
 }
