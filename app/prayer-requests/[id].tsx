@@ -26,10 +26,10 @@ import { supabase } from "@/lib/supabase";
 import {
   createPrayerRequestComment,
   deletePrayerRequest,
-  fetchPrayerRequestComments,
-  fetchPrayerRequests,
+  fetchPrayerRequest,
   togglePrayerRequestAnswered,
 } from "@/services/PrayerRequestApi";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -46,6 +46,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -58,6 +59,7 @@ export default function PrayerRequestDetailScreen() {
   const [commentText, setCommentText] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -65,16 +67,9 @@ export default function PrayerRequestDetailScreen() {
     });
   }, []);
 
-  const { data: requests = [] } = useQuery({
-    queryKey: ["prayerRequests"],
-    queryFn: fetchPrayerRequests,
-  });
-
-  const request = requests.find((r) => r.id === id);
-
-  const { data: comments = [], isLoading: isLoadingComments } = useQuery({
-    queryKey: ["prayerRequestComments", id],
-    queryFn: () => fetchPrayerRequestComments(id as string),
+  const { data: request, isLoading: isLoadingRequest } = useQuery({
+    queryKey: ["prayerRequest", id],
+    queryFn: () => fetchPrayerRequest(id as string),
     enabled: !!id,
   });
 
@@ -84,7 +79,7 @@ export default function PrayerRequestDetailScreen() {
     onSuccess: () => {
       setCommentText("");
       queryClient.invalidateQueries({
-        queryKey: ["prayerRequestComments", id],
+        queryKey: ["prayerRequest", id],
       });
     },
   });
@@ -99,7 +94,7 @@ export default function PrayerRequestDetailScreen() {
     mutationFn: (isAnswered: boolean) =>
       togglePrayerRequestAnswered(id as string, isAnswered),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["prayerRequest", id] });
     },
   });
 
@@ -107,14 +102,18 @@ export default function PrayerRequestDetailScreen() {
     const { success, error } = await deletePrayerRequest(id as string);
     if (success) {
       setShowDeleteModal(false);
-      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["prayerRequest", id] });
       router.back();
     } else {
       console.error(error);
     }
   };
 
-  if (!request) {
+  const onRefresh = async () => {
+    onRefreshHelper(setRefreshing, ["prayerRequest"]);
+  };
+
+  if (isLoadingRequest || !request) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-background-dark">
         <ActivityIndicator />
@@ -166,6 +165,9 @@ export default function PrayerRequestDetailScreen() {
           <ScrollView
             className="flex-1 bg-white dark:bg-background-dark"
             contentContainerClassName="p-4 gap-6"
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           >
             {/* Main Request Content */}
             <VStack className="border-b border-outline-100 pb-6 dark:border-outline-800">
@@ -263,13 +265,11 @@ export default function PrayerRequestDetailScreen() {
                   {t("common.comments", "Comments")}
                 </Heading>
                 <Text className="text-sm font-medium text-typography-500">
-                  {comments.length}
+                  {request.prayer_request_comments.length}
                 </Text>
               </HStack>
 
-              {isLoadingComments ? (
-                <ActivityIndicator className="py-4" />
-              ) : comments.length === 0 ? (
+              {request.prayer_request_comments.length === 0 ? (
                 <Text className="py-8 text-center italic text-typography-400">
                   {t(
                     "common.noComments",
@@ -277,7 +277,7 @@ export default function PrayerRequestDetailScreen() {
                   )}
                 </Text>
               ) : (
-                comments.map((comment) => (
+                request.prayer_request_comments.map((comment) => (
                   <HStack key={comment.id} className="items-start gap-3">
                     <Avatar size="xs" className="mt-1">
                       <AvatarFallbackText>

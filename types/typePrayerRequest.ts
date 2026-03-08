@@ -11,7 +11,8 @@ export interface PrayerRequest {
     full_name: string;
     avatar_url: string;
   };
-  comment_count?: number;
+  prayer_request_amens: PrayerRequestAmen[];
+  prayer_request_comments: PrayerRequestComment[];
 }
 
 export interface PrayerRequestComment {
@@ -22,6 +23,16 @@ export interface PrayerRequestComment {
   created_at: string;
   profiles: {
     full_name: string;
+    avatar_url: string;
+  };
+}
+
+export interface PrayerRequestAmen {
+  id: string;
+  prayer_request_id: string;
+  user_id: string;
+  created_at: string;
+  profiles?: {
     avatar_url: string;
   };
 }

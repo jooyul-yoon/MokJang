@@ -9,7 +9,9 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
 
   const { data, error } = await supabase
     .from("prayer_requests")
-    .select("*, profiles(full_name, avatar_url)")
+    .select(
+      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(avatar_url)), prayer_request_comments(id, profiles(full_name, avatar_url))",
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -23,6 +25,30 @@ export const fetchPrayerRequests = async (): Promise<PrayerRequest[]> => {
   }
 
   return data as PrayerRequest[];
+};
+
+export const fetchPrayerRequest = async (
+  id: string,
+): Promise<PrayerRequest | null> => {
+  const { data, error } = await supabase
+    .from("prayer_requests")
+    .select(
+      "*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(avatar_url)), prayer_request_comments(id, content, created_at, profiles(full_name, avatar_url))",
+    )
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(
+      "Error fetching prayer request:",
+      error.message,
+      error.details,
+      error.hint,
+    );
+    return null;
+  }
+
+  return data as PrayerRequest;
 };
 
 export const createPrayerRequest = async (
@@ -128,7 +154,9 @@ export const fetchMyPrayerRequests = async (): Promise<PrayerRequest[]> => {
 
   const { data, error } = await supabase
     .from("prayer_requests")
-    .select("*, profiles(full_name, avatar_url)")
+    .select(
+      "*, profiles(full_name, avatar_url), prayer_request_amens(id, user_id, profiles(avatar_url))",
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -138,4 +166,35 @@ export const fetchMyPrayerRequests = async (): Promise<PrayerRequest[]> => {
   }
 
   return data as PrayerRequest[];
+};
+
+export const togglePrayerRequestAmen = async (
+  requestId: string,
+  userId: string,
+  hasAmened: boolean,
+): Promise<{ success: boolean; error?: string }> => {
+  if (hasAmened) {
+    const { error } = await supabase
+      .from("prayer_request_amens")
+      .delete()
+      .eq("prayer_request_id", requestId)
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error deleting amen:", error);
+      return { success: false, error: error.message };
+    }
+  } else {
+    const { error } = await supabase.from("prayer_request_amens").insert({
+      prayer_request_id: requestId,
+      user_id: userId,
+    });
+
+    if (error) {
+      console.error("Error inserting amen:", error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  return { success: true };
 };

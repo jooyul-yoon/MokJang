@@ -11,13 +11,16 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { fetchUserProfile } from "@/services/api";
-import { fetchPrayerRequests } from "@/services/PrayerRequestApi";
+import {
+  fetchPrayerRequests,
+  togglePrayerRequestAmen,
+} from "@/services/PrayerRequestApi";
 import {
   PrayerRequest,
   prayerRequestCategories,
 } from "@/types/typePrayerRequest";
 import { onRefreshHelper } from "@/utils/refreshHelper";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, Heart, Plus } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
@@ -34,6 +37,7 @@ export default function PrayerBoardScreen() {
   const router = useRouter();
   const { id: groupId } = useLocalSearchParams();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState("allRequests");
   const filters = ["allRequests", "myPrayers", "answered"];
@@ -46,6 +50,21 @@ export default function PrayerBoardScreen() {
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["prayerRequests"],
     queryFn: fetchPrayerRequests,
+  });
+
+  const toggleAmenMutation = useMutation({
+    mutationFn: ({
+      requestId,
+      userId,
+      hasAmened,
+    }: {
+      requestId: string;
+      userId: string;
+      hasAmened: boolean;
+    }) => togglePrayerRequestAmen(requestId, userId, hasAmened),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
+    },
   });
 
   const onRefresh = () => {
@@ -169,8 +188,11 @@ export default function PrayerBoardScreen() {
               prayerRequestCategories[categoryId || "general"] ||
               prayerRequestCategories.general;
 
-            // Mock prayed users layout as per UI image
-            const dummyPrays = (index % 3) * 5 + 3; // 3, 8, 13 prayed...
+            const amens = request.prayer_request_amens || [];
+            const amenCount = amens.length;
+            const hasAmened = userProfile
+              ? amens.some((a) => a.user_id === userProfile.id)
+              : false;
 
             return (
               <TouchableOpacity
@@ -224,42 +246,61 @@ export default function PrayerBoardScreen() {
 
                 {/* Footer Actions */}
                 <HStack className="items-center justify-between">
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    className="flex-row items-center justify-center rounded-xl bg-primary-50 px-4 py-2"
-                  >
-                    <Icon
-                      as={Heart}
-                      size="sm"
-                      className="mr-2 text-primary-600"
-                    />
-                    <Text className="text-[13px] font-bold text-primary-600">
-                      {t("prayerBoard.amen")}
-                    </Text>
-                  </TouchableOpacity>
-
-                  <HStack className="items-center gap-2">
-                    <HStack className="-space-x-1.5">
-                      {[1, 2, 3].map((i) => (
-                        <Avatar
-                          key={i}
-                          size="xs"
-                          className="z-10 h-6 w-6 border-[2px] border-white"
-                        >
-                          <AvatarImage
-                            source={{
-                              uri: `https://i.pravatar.cc/100?img=${
-                                i + index * 2 + 10
-                              }`,
-                            }}
-                          />
-                        </Avatar>
-                      ))}
+                  {amenCount > 0 && (
+                    <HStack className="items-center gap-2">
+                      <HStack className="-space-x-1.5">
+                        {amens.slice(0, 3).map((amen, i) => (
+                          <Avatar
+                            key={amen.id || i}
+                            size="xs"
+                            className="z-10 h-6 w-6 border-[2px] border-white"
+                          >
+                            <AvatarImage
+                              source={{
+                                uri:
+                                  amen.profiles?.avatar_url ||
+                                  `https://i.pravatar.cc/100?img=${
+                                    i + index * 2 + 10
+                                  }`,
+                              }}
+                            />
+                          </Avatar>
+                        ))}
+                      </HStack>
+                      <Text className="ml-1 text-[12px] font-medium text-typography-500">
+                        {amenCount} {t("prayerBoard.prayed")}
+                      </Text>
                     </HStack>
-                    <Text className="ml-1 text-[12px] font-medium text-typography-500">
-                      {dummyPrays} {t("prayerBoard.prayed")}
-                    </Text>
-                  </HStack>
+                  )}
+                  {request.user_id !== userProfile?.id ? (
+                    <HStack className="items-center gap-2">
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        disabled={toggleAmenMutation.isPending}
+                        onPress={() => {
+                          if (userProfile?.id) {
+                            toggleAmenMutation.mutate({
+                              requestId: request.id,
+                              userId: userProfile.id,
+                              hasAmened,
+                            });
+                          }
+                        }}
+                      >
+                        <Icon
+                          as={Heart}
+                          className={`text-primary-600 ${
+                            hasAmened ? "fill-primary-600" : ""
+                          }`}
+                        />
+                      </TouchableOpacity>
+                      <Text className="text-[13px] font-bold text-primary-600">
+                        {t("prayerBoard.amen")}
+                      </Text>
+                    </HStack>
+                  ) : (
+                    <HStack></HStack>
+                  )}
                 </HStack>
               </TouchableOpacity>
             );
