@@ -104,7 +104,12 @@
     "groupActivities": "목장 활동",
     "prayers": "기도제목",
     "feeds": "목장 피드",
-    "diary": "목회 일기"
+    "diary": "목회 일기",
+    "diary_title_placeholder": "제목을 입력하세요",
+    "diary_content_placeholder": "오늘의 목회일기를 입력하세요",
+    "save_diary": "목회일기 저장",
+    "add_diary": "목회일기 쓰기",
+    "no_diary": "등록된 목회일기가 없습니다."
   },
   "profile": {
     "name": "이름",

@@ -103,7 +103,12 @@
     "groupActivities": "Group Activities",
     "prayers": "Prayer Requests",
     "feeds": "Group Feeds",
-    "diary": "Pastoral Diary"
+    "diary": "Pastoral Diary",
+    "diary_title_placeholder": "Enter title",
+    "diary_content_placeholder": "Enter today's pastoral diary",
+    "save_diary": "Save Diary",
+    "add_diary": "Write Diary",
+    "no_diary": "No pastoral diaries found."
   },
   "profile": {
     "name": "Name",

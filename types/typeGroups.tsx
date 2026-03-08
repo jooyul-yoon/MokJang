@@ -8,3 +8,12 @@ export interface Group {
   meeting_hour: string | null;
   leader_id: string;
 }
+
+export interface Diary {
+  id: string;
+  group_id: string;
+  writer_id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}

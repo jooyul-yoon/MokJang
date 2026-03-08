@@ -210,3 +210,41 @@ export const leaveGroup = async (
   }
   return { success: true };
 };
+
+export const fetchGroupDiaries = async (groupId: string) => {
+  const { data, error } = await supabase
+    .from("group_diaries")
+    .select("*")
+    .eq("group_id", groupId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching group diaries:", error);
+    return [];
+  }
+  return data;
+};
+
+export const createGroupDiary = async (
+  groupId: string,
+  title: string,
+  content: string,
+): Promise<{ success: boolean; error?: string }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "User not authenticated" };
+
+  const { error } = await supabase.from("group_diaries").insert({
+    group_id: groupId,
+    writer_id: user.id,
+    title,
+    content,
+  });
+
+  if (error) {
+    console.error("Error creating group diary:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
+};
