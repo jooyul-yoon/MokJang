@@ -16,19 +16,25 @@ import {
   PrayerRequest,
   prayerRequestCategories,
 } from "@/types/typePrayerRequest";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, Heart, Plus } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PrayerBoardScreen() {
   const router = useRouter();
   const { id: groupId } = useLocalSearchParams();
   const { t } = useTranslation();
-
+  const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState("allRequests");
   const filters = ["allRequests", "myPrayers", "answered"];
 
@@ -41,6 +47,10 @@ export default function PrayerBoardScreen() {
     queryKey: ["prayerRequests"],
     queryFn: fetchPrayerRequests,
   });
+
+  const onRefresh = () => {
+    onRefreshHelper(setRefreshing, ["prayerRequests"]);
+  };
 
   const filteredRequests = useMemo(() => {
     let groupRequests = requests.filter(
@@ -135,6 +145,9 @@ export default function PrayerBoardScreen() {
       <ScrollView
         className="flex-1 px-4 pt-4"
         contentContainerStyle={{ paddingBottom: 40, gap: 16 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {isLoading ? (
           <Center className="py-10">
