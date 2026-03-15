@@ -42,7 +42,7 @@ export default function MyPrayerRequestsScreen() {
                 key={prayer.id}
                 onPress={() => router.push(`/prayer-requests/${prayer.id}`)}
               >
-                <Card className="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-800">
+                <Card className="rounded-xl bg-white p-5 shadow-sm dark:bg-primary-500/10">
                   <HStack className="mb-3 items-center justify-between">
                     <Text className="text-xs font-medium text-typography-500">
                       {new Date(prayer.created_at).toLocaleDateString()}

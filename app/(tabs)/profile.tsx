@@ -259,7 +259,6 @@ export default function ProfileScreen() {
     }
   }
 
-  console.log(myPrayers);
   if (isProfileLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-background-dark">
