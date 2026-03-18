@@ -192,5 +192,45 @@
     "amen": "Amen!",
     "prayed": "prayed",
     "praying": "Praying"
+  },
+  "feed": {
+    "title": "Feed",
+    "tabs": {
+      "all": "VCHUNG Feed",
+      "public": "All",
+      "group": "MokJang"
+    },
+    "post": {
+      "new": "New Post",
+      "captionPlaceholder": "Write a caption...",
+      "visibility": "Visibility",
+      "visibilityPublic": "Public",
+      "visibilityGroup": "MokJang Only",
+      "publish": "Share",
+      "likedBy": "Liked by {{name}} and others",
+      "likedByOne": "Liked by {{name}}",
+      "likes": "{{count}} likes",
+      "viewAllComments": "View all {{count}} comments",
+      "addComment": "Add a comment...",
+      "reply": "Reply",
+      "replyTo": "Replying to {{name}}"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "picker": {
+      "selectPhotos": "Select Photos",
+      "next": "Next",
+      "cancel": "Cancel",
+      "recents": "Recents"
+    },
+    "comment": {
+      "title": "Comments",
+      "noComments": "No comments yet.",
+      "placeholder": "Write a comment...",
+      "replyingTo": "Replying to {{name}}",
+      "think": "What do you think of this?"
+    }
   }
 }

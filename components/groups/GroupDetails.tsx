@@ -9,6 +9,7 @@ import {
   ChevronRight,
   DeleteIcon,
   Heart,
+  Images,
   MenuIcon,
   NotebookPen,
 } from "lucide-react-native";
@@ -226,7 +227,7 @@ export default function GroupDetails({
                 </HStack>
                 <Icon as={ChevronRight} className="text-typography-400" />
               </TouchableOpacity>
-              {/* <TouchableOpacity
+              <TouchableOpacity
                 activeOpacity={0.5}
                 className="h-14 w-full flex-row items-center justify-between px-2"
                 onPress={() => router.push(`/groups/${myGroups[0].id}/feeds`)}
@@ -238,7 +239,7 @@ export default function GroupDetails({
                   </Text>
                 </HStack>
                 <Icon as={ChevronRight} className="text-typography-400" />
-              </TouchableOpacity> */}
+              </TouchableOpacity>
               {myGroups[0]?.leader_id === userProfile?.id && (
                 <TouchableOpacity
                   activeOpacity={0.5}

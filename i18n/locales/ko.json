@@ -193,5 +193,45 @@
     "amen": "아멘",
     "prayed": "명이 기도함",
     "praying": "기도중"
+  },
+  "feed": {
+    "title": "피드",
+    "tabs": {
+      "all": "청년부 피드",
+      "public": "전체 피드",
+      "group": "목장 피드"
+    },
+    "post": {
+      "new": "새 게시물",
+      "captionPlaceholder": "문구를 입력하세요...",
+      "visibility": "공개 범위",
+      "visibilityPublic": "전체 공유",
+      "visibilityGroup": "우리 목장만 공유",
+      "publish": "공유",
+      "likedBy": "{{name}}님 외 여러 명이 좋아합니다",
+      "likedByOne": "{{name}}님이 좋아합니다",
+      "likes": "좋아요 {{count}}개",
+      "viewAllComments": "댓글 {{count}}개 모두 보기",
+      "addComment": "댓글 달기...",
+      "reply": "답글 달기",
+      "replyTo": "{{name}}님에게 답글 달기"
+    },
+    "actions": {
+      "edit": "수정",
+      "delete": "삭제"
+    },
+    "picker": {
+      "selectPhotos": "사진 선택",
+      "next": "다음",
+      "cancel": "취소",
+      "recents": "최근 항목"
+    },
+    "comment": {
+      "title": "댓글",
+      "noComments": "댓글이 없습니다.",
+      "placeholder": "댓글을 입력하세요...",
+      "replyingTo": "{{name}}님에게 답글 남기는 중",
+      "think": "어떤 생각을 하고 계신가요?"
+    }
   }
 }

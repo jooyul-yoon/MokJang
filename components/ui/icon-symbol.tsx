@@ -27,6 +27,18 @@ const MAPPING = {
   "bubble.left.and.bubble.right.fill": "forum",
   "person.2.fill": "people",
   "bell.fill": "notifications",
+  "chevron.left": "chevron-left",
+  "plus.app": "add-box",
+  "ellipsis": "more-horiz",
+  "heart": "favorite-border",
+  "heart.fill": "favorite",
+  "bubble.right": "chat-bubble-outline",
+  "square.on.square": "collections",
+  "xmark": "close",
+  "globe": "language",
+  "checkmark": "check",
+  "xmark.circle.fill": "cancel",
+  "arrow.up": "arrow-upward",
 } as IconMapping;
 
 /**

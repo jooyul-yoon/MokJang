@@ -5,6 +5,7 @@ import "@/i18n";
 import { queryClient } from "@/lib/react-query";
 import { supabase } from "@/lib/supabase";
 import { updatePushToken } from "@/services/pushTokenApi";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {
   DarkTheme,
   DefaultTheme,
@@ -22,6 +23,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { useEffect, useRef, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 export function useNotificationObserver() {
@@ -117,22 +119,28 @@ export default function RootLayout() {
   }, [session, initialized, segments]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GluestackUIProvider mode={(colorScheme as "light" | "dark") || "system"}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <GluestackUIProvider
+          mode={(colorScheme as "light" | "dark") || "system"}
         >
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="login" />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: "modal", title: "Modal" }}
-            />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </GluestackUIProvider>
-    </QueryClientProvider>
+          <BottomSheetModalProvider>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="login" />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal", title: "Modal" }}
+                />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </BottomSheetModalProvider>
+        </GluestackUIProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
