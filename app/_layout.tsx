@@ -25,6 +25,7 @@ import { useColorScheme } from "nativewind";
 import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export function useNotificationObserver() {
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function RootLayout() {
   const { colorScheme } = useColorScheme();
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const { hasProfile, setHasProfile } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -105,18 +107,48 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    if (session) {
+      const checkProfile = async () => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("updated_at")
+          .eq("id", session.user.id)
+          .single();
+        if (active) {
+          if (error || !data) setHasProfile(false);
+          else setHasProfile(!!data.updated_at);
+        }
+      };
+      checkProfile();
+    } else {
+      setHasProfile(null);
+    }
+    return () => {
+      active = false;
+    };
+  }, [session]);
+
+  useEffect(() => {
     if (!initialized) return;
 
-    const inLogin = segments[0] === "login"; // Direct route check
+    // Wait until we know if they have a profile if they are logged in
+    if (session && hasProfile === null) return;
+
+    const inLogin = segments[0] === "login";
+    const inOnboarding = (segments[0] as string) === "onboarding";
 
     if (!session && !inLogin) {
       // Redirect to the sign-in page.
       router.replace("/login");
-    } else if (session && inLogin) {
-      // Redirect away from the sign-in page.
-      router.replace("/(tabs)");
+    } else if (session) {
+      if (!hasProfile && !inOnboarding) {
+        router.replace("/onboarding" as any);
+      } else if (hasProfile && (inLogin || inOnboarding)) {
+        router.replace("/(tabs)");
+      }
     }
-  }, [session, initialized, segments]);
+  }, [session, initialized, segments, hasProfile]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
