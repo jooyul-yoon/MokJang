@@ -36,8 +36,8 @@
     "home": "Home",
     "bible": "Bible",
     "profile": "Profile",
-    "notifications": "Notifications",
-    "mokjang": "MokJang"
+    "mokjang": "MokJang",
+    "feed": "Feed"
   },
   "community": {
     "mokjang": "MokJang",
@@ -196,7 +196,6 @@
   "feed": {
     "title": "Feed",
     "tabs": {
-      "all": "VCHUNG Feed",
       "public": "All",
       "group": "MokJang"
     },

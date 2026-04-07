@@ -36,8 +36,8 @@
     "home": "홈",
     "bible": "성경",
     "profile": "프로필",
-    "notifications": "알림",
-    "mokjang": "목장"
+    "mokjang": "목장",
+    "feed": "피드"
   },
   "community": {
     "mokjangMeeting": "목장 모임",
@@ -197,7 +197,6 @@
   "feed": {
     "title": "피드",
     "tabs": {
-      "all": "청년부 피드",
       "public": "전체 피드",
       "group": "목장 피드"
     },

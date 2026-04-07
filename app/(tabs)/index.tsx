@@ -1,25 +1,23 @@
 import AnnouncementCarousel from "@/components/annoucements/AnnouncementCarousel";
 import { HStack } from "@/components/ui/hstack";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Pressable } from "@/components/ui/pressable";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements } from "@/services/AnnouncementApi";
 import { useGroupStore } from "@/store/groupStore";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useColorScheme } from "react-native";
+import { ScrollView, TouchableOpacity, useColorScheme, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 
 import { Post } from "@/api/feeds/queries";
 import {
   CommentsSheet,
   CommentsSheetRef,
 } from "@/components/feeds/CommentsSheet";
-import FeedList from "@/components/feeds/FeedList";
-import { Heading } from "@/components/ui/heading";
+import { Bell } from "lucide-react-native";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -43,47 +41,47 @@ export default function HomeScreen() {
     commentsSheetRef.current?.present(post.id);
   };
 
-  const renderHeader = () => (
-    <VStack className="px-4 pb-2">
-      <AnnouncementCarousel announcements={announcements} />
-
-      {/* Feed Tabs */}
-      <HStack className="mb-2 mt-6 items-center px-2">
-        <Heading size="lg" className="font-bold text-gray-900 dark:text-white">
-          {t("feed.tabs.all")}
-        </Heading>
-      </HStack>
-    </VStack>
-  );
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    onRefreshHelper(setRefreshing, ["announcements"]);
+  };
 
   return (
     <SafeAreaView
-      className="flex-1 bg-background-light py-2 dark:bg-background-dark"
+      className="flex-1 bg-white py-2 dark:bg-background-dark"
       edges={["top"]}
     >
-      <VStack className="flex-1">
+      <VStack className="flex-1 px-4">
         {/* Top Bar */}
-        <HStack className="items-center justify-between px-4 pb-2">
+        <HStack className="items-center justify-between pb-2">
           <Image
             source={logoSource}
             style={{ width: 144, height: 54 }}
             contentFit="contain"
           />
-          <Pressable onPress={() => router.push("/new-post")} className="p-2">
-            <IconSymbol
-              name="plus.app"
-              size={28}
+          <TouchableOpacity className="p-2">
+            <Bell
+              size={24}
               color={colorScheme === "dark" ? "white" : "black"}
             />
-          </Pressable>
+          </TouchableOpacity>
         </HStack>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <AnnouncementCarousel announcements={announcements} />
 
-        <FeedList
-          visibility={"public"}
-          groupId={selectedGroup?.id}
-          onCommentPress={handleCommentPress}
-          ListHeaderComponent={renderHeader()}
-        />
+          {/* <FeedList
+            visibility={"public"}
+            groupId={selectedGroup?.id}
+            onCommentPress={handleCommentPress}
+          /> */}
+        </ScrollView>
       </VStack>
 
       <CommentsSheet ref={commentsSheetRef} />

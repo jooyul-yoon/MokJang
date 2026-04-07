@@ -3,6 +3,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Tabs } from "expo-router";
+import { Images } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -56,12 +57,10 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="notifications"
+        name="feed"
         options={{
-          title: t("tabs.notifications"),
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={24} name="bell.fill" color={color} />
-          ),
+          title: t("tabs.feed"),
+          tabBarIcon: ({ color }) => <Images size={24} color={color} />,
         }}
       />
 

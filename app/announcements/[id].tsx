@@ -88,7 +88,7 @@ export default function AnnouncementDetailScreen() {
 
   if (!announcement) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white dark:bg-background-dark">
         <ActivityIndicator />
       </SafeAreaView>
     );
@@ -133,7 +133,7 @@ export default function AnnouncementDetailScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
