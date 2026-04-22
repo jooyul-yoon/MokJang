@@ -54,3 +54,8 @@ eas.json
 # Google Play Store
 mokjang-479801-f2150dea6d91.json
 
+.venv
+.pytest_cache
+artifacts
+GEMINI.md
+PRD.md
