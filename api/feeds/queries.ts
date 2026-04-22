@@ -107,3 +107,8 @@ export const fetchPostById = async (postId: string, userId: string): Promise<Pos
     post_comments: undefined,
   } as Post;
 };
+
+export const deletePost = async (postId: string) => {
+  const { error } = await supabase.from('posts').delete().eq('id', postId);
+  if (error) throw error;
+};

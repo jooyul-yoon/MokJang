@@ -9,13 +9,14 @@ import { HStack } from "@/components/ui/hstack";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useToggleLike } from "@/hooks/useFeeds/useFeed";
+import { useToggleLike, useDeletePost } from "@/hooks/useFeeds/useFeed";
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "expo-image";
 import { useColorScheme } from "nativewind";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Pressable, ScrollView } from "react-native";
+import { Dimensions, Pressable, ScrollView, Alert } from "react-native";
+import { supabase } from "@/lib/supabase";
 
 const { width } = Dimensions.get("window");
 
@@ -29,7 +30,30 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { mutate: toggleLike } = useToggleLike();
+  const { mutate: deletePostMutation } = useDeletePost();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setCurrentUserId(data.user.id);
+    });
+  }, []);
+
+  const handleDelete = () => {
+    Alert.alert(
+      t("common.delete", { defaultValue: "삭제 확인" }),
+      t("feed.post.deleteConfirm", { defaultValue: "이 게시물을 정말 삭제하시겠습니까?" }),
+      [
+        { text: t("common.cancel", { defaultValue: "취소" }), style: "cancel" },
+        { 
+          text: t("common.delete", { defaultValue: "삭제" }), 
+          style: "destructive", 
+          onPress: () => deletePostMutation(post.id) 
+        },
+      ]
+    );
+  };
 
   const handleLike = () => {
     toggleLike({ postId: post.id, hasLiked: post.has_liked });
@@ -71,13 +95,15 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
             </HStack>
           </VStack>
         </HStack>
-        <Pressable className="p-1">
-          <IconSymbol
-            name="ellipsis"
-            size={20}
-            color={isDark ? "white" : "black"}
-          />
-        </Pressable>
+        {currentUserId === post.user_id && (
+          <Pressable className="p-1" onPress={handleDelete}>
+            <IconSymbol
+              name="ellipsis"
+              size={20}
+              color={isDark ? "white" : "black"}
+            />
+          </Pressable>
+        )}
       </HStack>
 
       {/* Media */}

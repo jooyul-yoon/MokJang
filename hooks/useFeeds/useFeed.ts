@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { fetchFeeds, toggleLike, fetchPostById } from '@/api/feeds/queries';
+import { fetchFeeds, toggleLike, fetchPostById, deletePost } from '@/api/feeds/queries';
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 
@@ -100,5 +100,18 @@ export const usePost = (postId: string) => {
     queryKey: ['post', postId],
     queryFn: () => fetchPostById(postId, currentUserId!),
     enabled: !!currentUserId && !!postId,
+  });
+};
+
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      await deletePost(postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feeds'] });
+    },
   });
 };
