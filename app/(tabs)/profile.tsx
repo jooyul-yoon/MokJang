@@ -343,7 +343,21 @@ export default function ProfileScreen() {
           {/* General Section */}
           <SectionHeader title="General" />
 
-          {/* My Prayer Requests */}
+          {/* Edit Profile */}
+          <MenuItem
+            icon="person-outline"
+            label={t("profile.editProfile", "프로필 수정")}
+            onPress={() => router.push("/profile/edit")}
+            rightElement={
+              <HStack className="items-center gap-2">
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+                />
+              </HStack>
+            }
+          />
           <MenuItem
             icon="hands-pray"
             iconFamily="MaterialCommunityIcons"

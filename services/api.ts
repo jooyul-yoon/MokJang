@@ -17,6 +17,10 @@ export interface UserProfile {
   avatar_url: string;
   role: string;
   is_notification_enabled?: boolean;
+  phone?: string;
+  address?: string;
+  birthdate?: string;
+  baptism_status?: boolean;
 }
 
 export const fetchUserProfile = async (): Promise<UserProfile | null> => {
