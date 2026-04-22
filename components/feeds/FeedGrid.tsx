@@ -11,7 +11,10 @@ import {
   Dimensions,
   FlatList,
   Pressable,
+  RefreshControl,
 } from "react-native";
+import { useState } from "react";
+import { onRefreshHelper } from "@/utils/refreshHelper";
 
 const { width } = Dimensions.get("window");
 const THUMB_SIZE = width / 3;
@@ -31,22 +34,20 @@ export default function FeedGrid({ userId, groupId, scrollEnabled = false }: Fee
   // For now, let's assume we update the hook to support `authorId` or we just fetch it.
   // I will update useFeeds and queries.ts to support `authorId`.
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useFeeds({ authorId: userId, groupId: groupId, visibility: groupId ? "group" : undefined } as any);
+    useFeeds({ authorId: userId, groupId: groupId, visibility: groupId ? "group" : "public" } as any);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = () => {
+    onRefreshHelper(setRefreshing, ["feeds"]);
+  };
 
   const posts = data?.pages.flatMap((page) => page.posts) || [];
 
-  if (isLoading) {
+  if (isLoading && !refreshing) {
     return (
       <Box className="flex-1 items-center justify-center p-4">
         <ActivityIndicator size="large" />
-      </Box>
-    );
-  }
-
-  if (posts.length === 0) {
-    return (
-      <Box className="flex-1 items-center justify-center py-10">
-        <Text className="text-typography-500">{t("community.no_feed")}</Text>
       </Box>
     );
   }
@@ -56,6 +57,14 @@ export default function FeedGrid({ userId, groupId, scrollEnabled = false }: Fee
       data={posts}
       numColumns={3}
       scrollEnabled={scrollEnabled}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      ListEmptyComponent={
+        <Box className="flex-1 items-center justify-center py-10">
+          <Text className="text-typography-500">{t("community.no_feed")}</Text>
+        </Box>
+      }
       keyExtractor={(item) => item.id}
       onEndReached={() => {
         if (hasNextPage) {
@@ -65,7 +74,10 @@ export default function FeedGrid({ userId, groupId, scrollEnabled = false }: Fee
       renderItem={({ item }) => (
         <Pressable
           style={{ width: THUMB_SIZE, height: THUMB_SIZE, padding: 1 }}
-          onPress={() => router.push(`/posts/${item.id}`)}
+          onPress={() => router.push({
+             pathname: "/posts/list",
+             params: { groupId: groupId || "", visibility: groupId ? "group" : "public", initialPostId: item.id }
+          })}
         >
           <Image
             source={{ uri: item.images[0] }}

@@ -37,7 +37,6 @@ export default function NewPostCaptionScreen() {
   const handlePublish = async () => {
     if (selectedAssets.length === 0) return;
     try {
-      console.log(selectedAssets, caption, visibility, selectedGroup?.id);
       await createPost({
         assetIds: selectedAssets.map((a) => a.id),
         content: caption,
@@ -107,7 +106,7 @@ export default function NewPostCaptionScreen() {
 
               {/* Caption Input */}
               <TextInput
-                className="h-32 flex-1 text-base text-typography-900 dark:text-typography-100"
+                className="text-typography00 h-32 flex-1 text-base"
                 placeholder={t("feed.post.captionPlaceholder")}
                 placeholderTextColor="gray"
                 multiline

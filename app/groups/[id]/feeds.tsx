@@ -25,10 +25,10 @@ export default function GroupFeedScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light py-2 dark:bg-background-dark">
+    <SafeAreaView className="flex-1 bg-white py-2 dark:bg-background-dark">
       <VStack className="flex-1">
         {/* Header */}
-        <HStack className="items-center justify-between border-b border-outline-100 px-4 pb-4 dark:border-outline-800">
+        <HStack className="items-center justify-between px-4 pb-4">
           <HStack className="items-center gap-4">
             <Pressable onPress={() => router.back()} className="p-1">
               <IconSymbol name="chevron.left" size={24} color="gray" />
@@ -40,10 +40,7 @@ export default function GroupFeedScreen() {
           </Pressable>
         </HStack>
 
-        <FeedGrid
-          groupId={id as string}
-          scrollEnabled={true}
-        />
+        <FeedGrid groupId={id as string} scrollEnabled={true} />
       </VStack>
 
       <CommentsSheet ref={commentsSheetRef} />
