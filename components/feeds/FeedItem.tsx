@@ -42,7 +42,7 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
   };
 
   return (
-    <VStack className="mb-6 border-t border-gray-300 py-2 dark:border-gray-700">
+    <VStack className="mb-6 border-b border-gray-300 py-2 dark:border-gray-700">
       {/* Header */}
       <HStack className="items-center justify-between px-3 py-4">
         <HStack className="items-center gap-2">
@@ -120,7 +120,7 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
             <IconSymbol
               name={post.has_liked ? "heart.fill" : "heart"}
               size={24}
-              color={post.has_liked ? "#EF4444" : isDark ? "white" : "black"}
+              color={post.has_liked ? "#EF4444" : isDark ? "white" : "#333"}
             />
           </Pressable>
           <Box className="w-8">
@@ -136,7 +136,7 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
             <IconSymbol
               name="bubble.right"
               size={22}
-              color={isDark ? "white" : "black"}
+              color={isDark ? "white" : "#333"}
             />
           </Pressable>
           <Box className="w-8">
@@ -152,9 +152,9 @@ export default function FeedItem({ post, onCommentPress }: FeedItemProps) {
       </HStack>
 
       {/* Info & Caption */}
-      <VStack className="gap-1 px-3">
+      <VStack className="my-2 gap-1 px-3">
         {post.content && (
-          <Text className="text-sm text-typography-900">{post.content}</Text>
+          <Text className="text-typography-800">{post.content}</Text>
         )}
       </VStack>
     </VStack>
