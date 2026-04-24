@@ -170,7 +170,8 @@
   },
   "login": {
     "signInWithGoogle": "Google로 로그인",
-    "signInWithApple": "Apple로 로그인"
+    "signInWithApple": "Apple로 로그인",
+    "welcomeSubtitle": "VCHUNG 비전청년부"
   },
   "prayer": {
     "answered": "응답받음",

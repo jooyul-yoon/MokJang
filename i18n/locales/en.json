@@ -169,7 +169,8 @@
   },
   "login": {
     "signInWithGoogle": "Sign in with Google",
-    "signInWithApple": "Sign in with Apple"
+    "signInWithApple": "Sign in with Apple",
+    "welcomeSubtitle": "VCHUNG Young Adult Munistry"
   },
   "prayer": {
     "answered": "Answered",
