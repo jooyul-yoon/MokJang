@@ -34,7 +34,7 @@ export default function SelectedDateMeetings({
 
   if (selectedDateMeetings.length === 0) {
     return (
-      <Center className="mr-4 flex-1 rounded-xl bg-background-50">
+      <Center className="mr-4 flex-1 rounded-xl bg-background-200/50">
         <Text className="text-gray-400">{t("community.noMeetings")}</Text>
       </Center>
     );

@@ -24,6 +24,7 @@ import {
   AlignLeft,
   Calendar as CalendarIcon,
   Globe,
+  Hand,
   MapPin,
   Type,
   Users,
@@ -57,13 +58,18 @@ interface CreateMeetingModalProps {
   isSaving: boolean;
 }
 
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <Text className="mb-2 text-2xs font-bold uppercase tracking-wider text-typography-500">
+    {children}
+  </Text>
+);
+
 export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   isOpen,
   onClose,
   t,
   formState,
   onSubmit,
-
   isSaving,
 }) => {
   const { addLocation } = useRecentLocations();
@@ -79,13 +85,11 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   const screenHeight = Dimensions.get("window").height;
 
   const MeetingTypeCard = ({
-    type,
     isSelected,
     onSelect,
     icon: IconComponent,
     label,
   }: {
-    type: "mokjang" | "general";
     isSelected: boolean;
     onSelect: () => void;
     icon: any;
@@ -93,25 +97,23 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   }) => (
     <Pressable
       onPress={onSelect}
-      className={`flex-1 rounded-xl border p-3 ${
+      className={`flex-1 rounded-xl border p-4 ${
         isSelected
-          ? isDark
-            ? "border-primary-400 bg-primary-900/30"
-            : "border-primary-500 bg-primary-50"
-          : isDark
-            ? "border-gray-700 bg-gray-800"
-            : "border-gray-200 bg-gray-50"
+          ? "border-primary-500 bg-primary-50"
+          : "border-outline-100 bg-background-0"
       }`}
     >
-      <VStack className="items-center space-y-1">
+      <VStack className="items-center gap-2">
         <Icon
           as={IconComponent}
           size="lg"
-          className={isSelected ? "text-primary-500" : "text-gray-400"}
+          className={isSelected ? "text-primary-500" : "text-typography-400"}
         />
         <Text
           size="sm"
-          className={`font-medium ${isSelected ? "text-primary-500" : "text-gray-500"}`}
+          className={`font-semibold tracking-tight ${
+            isSelected ? "text-primary-700" : "text-typography-600"
+          }`}
         >
           {label}
         </Text>
@@ -119,80 +121,111 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     </Pressable>
   );
 
+  const isConfirmDisabled =
+    isSaving ||
+    (formState.type === "general" && !formState.title) ||
+    (!formState.isVolunteerOpen && !formState.location);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       <ModalBackdrop />
       <ModalAvoidKeyboardView>
         <ModalContent
-          className="w-full max-w-[340px] overflow-hidden p-2"
-          style={{ height: screenHeight * 0.5 }}
+          className="shadow-card w-full max-w-[360px] overflow-hidden rounded-2xl border-0 bg-background-50 p-0"
+          style={{ height: screenHeight * 0.78 }}
         >
-          <ModalHeader className="min-h-0 border-b border-gray-100 py-2 dark:border-gray-800">
-            <Heading size="sm" className="text-gray-900 dark:text-gray-100">
+          {/* Header */}
+          <ModalHeader className="items-center border-b border-outline-100 bg-background-0 px-5 py-4">
+            <Heading
+              size="lg"
+              className="font-bold tracking-tight text-typography-900"
+            >
               {t("community.addMeeting")}
             </Heading>
             <ModalCloseButton>
-              <Icon as={X} size="sm" className="text-gray-500" />
+              <Icon as={X} size="md" className="text-typography-500" />
             </ModalCloseButton>
           </ModalHeader>
-          <ModalBody className="flex-1 p-0">
+
+          {/* Body */}
+          <ModalBody className="flex-1 bg-background-50 p-0">
             <ScrollView
-              contentContainerStyle={{ padding: 12, paddingBottom: 20 }}
-              showsVerticalScrollIndicator={true}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                paddingTop: 16,
+                paddingBottom: 24,
+              }}
+              showsVerticalScrollIndicator={false}
             >
-              <VStack className="gap-3">
-                {/* Meeting Type Selection */}
-                <FormControl>
+              <VStack className="gap-5">
+                {/* Meeting type */}
+                <VStack>
+                  <SectionLabel>
+                    {t("community.meetingType", { defaultValue: "Type" })}
+                  </SectionLabel>
                   <HStack space="sm" className="w-full">
                     <MeetingTypeCard
-                      type="mokjang"
                       isSelected={formState.type === "mokjang"}
                       onSelect={() => formState.setType("mokjang")}
                       icon={Users}
                       label={t("community.mokjangMeeting")}
                     />
                     <MeetingTypeCard
-                      type="general"
                       isSelected={formState.type === "general"}
                       onSelect={() => formState.setType("general")}
                       icon={Globe}
                       label={t("community.generalMeeting")}
                     />
                   </HStack>
-                </FormControl>
+                </VStack>
 
-                {/* Title Input (Conditional) */}
+                {/* Title (general only) */}
                 {formState.type === "general" && (
-                  <FormControl isRequired={true}>
+                  <FormControl isRequired>
+                    <SectionLabel>
+                      {t("community.title", { defaultValue: "Title" })}
+                    </SectionLabel>
                     <Input
-                      size="sm"
-                      className="h-12 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                      size="md"
+                      variant="outline"
+                      className="h-12 rounded-lg border-0 bg-background-0 px-1"
                     >
-                      <InputSlot className="pl-2">
+                      <InputSlot className="pl-3">
                         <InputIcon
                           as={Type}
-                          className="text-gray-400"
+                          className="text-typography-500"
                           size="sm"
                         />
                       </InputSlot>
                       <InputField
-                        className="py-0 text-sm"
+                        className="text-base text-typography-900"
                         value={formState.title}
                         onChangeText={formState.setTitle}
                         placeholder={t("community.enterTitle")}
+                        placeholderTextColor={isDark ? "#6B7280" : "#C4CAD4"}
                       />
                     </Input>
                   </FormControl>
                 )}
 
-                {/* Date Selection */}
-                <FormControl>
-                  <HStack className="h-12 items-center justify-between rounded-md border border-gray-300 bg-gray-50 pl-2 dark:border-gray-700 dark:bg-gray-800">
-                    <Icon
-                      as={CalendarIcon}
-                      size="sm"
-                      className="text-gray-400"
-                    />
+                {/* When */}
+                <VStack>
+                  <SectionLabel>
+                    {t("community.when", { defaultValue: "When" })}
+                  </SectionLabel>
+                  <HStack className="h-12 items-center justify-between rounded-lg bg-background-0 px-3">
+                    <HStack className="items-center gap-2">
+                      <Icon
+                        as={CalendarIcon}
+                        size="sm"
+                        className="text-typography-500"
+                      />
+                      <Text className="text-sm text-typography-700">
+                        {t("community.dateTime", {
+                          defaultValue: "Date & time",
+                        })}
+                      </Text>
+                    </HStack>
                     <RNDateTimePicker
                       value={formState.date}
                       mode="datetime"
@@ -201,98 +234,110 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                       onChange={(_, d) => d && formState.setDate(d)}
                       themeVariant={colorScheme}
                       style={{
-                        transform: [{ scale: 0.8 }, { translateX: 10 }],
+                        transform: [{ scale: 0.85 }, { translateX: 8 }],
                       }}
                     />
                   </HStack>
-                </FormControl>
+                </VStack>
 
-                {/* Location Input & Volunteer Toggle Row */}
-                <HStack space="sm" className="z-[100] items-center justify-end">
-                  {!formState.isVolunteerOpen && (
-                    <FormControl className="flex-1" isRequired={true}>
-                      <LocationInput
+                {/* Where */}
+                <VStack>
+                  <SectionLabel>
+                    {t("community.where", { defaultValue: "Where" })}
+                  </SectionLabel>
+
+                  {/* Volunteer toggle row — always visible */}
+                  <HStack className="mb-2 h-12 items-center justify-between rounded-lg bg-background-0 px-3">
+                    <HStack className="items-center gap-2">
+                      <Icon
+                        as={Hand}
                         size="sm"
-                        className="h-12 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                        className="text-typography-500"
+                      />
+                      <Text className="text-sm text-typography-700">
+                        {t("community.volunteerAvailable")}
+                      </Text>
+                    </HStack>
+                    <Switch
+                      value={formState.isVolunteerOpen}
+                      onValueChange={formState.setIsVolunteerOpen}
+                      trackColor={{ false: "#E0E3E8", true: "#467CFA" }}
+                      thumbColor="#FFFFFF"
+                      style={{
+                        transform: [{ scale: 0.85 }],
+                      }}
+                    />
+                  </HStack>
+
+                  {/* Location input — hidden when volunteer toggle is on */}
+                  {!formState.isVolunteerOpen && (
+                    <FormControl isRequired className="z-[100]">
+                      <LocationInput
+                        size="md"
+                        className="h-12 rounded-lg border-0 bg-background-0 px-1"
                         icon={MapPin}
                         value={formState.location}
                         onChangeText={formState.setLocation}
                         placeholder={t("community.locationPlaceholder")}
-                        inputFieldClassName="py-0 text-sm"
+                        inputFieldClassName="text-base text-typography-900"
                       />
                     </FormControl>
                   )}
+                </VStack>
 
-                  <HStack className="h-12 items-center rounded-md border border-gray-300 bg-gray-50 px-2 dark:border-gray-700 dark:bg-gray-800">
-                    <Text
-                      size="sm"
-                      className="mr-2 text-typography-500 dark:text-gray-300"
-                    >
-                      {t("community.volunteerAvailable").split(" ")[0]}
-                    </Text>
-                    <VStack className="justify-center">
-                      <Switch
-                        value={formState.isVolunteerOpen}
-                        onValueChange={formState.setIsVolunteerOpen}
-                        trackColor={{ false: "#767577", true: "#0a7ea4" }}
-                        style={{
-                          transform: [{ scale: 0.8 }],
-                        }}
-                      />
-                    </VStack>
-                  </HStack>
-                </HStack>
-
-                {/* Memo Input */}
-                <FormControl className="z-[0]">
+                {/* Memo */}
+                <VStack className="z-[0]">
+                  <SectionLabel>
+                    {t("community.memo", { defaultValue: "Notes" })}
+                  </SectionLabel>
                   <Input
-                    size="sm"
-                    className="h-20 rounded-md border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                    size="md"
+                    variant="outline"
+                    className="h-24 rounded-lg border-0 bg-background-0 px-1"
                   >
-                    <InputSlot className="self-start pl-2 pt-2">
+                    <InputSlot className="self-start pl-3 pt-3">
                       <InputIcon
                         as={AlignLeft}
-                        className="text-gray-400"
+                        className="text-typography-500"
                         size="sm"
                       />
                     </InputSlot>
                     <InputField
-                      className="pt-1.5 text-sm"
+                      className="pt-2.5 text-base text-typography-900"
                       value={formState.memo}
                       onChangeText={formState.setMemo}
                       placeholder={t("community.enterMemo")}
-                      multiline={true}
+                      placeholderTextColor={isDark ? "#6B7280" : "#C4CAD4"}
+                      multiline
                       textAlignVertical="top"
                       numberOfLines={4}
                     />
                   </Input>
-                </FormControl>
+                </VStack>
               </VStack>
             </ScrollView>
           </ModalBody>
-          <ModalFooter className="border-t border-gray-100 pt-3 dark:border-gray-800">
+
+          {/* Footer */}
+          <ModalFooter className="gap-2 border-t border-outline-100 bg-background-0 px-5 py-3">
             <Button
               variant="outline"
               action="secondary"
-              size="sm"
+              size="md"
               onPress={onClose}
-              className="mr-2 flex-1 border-gray-300 dark:border-gray-600"
+              className="h-12 flex-1 rounded-lg border border-outline-200 bg-transparent"
             >
-              <ButtonText className="font-medium text-gray-600 dark:text-gray-300">
+              <ButtonText className="text-base font-semibold text-typography-600">
                 {t("common.cancel")}
               </ButtonText>
             </Button>
             <Button
-              size="sm"
+              size="md"
               onPress={handleConfirm}
-              className="flex-1 rounded-md bg-primary-500 shadow-sm hover:bg-primary-600"
-              isDisabled={
-                isSaving ||
-                (formState.type === "general" && !formState.title) ||
-                (!formState.isVolunteerOpen && !formState.location)
-              }
+              className="h-12 flex-1 rounded-lg bg-primary-500 active:bg-primary-700 disabled:opacity-50"
+              isDisabled={isConfirmDisabled}
             >
-              <ButtonText className="font-bold text-white">
+              <ButtonText className="text-base font-bold text-white">
                 {isSaving ? t("common.saving") : t("common.confirm")}
               </ButtonText>
             </Button>

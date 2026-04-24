@@ -32,7 +32,7 @@ export default function UpcomingMeeting({ meetings }: UpcomingMeetingProps) {
     );
 
   return upcomingMeetings.length === 0 ? (
-    <Center className="max-h-[300px] min-h-[100px] rounded-xl bg-background-50">
+    <Center className="max-h-[300px] min-h-[100px] rounded-xl bg-background-200/50">
       <Text className="text-gray-400">
         {t("community.no_upcoming_meeting")}
       </Text>
