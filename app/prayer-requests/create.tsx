@@ -83,7 +83,7 @@ export default function CreatePrayerRequest() {
   const toast = useToast();
 
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>("general");
   const [showCategorySheet, setShowCategorySheet] = useState(false);
   const [visibility, setVisibility] = useState<"public" | "group" | "private">(
     "group",
@@ -323,7 +323,7 @@ export default function CreatePrayerRequest() {
               <ActionsheetItem
                 key={cat.id}
                 onPress={() => {
-                  setCategory(cat.id === category ? null : cat.id);
+                  setCategory(cat.id);
                   setShowCategorySheet(false);
                 }}
               >

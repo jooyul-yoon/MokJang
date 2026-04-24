@@ -11,15 +11,6 @@ import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
-import {
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@/components/ui/modal";
 import { Pressable } from "@/components/ui/pressable";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -39,12 +30,12 @@ import {
   MoreVertical,
   Send,
   Trash,
-  X,
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
@@ -58,7 +49,6 @@ export default function PrayerRequestDetailScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -100,16 +90,26 @@ export default function PrayerRequestDetailScreen() {
     },
   });
 
-  const handleDelete = async () => {
-    const { success, error } = await deletePrayerRequest(id as string);
-    if (success) {
-      setShowDeleteModal(false);
-      queryClient.invalidateQueries({ queryKey: ["prayerRequests"] });
-      queryClient.invalidateQueries({ queryKey: ["prayerRequest", id] });
-      router.back();
-    } else {
-      console.error(error);
-    }
+  const handleDelete = () => {
+    Alert.alert(t("common.delete"), t("common.deleteConfirmation"), [
+      {
+        text: t("common.cancel"),
+        style: "cancel",
+      },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          const { success, error } = await deletePrayerRequest(id as string);
+          if (success) {
+            onRefreshHelper(setRefreshing, ["prayerRequests", "myPrayers"]);
+            router.back();
+          } else {
+            console.error(error);
+          }
+        },
+      },
+    ]);
   };
 
   const onRefresh = async () => {
@@ -153,7 +153,7 @@ export default function PrayerRequestDetailScreen() {
                   <MenuItem
                     key="delete"
                     textValue="Delete"
-                    onPress={() => setShowDeleteModal(true)}
+                    onPress={handleDelete}
                   >
                     <Icon as={Trash} className="mr-2 text-error-500" />
                     <MenuItemLabel size="sm" className="text-error-500">
@@ -323,40 +323,6 @@ export default function PrayerRequestDetailScreen() {
           </HStack>
         </VStack>
       </KeyboardAvoidingView>
-
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        size="md"
-      >
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="md" className="text-typography-900">
-              {t("common.delete")}
-            </Heading>
-            <ModalCloseButton>
-              <Icon as={X} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <Text size="sm" className="text-typography-500">
-              {t("common.deleteConfirmation")}
-            </Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              action="secondary"
-              onPress={() => setShowDeleteModal(false)}
-            >
-              <ButtonText>{t("common.cancel")}</ButtonText>
-            </Button>
-            <Button onPress={handleDelete} action="negative">
-              <ButtonText>{t("common.delete")}</ButtonText>
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </SafeAreaView>
   );
 }
