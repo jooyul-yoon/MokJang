@@ -121,8 +121,8 @@ export const getCalendarTheme = (
         today: ({ date, isHovered }) => ({
           container: {
             backgroundColor: isHovered ? "rgba(0, 0, 0, 0.1)" : "transparent",
-            borderWidth: 1,
-            borderColor: "rgba(0, 0, 0, 0.4)",
+            borderWidth: 0.5,
+            borderColor: "rgba(59, 130, 246, 0.8)",
             borderTopLeftRadius: BORDER_RADIUS,
             borderBottomLeftRadius: BORDER_RADIUS,
             borderTopRightRadius: BORDER_RADIUS,
@@ -131,8 +131,8 @@ export const getCalendarTheme = (
         }),
         active: ({ isEndOfRange, isStartOfRange, isToday, isStartOfWeek }) => ({
           container: {
-            backgroundColor: "rgba(0, 0, 0, 0.1)",
-            borderWidth: isToday ? 1 : 0,
+            backgroundColor: "rgba(59, 130, 246, 0.10)",
+            borderWidth: isToday ? 0.5 : 0,
             borderColor: "rgba(0, 0, 0, 0.4)",
             borderTopLeftRadius: isStartOfRange ? BORDER_RADIUS : 0,
             borderBottomLeftRadius: isStartOfRange ? BORDER_RADIUS : 0,
@@ -141,7 +141,6 @@ export const getCalendarTheme = (
           },
           content: {
             color: isStartOfWeek ? sundayColor : "rgba(0, 0, 0, 1)",
-            fontWeight: isToday ? "bold" : "normal",
           },
         }),
       },

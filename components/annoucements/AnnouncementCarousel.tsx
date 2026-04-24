@@ -76,13 +76,7 @@ export default function AnnouncementCarousel({
   };
 
   return (
-    <VStack className="my-4 px-2" space="md">
-      <HStack className="items-center justify-between">
-        <Heading size="lg" className="font-bold text-gray-900 dark:text-white">
-          {t("announcements.title")}
-        </Heading>
-      </HStack>
-
+    <VStack space="md">
       {announcements && announcements.length > 0 ? (
         <FlatList
           data={announcements}

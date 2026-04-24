@@ -12,7 +12,7 @@ export default function TabTitle({
   rightElement?: ReactNode;
 }) {
   return (
-    <HStack className="mb-4 px-4">
+    <HStack className="mb-4 px-4 pt-2">
       <Heading size="xl" className={className}>
         {title}
       </Heading>
