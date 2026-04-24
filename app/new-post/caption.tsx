@@ -146,7 +146,7 @@ export default function NewPostCaptionScreen() {
                     </Text>
                   </HStack>
                   {visibility === "public" && (
-                    <IconSymbol name="checkmark" size={20} color="#3B82F6" />
+                    <IconSymbol name="checkmark" size={20} color="#467CFA" />
                   )}
                 </HStack>
               </Pressable>
@@ -179,7 +179,7 @@ export default function NewPostCaptionScreen() {
                       </VStack>
                     </HStack>
                     {visibility === "group" && (
-                      <IconSymbol name="checkmark" size={20} color="#3B82F6" />
+                      <IconSymbol name="checkmark" size={20} color="#467CFA" />
                     )}
                   </HStack>
                 </Pressable>

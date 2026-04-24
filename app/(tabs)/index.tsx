@@ -1,5 +1,4 @@
 import AnnouncementCarousel from "@/components/annoucements/AnnouncementCarousel";
-import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { fetchAnnouncements } from "@/services/AnnouncementApi";
 import { onRefreshHelper } from "@/utils/refreshHelper";
@@ -12,7 +11,7 @@ import {
   CommentsSheet,
   CommentsSheetRef,
 } from "@/components/feeds/CommentsSheet";
-import { Heading } from "@/components/ui/heading";
+import TabTitle from "@/components/shared/TabTitle";
 import { useTranslation } from "react-i18next";
 
 export default function HomeScreen() {
@@ -39,19 +38,12 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white py-2 dark:bg-background-dark"
+      className="flex-1 bg-white px-6 dark:bg-background-dark"
       edges={["top"]}
     >
-      <VStack className="flex-1 gap-6 px-6">
+      <VStack className="flex-1">
         {/* Top Bar */}
-        <HStack className="items-center justify-between">
-          <Heading
-            size="xl"
-            className="font-bold text-gray-900 dark:text-white"
-          >
-            {t("announcements.title")}
-          </Heading>
-        </HStack>
+        <TabTitle title={t("announcements.title")} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}

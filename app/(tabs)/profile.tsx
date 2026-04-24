@@ -11,11 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
-import {
-  deleteAccount,
-  fetchUserProfile,
-  updateNotificationSettings,
-} from "@/services/api";
+import { deleteAccount, fetchUserProfile } from "@/services/api";
 import { fetchMyPrayerRequests } from "@/services/PrayerRequestApi";
 import { useGroupStore } from "@/store/groupStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -30,7 +26,6 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
-  ScrollView,
   TextInput,
   TouchableOpacity,
   View,
@@ -268,161 +263,164 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">
+    <SafeAreaView
+      className="flex-1 bg-white px-6 dark:bg-background-dark"
+      edges={["top"]}
+    >
+      {/* <ScrollView className="flex-1" showsVerticalScrollIndicator={false}> */}
       <TabTitle title={t("tabs.profile")} />
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        <VStack className="pb-10">
-          <VStack className="mb-8 items-center gap-4">
-            <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
-              <Avatar
-                size="2xl"
-                className="h-28 w-28 border-2 border-background-200"
-              >
-                {profile?.avatar_url ? (
-                  <AvatarImage
-                    source={{ uri: profile.avatar_url }}
-                    alt="Profile Image"
-                  />
-                ) : (
-                  <AvatarFallbackText className="text-3xl text-primary-600 dark:text-primary-400">
-                    {profile?.full_name || "User"}
-                  </AvatarFallbackText>
-                )}
-                <View className="dark:bg-background-card-dark absolute bottom-0 right-0 rounded-full border border-outline-100 bg-white p-2 shadow-sm dark:border-outline-800">
-                  <Ionicons
-                    name="camera"
-                    size={16}
-                    color={colorScheme === "dark" ? "#000" : "#666"}
-                  />
-                </View>
-              </Avatar>
-            </TouchableOpacity>
-
-            {/* Name Edit */}
-            {isEditing ? (
-              <HStack className="items-center gap-2">
-                <TextInput
-                  className="rounded-lg border border-outline-300 bg-white px-3 py-1.5 text-base text-typography-900 dark:border-outline-700 dark:bg-background-800 dark:text-typography-100"
-                  value={fullName}
-                  onChangeText={setFullName}
-                  placeholder={t("profile.namePlaceholder")}
-                  autoFocus
+      <VStack className="pb-10">
+        <VStack className="mb-8 items-center gap-4">
+          <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
+            <Avatar
+              size="2xl"
+              className="h-28 w-28 border-2 border-background-200"
+            >
+              {profile?.avatar_url ? (
+                <AvatarImage
+                  source={{ uri: profile.avatar_url }}
+                  alt="Profile Image"
                 />
-                <Button
-                  size="xs"
-                  onPress={() => updateProfileMutation.mutate(fullName)}
-                  isDisabled={updateProfileMutation.isPending}
-                  className="rounded-full"
-                >
-                  <ButtonText>{t("profile.save")}</ButtonText>
-                </Button>
-                <TouchableOpacity onPress={() => setIsEditing(false)}>
-                  <Ionicons name="close-circle" size={24} color="#9CA3AF" />
-                </TouchableOpacity>
-              </HStack>
-            ) : (
-              <VStack className="items-center">
-                <TouchableOpacity
-                  onPress={() => setIsEditing(true)}
-                  className="flex-row items-center gap-2"
-                >
-                  <Text className="text-xl font-bold text-typography-900">
-                    {profile?.full_name || "No name set"}
-                  </Text>
-                  <Ionicons name="pencil" size={14} color="#9CA3AF" />
-                </TouchableOpacity>
-                <Text className="text-sm text-typography-500">
-                  {selectedGroup?.name || t("profile.noMokjang")}
-                </Text>
-              </VStack>
-            )}
-
-            {/* Quick Stats or Actions could go here, for now keeping it clean */}
-          </VStack>
-
-          {/* General Section */}
-          <SectionHeader title="General" />
-
-          {/* Edit Profile */}
-          <MenuItem
-            icon="person-outline"
-            label={t("profile.editProfile", "프로필 수정")}
-            onPress={() => router.push("/profile/edit")}
-            rightElement={
-              <HStack className="items-center gap-2">
+              ) : (
+                <AvatarFallbackText className="text-3xl text-primary-600 dark:text-primary-400">
+                  {profile?.full_name || "User"}
+                </AvatarFallbackText>
+              )}
+              <View className="dark:bg-background-card-dark absolute bottom-0 right-0 rounded-full border border-outline-100 bg-white p-2 shadow-sm dark:border-outline-800">
                 <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+                  name="camera"
+                  size={16}
+                  color={colorScheme === "dark" ? "#000" : "#666"}
                 />
-              </HStack>
-            }
-          />
-          <MenuItem
-            icon="hands-pray"
-            iconFamily="MaterialCommunityIcons"
-            label={t("profile.myPrayers")}
-            onPress={() => router.push("/prayer-requests/mine")}
-            rightElement={
-              <HStack className="items-center gap-2">
-                <Text className="text-sm text-typography-500">
-                  {myPrayers.length > 0 ? `${myPrayers.length}` : ""}
-                </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
-                />
-              </HStack>
-            }
-          />
+              </View>
+            </Avatar>
+          </TouchableOpacity>
 
-          {/* General Section */}
-          <SectionHeader title="General" />
-
-          <MenuItem
-            icon="earth-outline"
-            label={t("common.language")}
-            rightElement={
-              <HStack className="items-center gap-2">
-                <Text className="text-sm text-typography-500">
-                  {i18n.language === "ko" ? "한국어" : "English (US)"}
-                </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
-                />
-              </HStack>
-            }
-            onPress={() => {
-              // Simple toggle for now or navigate to settings
-              const nextLang = i18n.language === "ko" ? "en" : "ko";
-              i18n.changeLanguage(nextLang);
-            }}
-          />
-
-          <MenuItem
-            icon={colorScheme === "dark" ? "moon-outline" : "sunny-outline"}
-            label={t("common.dark")} // Using "Theme" or "Dark Mode" key
-            rightElement={
-              <Switch
-                size="md"
-                value={colorScheme === "dark"}
-                onValueChange={toggleColorScheme}
-                trackColor={{ false: "#E5E7EB", true: "#3B82F6" }}
-                thumbColor={
-                  Platform.OS === "ios"
-                    ? "#FFF"
-                    : colorScheme === "dark"
-                      ? "#FFF"
-                      : "#F3F4F6"
-                }
+          {/* Name Edit */}
+          {isEditing ? (
+            <HStack className="items-center gap-2">
+              <TextInput
+                className="rounded-lg border border-outline-300 bg-white px-3 py-1.5 text-base text-typography-900 dark:border-outline-700 dark:bg-background-800 dark:text-typography-100"
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder={t("profile.namePlaceholder")}
+                autoFocus
               />
-            }
-          />
+              <Button
+                size="xs"
+                onPress={() => updateProfileMutation.mutate(fullName)}
+                isDisabled={updateProfileMutation.isPending}
+                className="rounded-full"
+              >
+                <ButtonText>{t("profile.save")}</ButtonText>
+              </Button>
+              <TouchableOpacity onPress={() => setIsEditing(false)}>
+                <Ionicons name="close-circle" size={24} color="#9CA3AF" />
+              </TouchableOpacity>
+            </HStack>
+          ) : (
+            <VStack className="items-center">
+              <TouchableOpacity
+                onPress={() => setIsEditing(true)}
+                className="flex-row items-center gap-2"
+              >
+                <Text className="text-xl font-bold text-typography-900">
+                  {profile?.full_name || "No name set"}
+                </Text>
+                <Ionicons name="pencil" size={14} color="#9CA3AF" />
+              </TouchableOpacity>
+              <Text className="text-sm text-typography-500">
+                {selectedGroup?.name || t("profile.noMokjang")}
+              </Text>
+            </VStack>
+          )}
 
-          <MenuItem
+          {/* Quick Stats or Actions could go here, for now keeping it clean */}
+        </VStack>
+
+        {/* General Section */}
+        <SectionHeader title="General" />
+
+        {/* Edit Profile */}
+        <MenuItem
+          icon="person-outline"
+          label={t("profile.editProfile", "프로필 수정")}
+          onPress={() => router.push("/profile/edit")}
+          rightElement={
+            <HStack className="items-center gap-2">
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+              />
+            </HStack>
+          }
+        />
+        <MenuItem
+          icon="hands-pray"
+          iconFamily="MaterialCommunityIcons"
+          label={t("profile.myPrayers")}
+          onPress={() => router.push("/prayer-requests/mine")}
+          rightElement={
+            <HStack className="items-center gap-2">
+              <Text className="text-sm text-typography-500">
+                {myPrayers.length > 0 ? `${myPrayers.length}` : ""}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+              />
+            </HStack>
+          }
+        />
+
+        {/* General Section */}
+        <SectionHeader title="General" />
+
+        <MenuItem
+          icon="earth-outline"
+          label={t("common.language")}
+          rightElement={
+            <HStack className="items-center gap-2">
+              <Text className="text-sm text-typography-500">
+                {i18n.language === "ko" ? "한국어" : "English (US)"}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colorScheme === "dark" ? "#6B7280" : "#9CA3AF"}
+              />
+            </HStack>
+          }
+          onPress={() => {
+            // Simple toggle for now or navigate to settings
+            const nextLang = i18n.language === "ko" ? "en" : "ko";
+            i18n.changeLanguage(nextLang);
+          }}
+        />
+
+        <MenuItem
+          icon={colorScheme === "dark" ? "moon-outline" : "sunny-outline"}
+          label={t("common.dark")} // Using "Theme" or "Dark Mode" key
+          rightElement={
+            <Switch
+              size="md"
+              value={colorScheme === "dark"}
+              onValueChange={toggleColorScheme}
+              trackColor={{ false: "#E5E7EB", true: "#467CFA" }}
+              thumbColor={
+                Platform.OS === "ios"
+                  ? "#FFF"
+                  : colorScheme === "dark"
+                    ? "#FFF"
+                    : "#F3F4F6"
+              }
+            />
+          }
+        />
+
+        {/* <MenuItem
             icon="notifications-outline"
             label={t("profile.notifications", {
               defaultValue: "Notifications",
@@ -432,7 +430,6 @@ export default function ProfileScreen() {
                 size="md"
                 value={profile?.is_notification_enabled ?? false}
                 onValueChange={async (val) => {
-                  /* Optimistic update could go here, but for now just mutate */
                   const oldData = queryClient.getQueryData(["userProfile"]);
                   queryClient.setQueryData(["userProfile"], (old: any) => ({
                     ...old,
@@ -443,7 +440,6 @@ export default function ProfileScreen() {
                     await updateNotificationSettings(val);
 
                   if (!success) {
-                    // Revert on error
                     queryClient.setQueryData(["userProfile"], oldData);
                     Alert.alert(t("common.error"), error);
                   } else {
@@ -452,7 +448,7 @@ export default function ProfileScreen() {
                     });
                   }
                 }}
-                trackColor={{ false: "#E5E7EB", true: "#3B82F6" }}
+                trackColor={{ false: "#E5E7EB", true: "#467CFA" }}
                 thumbColor={
                   Platform.OS === "ios"
                     ? "#FFF"
@@ -462,32 +458,32 @@ export default function ProfileScreen() {
                 }
               />
             }
-          />
+          /> */}
 
-          {/* Account Section */}
-          <SectionHeader title="Account" />
+        {/* Account Section */}
+        <SectionHeader title="Account" />
 
-          <MenuItem
-            icon="log-out-outline"
-            label={t("profile.signOut")}
-            isDestructive
-            onPress={handleSignOut}
-            rightElement={<View />} // Empty view to hide chevron
-          />
+        <MenuItem
+          icon="log-out-outline"
+          label={t("profile.signOut")}
+          isDestructive
+          onPress={handleSignOut}
+          rightElement={<View />} // Empty view to hide chevron
+        />
 
-          <MenuItem
-            icon="trash-outline"
-            label={t("common.deleteAccount")}
-            isDestructive
-            onPress={handleDeleteAccount}
-            rightElement={<View />} // Empty view to hide chevron
-          />
+        <MenuItem
+          icon="trash-outline"
+          label={t("common.deleteAccount")}
+          isDestructive
+          onPress={handleDeleteAccount}
+          rightElement={<View />} // Empty view to hide chevron
+        />
 
-          <Text className="mt-6 text-center text-xs text-typography-300">
-            Version 1.0.0
-          </Text>
-        </VStack>
-      </ScrollView>
+        <Text className="mt-6 text-center text-xs text-typography-300">
+          Version 1.0.0
+        </Text>
+      </VStack>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }

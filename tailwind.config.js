@@ -179,6 +179,7 @@ module.exports = {
         heading: undefined,
         body: undefined,
         mono: undefined,
+        pretendard: ["Pretendard", "Pretendard Variable"],
         jakarta: ["var(--font-plus-jakarta-sans)"],
         roboto: ["var(--font-roboto)"],
         code: ["var(--font-source-code-pro)"],
@@ -191,7 +192,14 @@ module.exports = {
       fontSize: {
         "2xs": "10px",
       },
+      borderRadius: {
+        pill: "9999px",
+        mj: "16px",
+      },
       boxShadow: {
+        card: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+        floating: "0px 8px 30px rgba(70, 124, 250, 0.30)",
+        navigation: "0px -4px 20px rgba(0, 0, 0, 0.03)",
         "hard-1": "-2px 2px 8px 0px rgba(38, 38, 38, 0.20)",
         "hard-2": "0px 3px 10px 0px rgba(38, 38, 38, 0.20)",
         "hard-3": "2px 2px 8px 0px rgba(38, 38, 38, 0.20)",

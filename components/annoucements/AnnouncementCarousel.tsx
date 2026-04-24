@@ -10,6 +10,7 @@ import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
+import { AnnouncementBadge } from "./AnnouncementBadge";
 
 interface IAnnouncementCarousel {
   announcements?: Announcement[];
@@ -52,15 +53,16 @@ export default function AnnouncementCarousel({
           </VStack>
 
           <VStack className="flex-1 pb-4">
-            <VStack className="mb-1 items-start justify-between">
-              <Heading
-                size="sm"
-                className="shrink text-lg font-bold text-gray-900 dark:text-white"
-                numberOfLines={1}
-              >
-                {item.title}
-              </Heading>
-            </VStack>
+            <HStack>
+              <AnnouncementBadge type={item.type} />
+            </HStack>
+            <Heading
+              size="sm"
+              className="shrink text-lg font-bold text-gray-900 dark:text-white"
+              numberOfLines={1}
+            >
+              {item.title}
+            </Heading>
 
             <Text
               className="leading-normal text-gray-700 dark:text-gray-300"

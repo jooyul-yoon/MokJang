@@ -41,8 +41,14 @@
           "backgroundColor": "#ffffff",
           "dark": {
             "image": "./assets/images/splash-icon-dark.png",
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0B0F1A"
           }
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/PretendardVariable.ttf"]
         }
       ],
       "expo-localization",

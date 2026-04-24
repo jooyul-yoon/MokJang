@@ -31,6 +31,7 @@ import {
   fetchAnnouncements,
   fetchComments,
 } from "@/services/AnnouncementApi";
+import { getAnnouncementTagStyle } from "@/components/annoucements/AnnouncementBadge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { MoreVertical, Send, Trash, X } from "lucide-react-native";
@@ -94,43 +95,7 @@ export default function AnnouncementDetailScreen() {
     );
   }
 
-  // Determine tag style (reused logic)
-  let tagStyle = {
-    tagText: "NEWS",
-    tagColor: "text-amber-500",
-    dotColor: "bg-amber-500",
-    bgColor: "bg-amber-50",
-    darkBgColor: "dark:bg-amber-900/20",
-  };
-  switch (announcement.type) {
-    case "meeting":
-      tagStyle = {
-        tagText: "MEETING",
-        tagColor: "text-blue-500",
-        dotColor: "bg-blue-500",
-        bgColor: "bg-blue-50",
-        darkBgColor: "dark:bg-blue-900/20",
-      };
-      break;
-    case "retreat":
-      tagStyle = {
-        tagText: "RETREAT",
-        tagColor: "text-green-500",
-        dotColor: "bg-green-500",
-        bgColor: "bg-green-50",
-        darkBgColor: "dark:bg-green-900/20",
-      };
-      break;
-    case "picnic":
-      tagStyle = {
-        tagText: "PICNIC",
-        tagColor: "text-orange-500",
-        dotColor: "bg-orange-500",
-        bgColor: "bg-orange-50",
-        darkBgColor: "dark:bg-orange-900/20",
-      };
-      break;
-  }
+  const tagStyle = getAnnouncementTagStyle(announcement.type);
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-background-dark">

@@ -1,6 +1,5 @@
 import FeedGrid from "@/components/feeds/FeedGrid";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
+import TabTitle from "@/components/shared/TabTitle";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Pressable } from "@/components/ui/pressable";
 import { useRouter } from "expo-router";
@@ -13,17 +12,17 @@ export default function Feed() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white dark:bg-background-dark"
+      className="flex-1 bg-white px-6 dark:bg-background-dark"
       edges={["top"]}
     >
-      <HStack className="items-center justify-between px-4 pb-2 pt-2">
-        <Heading size="xl" className="font-bold text-gray-900 dark:text-white">
-          VCHUNG {t("tabs.feed")}
-        </Heading>
-        <Pressable onPress={() => router.push("/new-post")} className="p-1">
-          <IconSymbol name="plus.app" size={24} color="gray" />
-        </Pressable>
-      </HStack>
+      <TabTitle
+        title={t("tabs.feed")}
+        rightElement={
+          <Pressable onPress={() => router.push("/new-post")} className="p-1">
+            <IconSymbol name="plus.app" size={24} color="gray" />
+          </Pressable>
+        }
+      />
       <FeedGrid scrollEnabled={true} />
     </SafeAreaView>
   );

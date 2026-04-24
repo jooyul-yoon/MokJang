@@ -27,7 +27,7 @@ export default function CommunityScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white dark:bg-background-dark"
+      className="flex-1 bg-white px-6 dark:bg-background-dark"
       edges={["top", "left", "right"]}
     >
       {myGroups?.length > 0 ? (

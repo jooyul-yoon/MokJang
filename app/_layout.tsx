@@ -13,6 +13,7 @@ import {
 } from "@react-navigation/native";
 import { Session } from "@supabase/supabase-js";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import {
   Stack,
@@ -20,12 +21,15 @@ import {
   useRouter,
   useSegments,
 } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { useAuthStore } from "@/store/useAuthStore";
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export function useNotificationObserver() {
   const router = useRouter();
@@ -78,6 +82,17 @@ export default function RootLayout() {
   const { hasProfile, setHasProfile } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+
+  const [fontsLoaded, fontError] = useFonts({
+    Pretendard: require("@/assets/fonts/PretendardVariable.ttf"),
+    "Pretendard-Variable": require("@/assets/fonts/PretendardVariable.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontError]);
 
   // Push notifications
   const { expoPushToken } = usePushNotifications();
@@ -150,8 +165,12 @@ export default function RootLayout() {
     }
   }, [session, initialized, segments, hasProfile]);
 
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <QueryClientProvider client={queryClient}>
         <GluestackUIProvider
           mode={(colorScheme as "light" | "dark") || "system"}

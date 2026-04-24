@@ -197,11 +197,12 @@ export default function GroupDetails({
       />
       <VStack className="flex-1">
         <ScrollView
-          className="flex-1 px-4"
+          className="flex-1"
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
           contentContainerClassName="gap-4"
+          showsVerticalScrollIndicator={false}
         >
           <GroupSchedules
             selectedGroup={myGroups[0]}
