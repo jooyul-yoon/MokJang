@@ -15,7 +15,7 @@ export default function TabTitle({
     <HStack className="mb-4 items-center justify-between pt-2">
       <Heading
         size="2xl"
-        className={`font-bold tracking-tight text-typography-900 ${className ?? ""}`}
+        className={`font-bold text-typography-900 ${className ?? ""}`}
       >
         {title}
       </Heading>

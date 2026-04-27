@@ -27,7 +27,7 @@ export default function CommunityScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-white px-6 dark:bg-background-dark"
+      className="flex-1 bg-background-muted px-6 dark:bg-background-dark"
       edges={["top", "left", "right"]}
     >
       {myGroups?.length > 0 ? (
@@ -39,7 +39,7 @@ export default function CommunityScreen() {
           isLoadingMyGroups={isLoadingMyGroups}
         />
       ) : (
-        <GroupList groups={groups} />
+        <GroupList groups={groups} isLoading={isLoadingGroups} />
       )}
     </SafeAreaView>
   );

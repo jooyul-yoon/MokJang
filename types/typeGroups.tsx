@@ -7,6 +7,7 @@ export interface Group {
   meeting_day: string | null;
   meeting_hour: string | null;
   leader_id: string;
+  group_members: GroupMember[];
 }
 
 export interface Diary {
@@ -16,4 +17,12 @@ export interface Diary {
   title: string;
   content: string;
   created_at: string;
+}
+
+export interface GroupMember {
+  id: string;
+  group_id: string;
+  user_id: string;
+  role: string;
+  joined_at: string;
 }

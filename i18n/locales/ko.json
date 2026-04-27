@@ -109,7 +109,14 @@
     "diary_content_placeholder": "오늘의 목회일기를 입력하세요",
     "save_diary": "목회일기 저장",
     "add_diary": "목회일기 쓰기",
-    "no_diary": "등록된 목회일기가 없습니다."
+    "no_diary": "등록된 목회일기가 없습니다.",
+    "searchPlaceholder": "목장 이름 또는 지역 검색",
+    "openGroupsLabel": "현재 모집 중인 목장",
+    "groupCountUnit": "개",
+    "joinRequest": "가입 신청",
+    "joinRequested": "신청 완료 ✓",
+    "noSearchResults": "검색 결과가 없습니다",
+    "noGroups": "현재 모집 중인 목장이 없습니다"
   },
   "profile": {
     "name": "이름",

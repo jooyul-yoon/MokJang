@@ -4,7 +4,7 @@ import { Group } from "@/types/typeGroups";
 export const fetchGroups = async (): Promise<Group[]> => {
   const { data, error } = await supabase
     .from("groups")
-    .select("*")
+    .select("*, group_members:group_members(*)")
     .order("name");
 
   if (error) {

@@ -108,7 +108,14 @@
     "diary_content_placeholder": "Enter today's pastoral diary",
     "save_diary": "Save Diary",
     "add_diary": "Write Diary",
-    "no_diary": "No pastoral diaries found."
+    "no_diary": "No pastoral diaries found.",
+    "searchPlaceholder": "Search by name or region",
+    "openGroupsLabel": "Open groups",
+    "groupCountUnit": "",
+    "joinRequest": "Join",
+    "joinRequested": "Requested ✓",
+    "noSearchResults": "No results found",
+    "noGroups": "No open groups available"
   },
   "profile": {
     "name": "Name",

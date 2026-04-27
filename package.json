@@ -25,6 +25,7 @@
     "@react-navigation/native": "^7.1.8",
     "@shopify/flash-list": "2.0.2",
     "@supabase/supabase-js": "^2.86.0",
+    "@tabler/icons-react-native": "^3.41.1",
     "@tanstack/react-query": "^5.90.11",
     "base64-arraybuffer": "^1.0.2",
     "date-fns": "^4.1.0",
