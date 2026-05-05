@@ -10,7 +10,6 @@ import { useColorScheme } from "react-native";
 import { getCalendarTheme } from "../meetings/CalendarTheme";
 import MeetingCalendar from "../meetings/MeetingCalendar";
 import SelectedDateMeetings from "../meetings/SelectedDateMeetings";
-import UpcomingMeeting from "../meetings/UpcomingMeeting";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { VStack } from "../ui/vstack";
@@ -100,7 +99,7 @@ export default function GroupSchedules({
           <Heading size="sm" className="mb-2 text-typography-800">
             {t("community.upcomingMeetings")}
           </Heading>
-          <UpcomingMeeting meetings={meetings} />
+          {/* <UpcomingMeeting meetings={meetings} /> */}
         </VStack>
         {/* selected date */}
         <VStack className="w-1/2 overflow-hidden">

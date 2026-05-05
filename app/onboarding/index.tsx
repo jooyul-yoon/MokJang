@@ -1,15 +1,20 @@
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
-import { AnimatePresence, MotiView } from "moti";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Dimensions, KeyboardAvoidingView, Platform } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+  clearPendingAppleFullName,
+  getAuthMetadataName,
+  getPendingAppleFullName,
+  isAppleAuthUser,
+} from "@/utils/auth-profile";
+import { AnimatePresence, MotiView } from "moti";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // UI components
 import { Box } from "@/components/ui/box";
@@ -31,14 +36,42 @@ import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-const { width } = Dimensions.get("window");
-
 const STEPS = ["name", "birthdate", "phone", "address", "baptism", "welcome"];
+const APPLE_NAME_FALLBACK = "Apple User";
+
+const formatBirthdateInput = (text: string) =>
+  text.replace(/\D/g, "").slice(0, 6);
+
+const parseBirthdateInput = (value: string) => {
+  const digits = formatBirthdateInput(value);
+  if (!digits) return null;
+  if (digits.length !== 6) return undefined;
+
+  const yy = Number(digits.slice(0, 2));
+  const month = Number(digits.slice(2, 4));
+  const day = Number(digits.slice(4, 6));
+  const currentYear = new Date().getFullYear();
+  const currentYearShort = currentYear % 100;
+  const year = yy > currentYearShort ? 1900 + yy : 2000 + yy;
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day ||
+    date > new Date()
+  ) {
+    return undefined;
+  }
+
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
+    2,
+    "0",
+  )}`;
+};
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
 
   const [stepIndex, setStepIndex] = useState(0);
   const [formData, setFormData] = useState({
@@ -50,22 +83,69 @@ export default function OnboardingScreen() {
   });
 
   const [nameError, setNameError] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [birthdateError, setBirthdateError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [shouldSkipNameStep, setShouldSkipNameStep] = useState(false);
 
   const currentStepId = STEPS[stepIndex];
+  const firstStepIndex = shouldSkipNameStep ? 1 : 0;
+  const formStepTotal = shouldSkipNameStep
+    ? STEPS.length - 2
+    : STEPS.length - 1;
+  const formStepNumber = shouldSkipNameStep ? stepIndex : stepIndex + 1;
+  const canGoBack = currentStepId !== "welcome" && stepIndex > firstStepIndex;
 
-  const handleDateChange = (_event: any, selectedDate?: Date) => {
-    if (Platform.OS === "android") {
-      setShowDatePicker(false);
-    }
-    if (selectedDate) {
-      const yyyy = selectedDate.getFullYear();
-      const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
-      const dd = String(selectedDate.getDate()).padStart(2, "0");
-      setFormData({ ...formData, birthdate: `${yyyy}-${mm}-${dd}` });
-    }
-  };
+  useEffect(() => {
+    let active = true;
+
+    const hydrateKnownProfileName = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        const isAppleUser = isAppleAuthUser(session.user);
+        const pendingAppleName = isAppleUser
+          ? await getPendingAppleFullName(session.user.id)
+          : null;
+        const resolvedName =
+          profile?.full_name?.trim() ||
+          pendingAppleName ||
+          getAuthMetadataName(session.user) ||
+          (isAppleUser ? APPLE_NAME_FALLBACK : null);
+
+        if (!active) return;
+
+        if (resolvedName) {
+          setFormData((previous) => ({
+            ...previous,
+            name: resolvedName,
+          }));
+          setShouldSkipNameStep(true);
+          setStepIndex((previous) => (previous === 0 ? 1 : previous));
+        }
+      } catch (error) {
+        console.error("Error hydrating onboarding profile:", error);
+      } finally {
+        if (active) setIsInitializing(false);
+      }
+    };
+
+    hydrateKnownProfileName();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleNext = async () => {
     if (currentStepId === "name" && !formData.name.trim()) {
@@ -73,6 +153,15 @@ export default function OnboardingScreen() {
       return;
     }
     setNameError("");
+
+    if (
+      currentStepId === "birthdate" &&
+      parseBirthdateInput(formData.birthdate) === undefined
+    ) {
+      setBirthdateError("YYMMDD 형식으로 정확히 입력해주세요.");
+      return;
+    }
+    setBirthdateError("");
 
     if (currentStepId === "baptism") {
       await saveProfileData();
@@ -86,6 +175,7 @@ export default function OnboardingScreen() {
 
   const handleSkip = async () => {
     setNameError("");
+    setBirthdateError("");
     if (currentStepId === "baptism") {
       await saveProfileData();
       setStepIndex(stepIndex + 1);
@@ -97,7 +187,7 @@ export default function OnboardingScreen() {
   };
 
   const handleBack = () => {
-    if (stepIndex > 0 && currentStepId !== "welcome") {
+    if (canGoBack) {
       setStepIndex(stepIndex - 1);
     }
   };
@@ -114,8 +204,8 @@ export default function OnboardingScreen() {
 
       const updates = {
         id: session.user.id,
-        full_name: formData.name,
-        birthdate: formData.birthdate || null,
+        full_name: formData.name.trim(),
+        birthdate: parseBirthdateInput(formData.birthdate) ?? null,
         phone: formData.phone || null,
         address: formData.address || null,
         baptism_status: formData.baptism_status,
@@ -124,6 +214,9 @@ export default function OnboardingScreen() {
 
       const { error } = await supabase.from("profiles").upsert(updates);
       if (error) throw error;
+      if (isAppleAuthUser(session.user)) {
+        await clearPendingAppleFullName(session.user.id);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -156,47 +249,34 @@ export default function OnboardingScreen() {
         );
       case "birthdate":
         return (
-          <FormControl className="w-full">
-            {Platform.OS === "android" ? (
-              <>
-                <Pressable onPress={() => setShowDatePicker(true)}>
-                  <Input variant="underlined" size="md" isReadOnly>
-                    <InputField
-                      placeholder="생년월일 선택"
-                      value={formData.birthdate}
-                      editable={false}
-                    />
-                  </Input>
-                </Pressable>
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={
-                      formData.birthdate
-                        ? new Date(formData.birthdate)
-                        : new Date(2000, 0, 1)
-                    }
-                    mode="date"
-                    display="default"
-                    onChange={handleDateChange}
-                    maximumDate={new Date()}
-                  />
-                )}
-              </>
-            ) : (
-              <Box className="mt-4 w-full flex-row justify-center">
-                <DateTimePicker
-                  value={
-                    formData.birthdate
-                      ? new Date(formData.birthdate)
-                      : new Date(2000, 0, 1)
-                  }
-                  mode="date"
-                  display="spinner"
-                  onChange={handleDateChange}
-                  maximumDate={new Date()}
-                />
-              </Box>
-            )}
+          <FormControl isInvalid={!!birthdateError} className="w-full">
+            <FormControlLabel>
+              <FormControlLabelText>생년월일 (선택)</FormControlLabelText>
+            </FormControlLabel>
+            <Input variant="underlined" size="xl">
+              <InputField
+                placeholder="YYMMDD"
+                value={formData.birthdate}
+                onChangeText={(text: string) => {
+                  setBirthdateError("");
+                  setFormData({
+                    ...formData,
+                    birthdate: formatBirthdateInput(text),
+                  });
+                }}
+                keyboardType="number-pad"
+                maxLength={6}
+                className="text-3xl font-bold tracking-[0px]"
+              />
+            </Input>
+            <FormControlHelper>
+              <FormControlHelperText>
+                예: 970415처럼 숫자 6자리만 입력해주세요.
+              </FormControlHelperText>
+            </FormControlHelper>
+            <FormControlError>
+              <FormControlErrorText>{birthdateError}</FormControlErrorText>
+            </FormControlError>
           </FormControl>
         );
       case "phone":
@@ -207,7 +287,7 @@ export default function OnboardingScreen() {
             </FormControlLabel>
             <Input variant="underlined" size="xl">
               <InputField
-                placeholder="01012345678"
+                placeholder="1234567890"
                 value={formData.phone}
                 onChangeText={(text: string) =>
                   setFormData({ ...formData, phone: text })
@@ -221,11 +301,11 @@ export default function OnboardingScreen() {
         return (
           <FormControl className="w-full">
             <FormControlLabel>
-              <FormControlLabelText>주소 (선택)</FormControlLabelText>
+              <FormControlLabelText>지역 (선택)</FormControlLabelText>
             </FormControlLabel>
             <Input variant="underlined" size="xl">
               <InputField
-                placeholder="Fremont"
+                placeholder="Mountain View"
                 value={formData.address}
                 onChangeText={(text: string) =>
                   setFormData({ ...formData, address: text })
@@ -234,7 +314,7 @@ export default function OnboardingScreen() {
             </Input>
             <FormControlHelper>
               <FormControlHelperText>
-                빠른 목장 편성을 위해 지역만 입력하셔도 됩니다.
+                자세한 주소는 입력하지 않으셔도 됩니다.
               </FormControlHelperText>
             </FormControlHelper>
           </FormControl>
@@ -258,11 +338,11 @@ export default function OnboardingScreen() {
         );
       case "welcome":
         return (
-          <VStack className="items-center justify-center flex-1 mt-10">
-            <Box className="w-24 h-24 rounded-full bg-blue-100 items-center justify-center mb-6">
+          <VStack className="mt-10 flex-1 items-center justify-center">
+            <Box className="mb-6 h-24 w-24 items-center justify-center rounded-full bg-primary-100">
               <Text className="text-4xl">🎉</Text>
             </Box>
-            <Text className="text-lg font-base text-center text-gray-800 dark:text-gray-200">
+            <Text className="text-center text-lg font-medium text-typography-900">
               {formData.name}님, 목장에 오신 것을{"\n"}진심으로 환영합니다.
             </Text>
           </VStack>
@@ -291,37 +371,47 @@ export default function OnboardingScreen() {
     }
   };
 
+  if (isInitializing) {
+    return (
+      <Box className="flex-1 items-center justify-center bg-background-50">
+        <ActivityIndicator size="large" />
+      </Box>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-background-light dark:bg-background-dark"
+      className="flex-1 bg-background-50"
     >
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <VStack className="flex-1 px-6 pb-4 pt-6">
           {/* 상단 폼 영역 (가변 공간 채움) */}
           <Box className="flex-1">
             <HStack className="mb-8 w-full items-center justify-between">
-              {stepIndex > 0 && currentStepId !== "welcome" ? (
+              {canGoBack ? (
                 <Pressable onPress={handleBack} disabled={isSubmitting}>
-                  <Text className="text-primary-blue font-semibold">
+                  <Text className="font-semibold text-primary-500">
                     뒤로가기
                   </Text>
                 </Pressable>
               ) : (
                 <Box className="w-16" />
               )}
-              
+
               {currentStepId !== "welcome" ? (
-                <Text className="text-gray-500">
-                  {stepIndex + 1} / {STEPS.length - 1}
+                <Text className="text-typography-400">
+                  {formStepNumber} / {formStepTotal}
                 </Text>
               ) : (
                 <Box />
               )}
-              
+
               {currentStepId !== "name" && currentStepId !== "welcome" ? (
                 <Pressable onPress={handleSkip} disabled={isSubmitting}>
-                  <Text className="font-semibold text-gray-500">건너뛰기</Text>
+                  <Text className="font-semibold text-typography-400">
+                    건너뛰기
+                  </Text>
                 </Pressable>
               ) : (
                 <Box className="w-16" />
@@ -344,10 +434,16 @@ export default function OnboardingScreen() {
                     left: 0,
                   }}
                 >
-                  <VStack className={currentStepId === "welcome" ? "gap-2 items-center" : "gap-6"}>
+                  <VStack
+                    className={
+                      currentStepId === "welcome"
+                        ? "items-center gap-2"
+                        : "gap-6"
+                    }
+                  >
                     <Heading
                       size="xl"
-                      className={`leading-tight text-gray-900 dark:text-white ${currentStepId === "welcome" ? "text-center mt-10" : ""}`}
+                      className={`leading-tight text-typography-900 ${currentStepId === "welcome" ? "mt-10 text-center" : ""}`}
                     >
                       {getStepTitle()}
                     </Heading>
@@ -369,16 +465,19 @@ export default function OnboardingScreen() {
                     : "#467CFA",
               }}
               onPress={handleNext}
-              disabled={(currentStepId === "name" && !formData.name.trim()) || isSubmitting}
+              disabled={
+                (currentStepId === "name" && !formData.name.trim()) ||
+                isSubmitting
+              }
             >
               <ButtonText className="font-bold text-white">
                 {isSubmitting
                   ? "저장 중..."
                   : currentStepId === "welcome"
-                  ? "앱 시작하기"
-                  : currentStepId === "baptism"
-                  ? "완료"
-                  : "다음"}
+                    ? "앱 시작하기"
+                    : currentStepId === "baptism"
+                      ? "완료"
+                      : "다음"}
               </ButtonText>
             </Button>
           </Box>

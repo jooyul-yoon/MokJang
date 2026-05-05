@@ -28,6 +28,7 @@ const formatTime = (dateString: string, lang: string = "ko") => {
 };
 
 export default function MeetingPreviewCard({ item }: { item: Meeting }) {
+  console.log(item);
   return (
     <TouchableOpacity
       activeOpacity={0.5}

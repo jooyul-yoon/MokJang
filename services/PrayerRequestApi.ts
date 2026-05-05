@@ -198,3 +198,18 @@ export const togglePrayerRequestAmen = async (
 
   return { success: true };
 };
+
+export const fetchGroupPrayerRequests = async (groupId: string): Promise<PrayerRequest[]> => {
+  const { data, error } = await supabase
+    .from("prayer_requests")
+    .select("*, profiles(full_name, avatar_url), prayer_request_amens(id, profiles(id, avatar_url)), prayer_request_comments(id, profiles(full_name, avatar_url))")
+    .eq("group_id", groupId)
+    .order("created_at", { ascending: false })
+    .limit(3);
+
+  if (error) {
+    console.error("Error fetching group prayer requests:", error);
+    return [];
+  }
+  return data as PrayerRequest[];
+};

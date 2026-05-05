@@ -130,6 +130,7 @@ const CommentItem = React.memo(
     );
   },
 );
+CommentItem.displayName = "CommentItem";
 
 export const CommentsSheet = forwardRef<CommentsSheetRef>((props, ref) => {
   const { t } = useTranslation();
@@ -235,6 +236,7 @@ export const CommentsSheet = forwardRef<CommentsSheetRef>((props, ref) => {
     </Actionsheet>
   );
 });
+CommentsSheet.displayName = "CommentsSheet";
 
 // Separate Input Area to isolate state re-renders
 const CommentInputSection = React.memo(
@@ -338,3 +340,4 @@ const CommentInputSection = React.memo(
     );
   },
 );
+CommentInputSection.displayName = "CommentInputSection";

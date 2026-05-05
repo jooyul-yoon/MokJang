@@ -21,18 +21,21 @@ import {
   RefreshControl,
   ScrollView,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { CreateMeetingModal } from "../meetings/CreateMeetingModal";
+import UpcomingMeeting from "../meetings/UpcomingMeeting";
 import TabTitle from "../shared/TabTitle";
 import { Button, ButtonIcon } from "../ui/button";
 import { Center } from "../ui/center";
-import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 import { Icon } from "../ui/icon";
 import { Menu, MenuItem, MenuItemLabel } from "../ui/menu";
 import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
+import { GroupMembersStrip } from "./GroupMembersStrip";
 import GroupSchedules from "./GroupSchedules";
+import { RecentPrayersStrip } from "./RecentPrayersStrip";
 
 interface GroupDetailsProps {
   userProfile?: UserProfile | null;
@@ -210,58 +213,97 @@ export default function GroupDetails({
             setSelectedDate={setSelectedDate}
             onDateChange={createState.setDate}
           />
-          <VStack className="mt-4 pb-10">
-            <Heading className="mb-2 px-1 text-typography-800">
+
+          <UpcomingMeeting groupId={myGroups[0].id} />
+
+          <GroupMembersStrip
+            groupId={myGroups[0].id}
+            leaderId={myGroups[0].leader_id}
+          />
+
+          <VStack className="mx-4 mt-2 pb-6">
+            <Text className="mb-3 px-1 text-base font-bold tracking-[-0.3px] text-typography-900">
               {t("community.groupActivities")}
-            </Heading>
-            <VStack className="overflow-hidden rounded-xl">
+            </Text>
+            <VStack className="overflow-hidden rounded-mj bg-background-0 shadow-card">
               <TouchableOpacity
                 activeOpacity={0.5}
-                className="h-14 w-full flex-row items-center justify-between px-2"
+                className="h-[58px] w-full flex-row items-center justify-between border-b border-outline-100 px-4"
                 onPress={() => router.push(`/groups/${myGroups[0].id}/prayers`)}
               >
                 <HStack space="md" className="items-center">
-                  <Icon as={Heart} size="md" className="text-typography-500" />
-                  <Text className="text-lg font-medium text-typography-800">
-                    {t("community.prayers")}
-                  </Text>
+                  <Center className="h-9 w-9 rounded-lg bg-[#FFF0F0]">
+                    <Icon as={Heart} size="sm" className="text-[#FF5C5C]" />
+                  </Center>
+                  <VStack>
+                    <Text className="text-[15px] font-semibold tracking-[-0.2px] text-typography-900">
+                      {t("community.prayers")}
+                    </Text>
+                  </VStack>
                 </HStack>
-                <Icon as={ChevronRight} className="text-typography-400" />
+                <Icon
+                  as={ChevronRight}
+                  size="sm"
+                  className="text-typography-300"
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.5}
-                className="h-14 w-full flex-row items-center justify-between px-2"
+                className={`h-[58px] w-full flex-row items-center justify-between px-4 ${
+                  myGroups[0]?.leader_id === userProfile?.id
+                    ? "border-b border-outline-100"
+                    : ""
+                }`}
                 onPress={() => router.push(`/groups/${myGroups[0].id}/feeds`)}
               >
                 <HStack space="md" className="items-center">
-                  <Icon as={Images} size="md" className="text-typography-500" />
-                  <Text className="text-lg font-medium text-typography-800">
-                    {t("community.feeds")}
-                  </Text>
+                  <Center className="h-9 w-9 rounded-lg bg-primary-100">
+                    <Icon as={Images} size="sm" className="text-primary-500" />
+                  </Center>
+                  <VStack>
+                    <Text className="text-[15px] font-semibold tracking-[-0.2px] text-typography-900">
+                      {t("community.feeds")}
+                    </Text>
+                  </VStack>
                 </HStack>
-                <Icon as={ChevronRight} className="text-typography-400" />
+                <Icon
+                  as={ChevronRight}
+                  size="sm"
+                  className="text-typography-300"
+                />
               </TouchableOpacity>
               {myGroups[0]?.leader_id === userProfile?.id && (
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  className="h-14 w-full flex-row items-center justify-between px-2"
+                  className="h-[58px] w-full flex-row items-center justify-between px-4"
                   onPress={() => router.push(`/groups/${myGroups[0].id}/diary`)}
                 >
                   <HStack space="md" className="items-center">
-                    <Icon
-                      as={NotebookPen}
-                      size="md"
-                      className="text-typography-500"
-                    />
-                    <Text className="text-lg font-medium text-typography-800">
-                      {t("community.diary")}
-                    </Text>
+                    <Center className="h-9 w-9 rounded-lg bg-[#F3E8FF]">
+                      <Icon
+                        as={NotebookPen}
+                        size="sm"
+                        className="text-[#7B5EA7]"
+                      />
+                    </Center>
+                    <VStack>
+                      <Text className="text-[15px] font-semibold tracking-[-0.2px] text-typography-900">
+                        {t("community.diary")}
+                      </Text>
+                    </VStack>
                   </HStack>
-                  <Icon as={ChevronRight} className="text-typography-400" />
+                  <Icon
+                    as={ChevronRight}
+                    size="sm"
+                    className="text-typography-300"
+                  />
                 </TouchableOpacity>
               )}
             </VStack>
           </VStack>
+
+          <RecentPrayersStrip groupId={myGroups[0].id} />
+          <View className="h-10" />
         </ScrollView>
       </VStack>
       <CreateMeetingModal

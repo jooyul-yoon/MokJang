@@ -22,9 +22,6 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          height: 80,
-          paddingTop: 6,
-          paddingBottom: 14,
           backgroundColor: isDark ? BrandColorsDark.bg[0] : BrandColors.bg[0],
           borderTopColor: isDark
             ? BrandColorsDark.border.subtle

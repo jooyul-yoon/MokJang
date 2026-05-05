@@ -2,6 +2,10 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { supabase } from "@/lib/supabase";
+import {
+  formatAppleFullName,
+  savePendingAppleFullName,
+} from "@/utils/auth-profile";
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import { Image } from "expo-image";
@@ -60,13 +64,21 @@ const handleAppleSignIn = async () => {
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
     });
+    const appleFullName = formatAppleFullName(credential.fullName);
+    if (appleFullName) {
+      await savePendingAppleFullName(appleFullName);
+    }
+
     // Sign in via Supabase Auth.
     if (credential.identityToken) {
-      const { error } = await supabase.auth.signInWithIdToken({
+      const { data, error } = await supabase.auth.signInWithIdToken({
         provider: "apple",
         token: credential.identityToken,
       });
       if (error) throw error;
+      if (appleFullName && data.user) {
+        await savePendingAppleFullName(appleFullName, data.user.id);
+      }
       // Session is handled by onAuthStateChange in _layout.tsx
     }
   } catch (e: any) {
@@ -106,7 +118,7 @@ export default function LoginScreen() {
         <VStack className="w-full gap-4 pb-12 pt-4">
           <TouchableOpacity
             onPress={performOAuth}
-            className="h-[52px] w-full flex-row items-center justify-center gap-2 rounded-xl border border-slate-400"
+            className="h-[52px] w-full flex-row items-center justify-center gap-2 rounded-xl dark:bg-white"
             activeOpacity={0.6}
           >
             <Image
@@ -116,8 +128,8 @@ export default function LoginScreen() {
             />
 
             <Text
-              className="font-medium text-slate-900 dark:text-typography-100"
-              style={{ fontSize: 20 }}
+              className="font-semibold text-typography-100 dark:text-black"
+              style={{ fontSize: 21 }}
             >
               Continue with Google
             </Text>
